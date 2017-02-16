@@ -36,16 +36,3 @@ if ((day >= Days::Monday) && (day <= Days::Friday))
     */
     return 0;
 }
-/* another way
-struct Days 
-{
-   enum type
-   {
-      Saturday,Sunday,Tuesday,Wednesday,Thursday,Friday
-   };
-};
-
-Days::type day = Days::Saturday;
-if (day == Days::Saturday)*/
-
-//g++ -std=c++11 enum_class.cpp -o enum_class.exe
