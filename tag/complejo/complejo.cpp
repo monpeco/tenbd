@@ -102,8 +102,15 @@ int operator!= (const complejo& a, const complejo& b)
 ostream& operator << (ostream& co, const complejo &a)
 {
 	co << a.real;
-	long fl = co.setf(ios::showpos);
+	std::ios_base::fmtflags fl = co.setf(ios::showpos);
 	co << a.imag << "i";
 	co.flags(fl);
 	return co;
+}
+
+int main(void)
+{
+	
+	cout << "return 0" << endl;
+	return 0;
 }
