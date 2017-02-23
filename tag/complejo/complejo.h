@@ -1,7 +1,8 @@
 #ifndef __COMPLEJO_H__
 #define __COMPLEJO_H__
 
-#include <iostream.h>
+#include <iostream>
+using namespace std;
 
 class complejo{
 private:

@@ -1,4 +1,5 @@
 #include "complejo.h"
+using namespace std;
 
 // constructor por defecto
 complejo::complejo(void)
