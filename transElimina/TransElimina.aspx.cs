@@ -34,9 +34,17 @@ namespace webTransferenciaSucursal
                 if (vPathBD == null || vPathBD == "")
                     vPathBD = System.Configuration.ConfigurationManager.AppSettings.Get("transBD");
                 tracer = "2"; //am:23/02/17
-                Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;Pooling=true;ReadOnly=false");
+                //am:23/02/17 Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;Pooling=true;ReadOnly=false");
+                Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;Pooling=true;ReadOnly=false");//original
+                //Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;Pooling=true;Read Only=false"); //Read Only=false
+                //Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;Pooling=false;ReadOnly=false"); //Pooling=false
+                //Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;Pooling=true;Mode=read/write");//read/write
+                //Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;Pooling=false;Mode=read/write");//read/write y pooling_false
+
+                //Conexion = new SQLiteConnection("Data Source=" + vPathBD + ";Version=3;New=False;Compress=False;Mode=Read Only;");//from TransInforme
                 tracer = "3"; //am:23/02/17
                 Conexion.Open();
+               
                 tracer = "4"; //am:23/02/17
                 string qry = " delete from dbq_arch " +
                               " where  pk01_tabl = '" + txtEmpresa.Text + "' " +
