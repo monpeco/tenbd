@@ -108,9 +108,3 @@ ostream& operator << (ostream& co, const complejo &a)
 	return co;
 }
 
-int main(void)
-{
-	
-	cout << "return 0" << endl;
-	return 0;
-}
