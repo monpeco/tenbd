@@ -25,9 +25,9 @@ using namespace std;
 #include <funciones.h>
 #include <time.h>
 
-
+#ifdef FOLICLIESUCU
 #include <DteControlDll.h>
-
+#endif
 
 extern Aplicacion *app;
 
