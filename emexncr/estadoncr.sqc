@@ -22,7 +22,10 @@ void ObtieneEstadoNCR(const char* pCodiEmex, int pCodiEmpr, int pTipoDocu, int p
 	EXEC SQL SELECT RUTT_RECE
 			INTO	:aux_rutt_rece
 			FROM 	DTE_VALI_DTE
-			WHERE	CODI_EMEX = :l_codi_emex;
+			WHERE	CODI_EMEX = :l_codi_emex
+			AND 	CODI_EMPR = :aux_codi_empr
+			AND 	TIPO_DOCU = :aux_tipo_docu
+			AND 	RUTT_RECE = :aux_rutt_rece;
 								
 	strcpy(pEstaDocu, aux_esta_docu);
 }
