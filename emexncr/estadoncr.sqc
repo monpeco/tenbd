@@ -27,6 +27,10 @@ void ObtieneCriterioNCR(const char* pCodiEmex, int pCodiEmpr, int pTipoDocu, int
 			AND 	CODI_EMPR = :aux_codi_empr
 			AND 	TIPO_DOCU = :aux_tipo_docu
 			AND 	RUTT_RECE = :aux_rutt_rece;
-								
+
+	r_trim(l_rutt_rece, ' ');	
+	sprintf(msgLog,"ObtieneCriterioNCR - l_rutt_rece: !%s!", l_rutt_rece);
+	putLogGlobal(1,msgLog); 
+	
 	strcpy(pEstaDocu, l_rutt_rece);
 }
