@@ -1,21 +1,28 @@
 /****AM|27-06-2017 - OT9359762***/
-//ObtieneCriterioNCR(pCodiEmex, aux_codi_empr_c, aux_tipo_docu_c, aux_rutt_rece_c, &pEstaDocu);
-void ObtieneCriterioNCR(int pTipoDocu, char* pEstaDocu)
+// Param: pCodiEmex, pCodiEmpr, pTipoDocu, pRuttRece -> pEstaDocu
+// Recupera si hay un criterio en la tabla DTE_VALI_DTE para dejar en estado 'PEN' los dte indicados por pCodiEmex, pCodiEmpr, pTipoDocu, pRuttRece
+void ObtieneEstadoNCR(const char* pCodiEmex, int pCodiEmpr, int pTipoDocu, int pRuttRece, char* pEstaDocu)
 {
+	EXEC SQL BEGIN DECLARE SECTION;
+		char l_codi_emex[30+1];
+	EXEC SQL END DECLARE SECTION;
+
 	char msgLog[200];
 
 	limpiaVrch((char*)aux_esta_docu,sizeof(aux_esta_docu));
+	
+	strcpy(l_codi_emex, pCodiEmex);
+	aux_codi_empr = pCodiEmpr;
 	aux_tipo_docu = pTipoDocu;
+	aux_rutt_rece = pRuttRece;
 
+	
+	/* revisa si cumple con un criterio */
 	EXEC SQL WHENEVER NOT FOUND continue;
-	EXEC SQL SELECT	isnull(esta_docu,'ING')
-			INTO	:aux_esta_docu
-			FROM	DTE_TIPO_DOCU
-			WHERE	tipo_docu = :aux_tipo_docu;
-
-	r_trim(aux_esta_docu, ' ');	
-	sprintf(msgLog,"aux_esta_docu: !%s!", aux_esta_docu);
-	putLogGlobal(1,msgLog); 
-		
+	EXEC SQL SELECT RUTT_RECE
+			INTO	:aux_rutt_rece
+			FROM 	DTE_VALI_DTE
+			WHERE	CODI_EMEX = :l_codi_emex;
+								
 	strcpy(pEstaDocu, aux_esta_docu);
 }
