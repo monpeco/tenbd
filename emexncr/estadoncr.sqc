@@ -5,11 +5,12 @@ void ObtieneEstadoNCR(const char* pCodiEmex, int pCodiEmpr, int pTipoDocu, int p
 {
 	EXEC SQL BEGIN DECLARE SECTION;
 		char l_codi_emex[30+1];
+		char l_rutt_rece[30+1];
 	EXEC SQL END DECLARE SECTION;
 
 	char msgLog[200];
 
-	limpiaVrch((char*)aux_esta_docu,sizeof(aux_esta_docu));
+	limpiaVrch((char*)l_rutt_rece,sizeof(l_rutt_rece));
 	
 	strcpy(l_codi_emex, pCodiEmex);
 	aux_codi_empr = pCodiEmpr;
@@ -20,12 +21,12 @@ void ObtieneEstadoNCR(const char* pCodiEmex, int pCodiEmpr, int pTipoDocu, int p
 	/* revisa si cumple con un criterio */
 	EXEC SQL WHENEVER NOT FOUND continue;
 	EXEC SQL SELECT RUTT_RECE
-			INTO	:aux_rutt_rece
+			INTO	:l_rutt_rece
 			FROM 	DTE_VALI_DTE
 			WHERE	CODI_EMEX = :l_codi_emex
 			AND 	CODI_EMPR = :aux_codi_empr
 			AND 	TIPO_DOCU = :aux_tipo_docu
 			AND 	RUTT_RECE = :aux_rutt_rece;
 								
-	strcpy(pEstaDocu, aux_esta_docu);
+	strcpy(pEstaDocu, l_rutt_rece);
 }
