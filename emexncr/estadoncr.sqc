@@ -1,7 +1,7 @@
 /****AM|27-06-2017 - OT9359762***/
 // Param: pCodiEmex, pCodiEmpr, pTipoDocu, pRuttRece -> pEstaDocu
 // Recupera si hay un criterio en la tabla DTE_VALI_DTE para dejar en estado 'PEN' los dte indicados por pCodiEmex, pCodiEmpr, pTipoDocu, pRuttRece
-void ObtieneEstadoNCR(const char* pCodiEmex, int pCodiEmpr, int pTipoDocu, int pRuttRece, char* pEstaDocu)
+void ObtieneCriterioNCR(const char* pCodiEmex, int pCodiEmpr, int pTipoDocu, int pRuttRece, char* pEstaDocu)
 {
 	EXEC SQL BEGIN DECLARE SECTION;
 		char l_codi_emex[30+1];
