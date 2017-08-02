@@ -216,5 +216,134 @@ namespace wssPortalEgresos
 
 
 
+
+        // Rut -> Mensaje
+        [WebMethod]
+        public Respuesta AgregarRutReceptor(int Rut)
+        {
+            string sql = string.Empty;
+            string xml = string.Empty;
+            string xmlBase64 = string.Empty;
+            string corr_docu = string.Empty;
+            string sEmex = string.Empty;
+            string codi_empr = string.Empty;
+
+            byte[] bytes;
+            
+            DataTable result;
+            Respuesta resp = new Respuesta();
+
+            log logs = new log();
+            logs.nombreLog = "AgregarRutReceptor";
+            logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
+
+            if (Rut == 0)
+            {
+                resp.SMensaje = "Rut No puede estar vacio";
+                // FIX logs.putLog(1, resp.SMensaje);
+                return resp;
+            }
+
+            setEgateHome(Rut, logs);
+
+            bdConexion conexion = new bdConexion();
+            try
+            {
+                conexion.egateHome = logs.egateHome;
+                conexion.conexionOpen();
+
+                if (!existeEmpresa(Rut, out codi_empr, conexion, resp))
+                {
+                    return resp;
+                }
+
+                if (!existeRut(Rut, conexion, resp))
+                {
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+
+            return resp;
+        }
+
+
+        // Rut -> Boolean
+        private static bool existeRutReceptor(int rut)
+        {
+            string sql = string.Empty;
+            string codi_empr = string.Empty;
+            DataTable result;
+
+            bdConexion conexion = new bdConexion();
+            return false;
+        }
+
+        private static string tipoBD()
+        {
+            return "";
+        }
+
+        private static Boolean Emex()
+        {
+            return false;
+        }
+
+        private void setEgateHome(int Rut, log logs)        
+        {
+            if (ConfigurationManager.AppSettings["eHome:" + Rut.ToString()] != null)
+            {
+                logs.egateHome = ConfigurationManager.AppSettings["eHome:" + Rut.ToString()];
+            }
+            else
+            {
+                logs.egateHome = "EGATE_HOME";
+                logs.putLog(1, "Empresa no registra Home: " + Rut);
+            }
+        }
+
+        private Boolean existeEmpresa(int Rut, out string codi_empr, bdConexion conexion, Respuesta resp)
+        {
+            Boolean result = true;
+            string sql = string.Empty;
+
+            if (!string.IsNullOrEmpty(conexion.Emex))
+            {
+                sql = "select codi_empr from empr_hold where rutt_empr = {0}";
+            }
+            else
+            {
+                sql = "select codi_empr from empr where rutt_empr = {0} ";
+            }
+
+            codi_empr = conexion.SelectInto(String.Format(sql, Rut));
+
+
+            if (string.IsNullOrEmpty(codi_empr))
+            {
+                resp.sMensaje = "Empresa no se encuentra configurada";
+                result = false;
+            }
+            return result;
+        }
+
+        private Boolean existeRut(int Rut, bdConexion conexion, Respuesta resp)
+        {
+            Boolean result = true;
+            string sql = "SELECT COUNT(*) FROM PERSONAS WHERE RUTT_PERS = '{0}'";
+            int cantPersonas = Convert.ToInt32(conexion.SelectInto(String.Format(sql, Rut)));
+            if(cantPersonas == 0)
+            {
+                result = false;
+                resp.sMensaje = "Rut no se encuentra";
+            }
+            return result;
+        }
     }
 }
