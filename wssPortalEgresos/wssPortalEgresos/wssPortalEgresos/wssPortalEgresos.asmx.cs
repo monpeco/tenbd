@@ -219,7 +219,7 @@ namespace wssPortalEgresos
 
         // Rut -> Mensaje
         [WebMethod]
-        public Respuesta AgregarRutReceptor(int Rut)
+        public Respuesta AgregarRutReceptor(int Rut, int digiVeri, string nombre)
         {
             string sql = string.Empty;
             string xml = string.Empty;
@@ -228,9 +228,6 @@ namespace wssPortalEgresos
             string sEmex = string.Empty;
             string codi_empr = string.Empty;
 
-            byte[] bytes;
-            
-            DataTable result;
             Respuesta resp = new Respuesta();
 
             log logs = new log();
@@ -252,24 +249,24 @@ namespace wssPortalEgresos
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
 
-                if (!existeEmpresa(Rut, out codi_empr, conexion, resp))
+                /*if (!existeEmpresa(Rut, out codi_empr, conexion, resp))
                 {
                     return resp;
-                }
+                }*/
 
-                if (!existeRut(Rut, conexion, resp))
+                if (!existeReceptor(Rut, conexion, resp))
                 {
-
+                    agregaReceptor(Rut, digiVeri, nombre, conexion, resp);
+                }
+                else
+                {
+                    habilitaReceptor(Rut, conexion, resp);
                 }
 
             }
             catch (Exception ex)
             {
-
             }
-
-
-
             return resp;
         }
 
@@ -327,13 +324,13 @@ namespace wssPortalEgresos
 
             if (string.IsNullOrEmpty(codi_empr))
             {
-                resp.sMensaje = "Empresa no se encuentra configurada";
+                resp.SMensaje = "Empresa no se encuentra configurada";
                 result = false;
             }
             return result;
         }
 
-        private Boolean existeRut(int Rut, bdConexion conexion, Respuesta resp)
+        private Boolean existeReceptor(int Rut, bdConexion conexion, Respuesta resp)
         {
             Boolean result = true;
             string sql = "SELECT COUNT(*) FROM PERSONAS WHERE RUTT_PERS = '{0}'";
@@ -341,9 +338,51 @@ namespace wssPortalEgresos
             if(cantPersonas == 0)
             {
                 result = false;
-                resp.sMensaje = "Rut no se encuentra";
+                resp.SMensaje = "Rut no se encuentra";
             }
             return result;
+        }
+
+        private void agregaReceptor(int Rut, int digi_veri, string nombre, bdConexion conexion, Respuesta resp)
+        {
+            try
+            {
+                string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'S')";
+
+                if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digi_veri, nombre)) == 0)
+                {
+                    resp.SMensaje = "No se pudo agregar Rut en receptores";
+                }
+                else
+                {
+                    conexion.confirma();
+                    resp.SMensaje = "Se inserta Rut en receptores";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void habilitaReceptor(int Rut, bdConexion conexion, Respuesta resp)
+        {
+            try
+            {
+                string sql = "UPDATE PERSONAS SET INDI_WSS = 'S' WHERE RUTT_PERS = {0} ";
+
+                if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
+                {
+                    resp.SMensaje = "No se pudo habilitar Rut en receptores";
+                }
+                else
+                {
+                    conexion.confirma();
+                    resp.SMensaje = "Se habilita Rut en receptores";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }
