@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+# Legacy project
+belProIngDigitador/
+clases/
