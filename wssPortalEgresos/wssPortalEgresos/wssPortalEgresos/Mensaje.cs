@@ -61,3 +61,8 @@ public class Mensaje
         set { sRuttEmis = value; }
     }
 }
+
+public class Respuesta
+{
+    public string SMensaje { get; set; }
+}
