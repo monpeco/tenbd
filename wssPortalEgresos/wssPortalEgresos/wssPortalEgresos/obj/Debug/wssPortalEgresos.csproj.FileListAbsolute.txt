@@ -1,0 +1,5 @@
+C:\facture\facturepp\ProjectosNet\wssPortalEgresos\wssPortalEgresos\wssPortalEgresos\obj\Debug\ResolveAssemblyReference.cache
+C:\facture\facturepp\ProjectosNet\wssPortalEgresos\wssPortalEgresos\wssPortalEgresos\bin\wssPortalEgresos.dll
+C:\facture\facturepp\ProjectosNet\wssPortalEgresos\wssPortalEgresos\wssPortalEgresos\bin\wssPortalEgresos.pdb
+C:\facture\facturepp\ProjectosNet\wssPortalEgresos\wssPortalEgresos\wssPortalEgresos\obj\Debug\wssPortalEgresos.dll
+C:\facture\facturepp\ProjectosNet\wssPortalEgresos\wssPortalEgresos\wssPortalEgresos\obj\Debug\wssPortalEgresos.pdb

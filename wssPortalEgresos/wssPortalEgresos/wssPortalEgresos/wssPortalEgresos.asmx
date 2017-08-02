@@ -1,0 +1,1 @@
+﻿<%@ WebService Language="C#" CodeBehind="wssPortalEgresos.asmx.cs" Class="wssPortalEgresos.Service1" %>
