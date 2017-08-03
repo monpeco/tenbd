@@ -25,10 +25,12 @@ namespace wssPortalEgresos
         string CONSULTA_OK = "0";
         string ERROR_RUT_VACIO = "1";
 
-        string ERROR_AGREGAR_RUT = "2";
-        string ERROR_HABILITAR_RUT = "3";
-        string ERROR_QUITAR_RUT = "4";
-        string ERROR_DESHABILITAR_RUT = "5";
+        string ERROR_AGREGAR_RUT_RECE = "2";
+        string ERROR_HABILITAR_RUT_RECE = "3";
+        string ERROR_QUITAR_RUT_RECE = "4";
+        string ERROR_DESHABILITAR_RUT_RECE = "5";
+
+        string ERROR_EMISOR_INVALIDO_EMIS = "6";
 
         [WebMethod]
         public Mensaje SupplierTrasETD(int Rut)
@@ -440,7 +442,7 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
                 {
-                    resp.SCodigo = ERROR_AGREGAR_RUT;
+                    resp.SCodigo = ERROR_AGREGAR_RUT_RECE;
                     resp.SMensaje = "No se pudo agregar Rut en receptores";
                 }
                 else
@@ -463,7 +465,7 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
                 {
-                    resp.SCodigo = ERROR_HABILITAR_RUT;
+                    resp.SCodigo = ERROR_HABILITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo habilitar Rut en receptores";
                 }
                 else
@@ -485,7 +487,7 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
                 {
-                    resp.SCodigo = ERROR_QUITAR_RUT;
+                    resp.SCodigo = ERROR_QUITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo quitar Rut en receptores";
                 }
                 else
@@ -508,7 +510,7 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
                 {
-                    resp.SCodigo = ERROR_DESHABILITAR_RUT;
+                    resp.SCodigo = ERROR_DESHABILITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo deshabilitar Rut en receptores";
                 }
                 else
