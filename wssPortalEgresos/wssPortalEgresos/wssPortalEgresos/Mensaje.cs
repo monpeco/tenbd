@@ -65,4 +65,5 @@ public class Mensaje
 public class Respuesta
 {
     public string SMensaje { get; set; }
+    public string SCodigo { get; set; }
 }

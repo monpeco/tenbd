@@ -22,6 +22,14 @@ namespace wssPortalEgresos
     // [System.Web.Script.Services.ScriptService]
     public class Service1 : System.Web.Services.WebService
     {
+        string CONSULTA_OK = "0";
+        string ERROR_RUT_VACIO = "1";
+
+        string ERROR_AGREGAR_RUT = "2";
+        string ERROR_HABILITAR_RUT = "3";
+        string ERROR_QUITAR_RUT = "4";
+        string ERROR_DESHABILITAR_RUT = "5";
+
         [WebMethod]
         public Mensaje SupplierTrasETD(int Rut)
         {
@@ -251,10 +259,8 @@ namespace wssPortalEgresos
             logs.nombreLog = "AgregarRutReceptor";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
-            if (Rut == 0)
+            if (!validaRut(Rut, resp))
             {
-                resp.SMensaje = "Rut No puede estar vacio";
-                // FIX logs.putLog(1, resp.SMensaje);
                 return resp;
             }
 
@@ -304,10 +310,8 @@ namespace wssPortalEgresos
             logs.nombreLog = "QuitarRutReceptor";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
-            if (Rut == 0)
+            if(!validaRut(Rut, resp))
             {
-                resp.SMensaje = "Rut No puede estar vacio";
-                // FIX logs.putLog(1, resp.SMensaje);
                 return resp;
             }
 
@@ -361,6 +365,20 @@ namespace wssPortalEgresos
         private static Boolean Emex()
         {
             return false;
+        }
+
+        private Boolean validaRut(int Rut, Respuesta resp)
+        {
+            Boolean result = true;
+            if (Rut == 0)
+            {
+                resp.SCodigo = ERROR_RUT_VACIO;
+                resp.SMensaje = "Rut No puede estar vacio";
+                result = false;
+                // FIX logs.putLog(1, resp.SMensaje);
+                //return resp;
+            }
+            return result;
         }
 
         private void setEgateHome(int Rut, log logs)        
@@ -422,11 +440,13 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
                 {
+                    resp.SCodigo = ERROR_AGREGAR_RUT;
                     resp.SMensaje = "No se pudo agregar Rut en receptores";
                 }
                 else
                 {
                     conexion.confirma();
+                    resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se inserta Rut en receptores";
                 }
             }
@@ -443,11 +463,13 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
                 {
+                    resp.SCodigo = ERROR_HABILITAR_RUT;
                     resp.SMensaje = "No se pudo habilitar Rut en receptores";
                 }
                 else
                 {
                     conexion.confirma();
+                    resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se habilita Rut en receptores";
                 }
             }
@@ -463,11 +485,13 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
                 {
+                    resp.SCodigo = ERROR_QUITAR_RUT;
                     resp.SMensaje = "No se pudo quitar Rut en receptores";
                 }
                 else
                 {
                     conexion.confirma();
+                    resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se quita Rut en receptores";
                 }
             }
@@ -484,11 +508,13 @@ namespace wssPortalEgresos
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
                 {
+                    resp.SCodigo = ERROR_DESHABILITAR_RUT;
                     resp.SMensaje = "No se pudo deshabilitar Rut en receptores";
                 }
                 else
                 {
                     conexion.confirma();
+                    resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se deshabilita Rut en receptores";
                 }
             }
