@@ -32,6 +32,7 @@ namespace wssPortalEgresos
 
         string ERROR_EMISOR_INVALIDO_EMIS = "6";
 
+
         [WebMethod]
         public Mensaje SupplierTrasETD(int Rut)
         {
@@ -231,7 +232,7 @@ namespace wssPortalEgresos
         {
             Respuesta resp = new Respuesta();
             log logs = new log();
-            logs.nombreLog = "AgregarRutReceptor";
+            logs.nombreLog = "AgregarRutEmisor";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
             if (!validaRut(Rut, resp))
@@ -249,7 +250,7 @@ namespace wssPortalEgresos
 
                 if (!existeEmisor(Rut, conexion, resp))
                 {
-                    emisorInvalido(resp);
+                    //emisorInvalido(resp);
                 }
                 else
                 {
@@ -269,6 +270,37 @@ namespace wssPortalEgresos
         public Respuesta QuitarRutEmisor(int Rut, int digiVeri, string nombre)
         {
             Respuesta resp = new Respuesta();
+            log logs = new log();
+            logs.nombreLog = "QuitarRutEmisor";
+            logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
+
+            if (!validaRut(Rut, resp))
+            {
+                return resp;
+            }
+
+            setEgateHome(Rut, logs);
+
+            bdConexion conexion = new bdConexion();
+            try
+            {
+                conexion.egateHome = logs.egateHome;
+                conexion.conexionOpen();
+
+                if (!existeEmisor(Rut, conexion, resp))
+                {
+                    //emisorInvalido(resp);
+                }
+                else
+                {
+                    deshabilitarEmisor(Rut, conexion, resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
+
             return resp;
         }
         #endregion
@@ -564,7 +596,8 @@ namespace wssPortalEgresos
             if (cantPersonas == 0)
             {
                 result = false;
-                resp.SMensaje = "Rut no se encuentra";
+                resp.SCodigo = ERROR_EMISOR_INVALIDO_EMIS;
+                resp.SMensaje = "No se encuentra Rut del emisor";
             }
             return result;
         }
@@ -592,11 +625,35 @@ namespace wssPortalEgresos
             }
         }
 
-        private void emisorInvalido(Respuesta resp)
+        private void deshabilitarEmisor(int Rut, bdConexion conexion, Respuesta resp)
         {
-            resp.SCodigo = ERROR_EMISOR_INVALIDO_EMIS;
-            resp.SMensaje = "No se pudo habilitar Rut en emisores";
+            try
+            {
+                string sql = "UPDATE EMPR SET INDI_WSS = 'N' WHERE RUTT_EMPR = {0} ";
+
+                if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
+                {
+                    resp.SCodigo = ERROR_DESHABILITAR_RUT_RECE;
+                    resp.SMensaje = "No se pudo deshabilitar Rut en emisores";
+                }
+                else
+                {
+                    conexion.confirma();
+                    resp.SCodigo = CONSULTA_OK;
+                    resp.SMensaje = "Se hdesabilita Rut en emisores";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
         }
+
+
+        //private void emisorInvalido(Respuesta resp)
+        //{
+        //    resp.SCodigo = ERROR_EMISOR_INVALIDO_EMIS;
+        //    resp.SMensaje = "No se pudo habilitar Rut en emisores";
+        //}
 
         #endregion
     }
