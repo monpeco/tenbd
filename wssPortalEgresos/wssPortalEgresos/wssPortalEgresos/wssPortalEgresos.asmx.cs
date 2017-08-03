@@ -215,7 +215,24 @@ namespace wssPortalEgresos
         }
 
 
-       
+        #region Agregar/Quitar Emisor
+        [WebMethod]
+        public Respuesta AgregarRutEmisor(int Rut, int digiVeri, string nombre)
+        {
+            Respuesta resp = new Respuesta();
+            return resp;
+        }
+
+
+        [WebMethod]
+        public Respuesta QuitarRutEmisor(int Rut, int digiVeri, string nombre)
+        {
+            Respuesta resp = new Respuesta();
+            return resp;
+        }
+        #endregion
+
+
         #region Agregar/Quitar Receptor
         // Rut -> Mensaje
         [WebMethod]
