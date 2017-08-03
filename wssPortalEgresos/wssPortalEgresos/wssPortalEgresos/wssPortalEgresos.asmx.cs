@@ -215,8 +215,8 @@ namespace wssPortalEgresos
         }
 
 
-
-
+       
+        #region Agregar/Quitar Receptor
         // Rut -> Mensaje
         [WebMethod]
         public Respuesta AgregarRutReceptor(int Rut, int digiVeri, string nombre)
@@ -256,11 +256,11 @@ namespace wssPortalEgresos
 
                 if (!existeReceptor(Rut, conexion, resp))
                 {
-                    agregaReceptor(Rut, digiVeri, nombre, conexion, resp);
+                    agregarReceptor(Rut, digiVeri, nombre, conexion, resp);
                 }
                 else
                 {
-                    habilitaReceptor(Rut, conexion, resp);
+                    habilitarReceptor(Rut, conexion, resp);
                 }
 
             }
@@ -270,6 +270,58 @@ namespace wssPortalEgresos
             return resp;
         }
 
+        // Rut -> Mensaje
+        [WebMethod]
+        public Respuesta QuitarRutReceptor(int Rut, int digiVeri, string nombre)
+        {
+            string sql = string.Empty;
+            string xml = string.Empty;
+            string xmlBase64 = string.Empty;
+            string corr_docu = string.Empty;
+            string sEmex = string.Empty;
+            string codi_empr = string.Empty;
+
+            Respuesta resp = new Respuesta();
+
+            log logs = new log();
+            logs.nombreLog = "QuitarRutReceptor";
+            logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
+
+            if (Rut == 0)
+            {
+                resp.SMensaje = "Rut No puede estar vacio";
+                // FIX logs.putLog(1, resp.SMensaje);
+                return resp;
+            }
+
+            setEgateHome(Rut, logs);
+
+            bdConexion conexion = new bdConexion();
+            try
+            {
+                conexion.egateHome = logs.egateHome;
+                conexion.conexionOpen();
+
+                /*if (!existeEmpresa(Rut, out codi_empr, conexion, resp))
+                {
+                    return resp;
+                }*/
+
+                if (!existeReceptor(Rut, conexion, resp))
+                {
+                    quitarReceptor(Rut, digiVeri, nombre, conexion, resp);
+                }
+                else
+                {
+                    deshabilitarReceptor(Rut, conexion, resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return resp;
+        }
 
         // Rut -> Boolean
         private static bool existeRutReceptor(int rut)
@@ -281,7 +333,9 @@ namespace wssPortalEgresos
             bdConexion conexion = new bdConexion();
             return false;
         }
+        #endregion
 
+        #region private methods Receptor
         private static string tipoBD()
         {
             return "";
@@ -343,13 +397,13 @@ namespace wssPortalEgresos
             return result;
         }
 
-        private void agregaReceptor(int Rut, int digi_veri, string nombre, bdConexion conexion, Respuesta resp)
+        private void agregarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp)
         {
             try
             {
                 string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'S')";
 
-                if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digi_veri, nombre)) == 0)
+                if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
                 {
                     resp.SMensaje = "No se pudo agregar Rut en receptores";
                 }
@@ -364,7 +418,7 @@ namespace wssPortalEgresos
             }
         }
 
-        private void habilitaReceptor(int Rut, bdConexion conexion, Respuesta resp)
+        private void habilitarReceptor(int Rut, bdConexion conexion, Respuesta resp)
         {
             try
             {
@@ -384,5 +438,48 @@ namespace wssPortalEgresos
             {
             }
         }
+    
+        private void quitarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp){
+            try
+            {
+                string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'N')";
+
+                if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
+                {
+                    resp.SMensaje = "No se pudo quitar Rut en receptores";
+                }
+                else
+                {
+                    conexion.confirma();
+                    resp.SMensaje = "Se quita Rut en receptores";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void deshabilitarReceptor(int Rut, bdConexion conexion, Respuesta resp)
+        {
+            try
+            {
+                string sql = "UPDATE PERSONAS SET INDI_WSS = 'N' WHERE RUTT_PERS = {0} ";
+
+                if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
+                {
+                    resp.SMensaje = "No se pudo deshabilitar Rut en receptores";
+                }
+                else
+                {
+                    conexion.confirma();
+                    resp.SMensaje = "Se deshabilita Rut en receptores";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        
+        #endregion
     }
 }
