@@ -230,6 +230,37 @@ namespace wssPortalEgresos
         public Respuesta AgregarRutEmisor(int Rut, int digiVeri, string nombre)
         {
             Respuesta resp = new Respuesta();
+            log logs = new log();
+            logs.nombreLog = "AgregarRutReceptor";
+            logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
+
+            if (!validaRut(Rut, resp))
+            {
+                return resp;
+            }
+
+            setEgateHome(Rut, logs);
+
+            bdConexion conexion = new bdConexion();
+            try
+            {
+                conexion.egateHome = logs.egateHome;
+                conexion.conexionOpen();
+
+                if (!existeEmisor(Rut, conexion, resp))
+                {
+                    emisorInvalido(resp);
+                }
+                else
+                {
+                    habilitarEmisor(Rut, conexion, resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
+
             return resp;
         }
 
@@ -524,7 +555,49 @@ namespace wssPortalEgresos
             {
             }
         }
-        
+
+        private Boolean existeEmisor(int Rut, bdConexion conexion, Respuesta resp)
+        {
+            Boolean result = true;
+            string sql = "SELECT COUNT(*) FROM EMPR WHERE RUTT_EMPR = '{0}'";
+            int cantPersonas = Convert.ToInt32(conexion.SelectInto(String.Format(sql, Rut)));
+            if (cantPersonas == 0)
+            {
+                result = false;
+                resp.SMensaje = "Rut no se encuentra";
+            }
+            return result;
+        }
+
+        private void habilitarEmisor(int Rut, bdConexion conexion, Respuesta resp)
+        {
+            try
+            {
+                string sql = "UPDATE EMPR SET INDI_WSS = 'S' WHERE RUTT_EMPR = {0} ";
+
+                if (conexion.EjecutaNonQuery(String.Format(sql, Rut)) == 0)
+                {
+                    resp.SCodigo = ERROR_HABILITAR_RUT_RECE;
+                    resp.SMensaje = "No se pudo habilitar Rut en emisores";
+                }
+                else
+                {
+                    conexion.confirma();
+                    resp.SCodigo = CONSULTA_OK;
+                    resp.SMensaje = "Se habilita Rut en emisores";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void emisorInvalido(Respuesta resp)
+        {
+            resp.SCodigo = ERROR_EMISOR_INVALIDO_EMIS;
+            resp.SMensaje = "No se pudo habilitar Rut en emisores";
+        }
+
         #endregion
     }
 }
