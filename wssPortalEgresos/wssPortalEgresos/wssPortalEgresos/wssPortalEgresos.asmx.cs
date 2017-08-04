@@ -275,21 +275,32 @@ namespace wssPortalEgresos
 
             result = conexion.EjecutaSelect(String.Format(sql));
 
-            if (result.Rows.Count == 0)
+            int dte_num = result.Rows.Count;
+            if (dte_num == 0)
             {
-                //mens.cantDTE = 0;
-                //mens.Mensajes = "No existen documentos a pendientes";
-                //return mens;
-            }
-            else
-            {
-                //mens.RuttEmis = result.Rows[0][0].ToString() + "-" + result.Rows[0][4].ToString();
-                //mens.TipoDoc = result.Rows[0][1].ToString();
                 dtes.mensaje = "No hay DTE pendientes por entregar";
                 dtes.restantes = 0;
             }
-            dtes.mensaje = "No hay DTE pendientes por entregar";
-            dtes.restantes = 0;
+            else
+            {
+                for (int i = 0; i < dte_num; i++)
+                {
+                    string ruttRece = result.Rows[i][0].ToString();
+                    string digiRece = result.Rows[i][1].ToString();
+                    string ruttEmis = result.Rows[i][2].ToString();
+                    string digiEmis = result.Rows[i][3].ToString();
+                    string tipoDocu = result.Rows[i][4].ToString();
+                    string foliDocu = result.Rows[i][5].ToString();
+                    string fechEmis = result.Rows[i][6].ToString();
+                    string montNeto = result.Rows[i][7].ToString();
+                    string montExen = result.Rows[i][8].ToString();
+                    string montTota = result.Rows[i][9].ToString();
+                    string corrDocu = result.Rows[i][10].ToString();
+                    Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota);
+                    dtes.DTE.Add(dte_temp);
+                }
+
+            }
         }
 
         #endregion
