@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Summary description for Mensaje
@@ -66,4 +67,35 @@ public class Respuesta
 {
     public string SMensaje { get; set; }
     public string SCodigo { get; set; }
+}
+
+
+
+public class Referencia
+{
+    public string foliRefe = string.Empty;
+    public string tipoRefe = string.Empty;
+}
+
+public class Documento
+{
+    public string corrDocu = string.Empty;
+    public string ruttRece = string.Empty;
+    public string digiRece = string.Empty;
+    public string ruttEmis = string.Empty;
+    public string digiEmis = string.Empty;
+    public string tipoDocu = string.Empty;
+    public string foliDocu = string.Empty;
+    public string fechEmis = string.Empty;
+    public string montNeto = string.Empty;
+    public string montExen = string.Empty;
+    public string montTota = string.Empty;
+    public List<Referencia> parts = new List<Referencia>();
+}
+
+public class DTEPendietes
+{
+    public List<Documento> DTE = new List<Documento>();
+    public string mensaje;
+    public int restantes; 
 }
