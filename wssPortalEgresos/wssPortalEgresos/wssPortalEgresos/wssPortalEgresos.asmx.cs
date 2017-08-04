@@ -262,6 +262,7 @@ namespace wssPortalEgresos
             sql += " LEFT OUTER JOIN dto_docu_refe_p ref ON dto.corr_docu=ref.corr_docu ";
             sql += " where dto.esta_docu in ('INI', 'ERA') ";
             sql += " and dto.tipo_docu in ('33','34') ";
+            sql += " and dto.esta_tras is null ";
             sql += " and dto.corr_docu not in ( ";
             sql += "     SELECT dto.corr_docu ";
             sql += "     FROM dto_enca_docu_p dto ";
