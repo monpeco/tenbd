@@ -241,7 +241,7 @@ namespace wssPortalEgresos
             {
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
-                recuperarDTEs(conexion);
+                recuperarDTEs(dtes, conexion);
 
 
             }
@@ -252,7 +252,7 @@ namespace wssPortalEgresos
             return dtes;
         }
 
-        private void recuperarDTEs(bdConexion conexion)
+        private void recuperarDTEs(DTEPendietes dtes, bdConexion conexion)
         { 
             string sql = string.Empty;
             DataTable result;
@@ -285,7 +285,11 @@ namespace wssPortalEgresos
             {
                 //mens.RuttEmis = result.Rows[0][0].ToString() + "-" + result.Rows[0][4].ToString();
                 //mens.TipoDoc = result.Rows[0][1].ToString();
+                dtes.mensaje = "No hay DTE pendientes por entregar";
+                dtes.restantes = 0;
             }
+            dtes.mensaje = "No hay DTE pendientes por entregar";
+            dtes.restantes = 0;
         }
 
         #endregion

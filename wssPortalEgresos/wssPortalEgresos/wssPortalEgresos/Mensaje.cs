@@ -79,7 +79,6 @@ public class Referencia
 
 public class Documento
 {
-    public string corrDocu = string.Empty;
     public string ruttRece = string.Empty;
     public string digiRece = string.Empty;
     public string ruttEmis = string.Empty;
@@ -90,7 +89,23 @@ public class Documento
     public string montNeto = string.Empty;
     public string montExen = string.Empty;
     public string montTota = string.Empty;
-    public List<Referencia> parts = new List<Referencia>();
+    //public string corrDocu = string.Empty;
+    public List<Referencia> Refencias = new List<Referencia>();
+    
+    public Documento() { }
+    public Documento(string ruttRece, string digiRece, string ruttEmis, string digiEmis, string tipoDocu ,string foliDocu, string fechEmis, string montNeto, string montExen, string montTota)
+    {
+        this.ruttRece = ruttRece;
+        this.digiRece = digiRece;
+        this.ruttEmis = ruttEmis;
+        this.digiEmis = digiEmis;
+        this.tipoDocu = tipoDocu;
+        this.foliDocu = foliDocu;
+        this.fechEmis = fechEmis;
+        this.montNeto = montNeto;
+        this.montExen = montExen;
+        this.montTota = montTota;
+    }
 }
 
 public class DTEPendietes
