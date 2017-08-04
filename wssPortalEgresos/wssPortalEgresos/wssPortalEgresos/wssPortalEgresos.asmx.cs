@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Web;
@@ -273,7 +274,7 @@ namespace wssPortalEgresos
             sql += " ) ";
 
 
-            result = conexion.EjecutaSelect(String.Format(sql));
+            result = conexion.EjecutaSelect(sql);
 
             int dte_num = result.Rows.Count;
             if (dte_num == 0)
@@ -296,11 +297,35 @@ namespace wssPortalEgresos
                     string montExen = result.Rows[i][8].ToString();
                     string montTota = result.Rows[i][9].ToString();
                     string corrDocu = result.Rows[i][10].ToString();
-                    Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota);
+                    List<Referencia> Refencias = new List<Referencia>();
+                    Refencias = getRefencias(corrDocu, conexion);
+                    Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, Refencias);
                     dtes.DTE.Add(dte_temp);
                 }
 
             }
+        }
+
+        private List<Referencia> getRefencias(string corrDocu, bdConexion conexion)
+        {
+            string sql = string.Empty;
+            DataTable result;
+            List<Referencia> list_refe_temp = new List<Referencia>();
+
+            sql = " select foli_refe, tipo_refe ";
+            sql += " from dto_docu_refe_p ";
+            sql += " where corr_docu = {0} ";
+
+            result = conexion.EjecutaSelect(String.Format(sql, corrDocu));
+            int dte_num = result.Rows.Count;
+            for (int i = 0; i < dte_num; i++)
+            {
+                string foliRefe = result.Rows[i][0].ToString();
+                string tipoRefe = result.Rows[i][1].ToString();
+                Referencia ref_temp = new Referencia(foliRefe, tipoRefe);
+                list_refe_temp.Add(ref_temp);
+            }
+            return list_refe_temp;
         }
 
         #endregion
