@@ -501,7 +501,7 @@ namespace wssPortalEgresos
         {
             try
             {
-                string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'S')";
+                string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, EMPR_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'S', 'S')";
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
                 {
@@ -546,7 +546,7 @@ namespace wssPortalEgresos
         private void quitarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp){
             try
             {
-                string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'N')";
+                string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, EMPR_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'S', 'N')";
 
                 if (conexion.EjecutaNonQuery(String.Format(sql, Rut, digiVeri, nombre)) == 0)
                 {
