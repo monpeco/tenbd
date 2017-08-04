@@ -75,6 +75,14 @@ public class Referencia
 {
     public string foliRefe = string.Empty;
     public string tipoRefe = string.Empty;
+    public Referencia()
+    {
+    }
+    public Referencia(string foliRefe, string tipoRefe)
+    {
+        this.foliRefe = foliRefe;
+        this.tipoRefe = tipoRefe;
+    }
 }
 
 public class Documento
@@ -93,7 +101,7 @@ public class Documento
     public List<Referencia> Refencias = new List<Referencia>();
     
     public Documento() { }
-    public Documento(string ruttRece, string digiRece, string ruttEmis, string digiEmis, string tipoDocu ,string foliDocu, string fechEmis, string montNeto, string montExen, string montTota)
+    public Documento(string ruttRece, string digiRece, string ruttEmis, string digiEmis, string tipoDocu, string foliDocu, string fechEmis, string montNeto, string montExen, string montTota)
     {
         this.ruttRece = ruttRece;
         this.digiRece = digiRece;
@@ -105,6 +113,20 @@ public class Documento
         this.montNeto = montNeto;
         this.montExen = montExen;
         this.montTota = montTota;
+    }
+    public Documento(string ruttRece, string digiRece, string ruttEmis, string digiEmis, string tipoDocu, string foliDocu, string fechEmis, string montNeto, string montExen, string montTota, List<Referencia> Refencias)
+    {
+        this.ruttRece = ruttRece;
+        this.digiRece = digiRece;
+        this.ruttEmis = ruttEmis;
+        this.digiEmis = digiEmis;
+        this.tipoDocu = tipoDocu;
+        this.foliDocu = foliDocu;
+        this.fechEmis = fechEmis;
+        this.montNeto = montNeto;
+        this.montExen = montExen;
+        this.montTota = montTota;
+        this.Refencias = Refencias;
     }
 }
 
