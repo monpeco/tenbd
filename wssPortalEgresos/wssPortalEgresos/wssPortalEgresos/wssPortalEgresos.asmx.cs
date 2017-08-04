@@ -225,6 +225,58 @@ namespace wssPortalEgresos
                 return true;
         }
 
+        #region entregarDTEPendientes
+        [WebMethod]
+        public DTEPendietes entregarDTEPendientes()
+        {
+            DTEPendietes dtes = new DTEPendietes();
+            log logs = new log();
+            logs.nombreLog = "entregarDTEPendientes";
+            logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
+
+            setEgateHome(000, logs);
+
+            bdConexion conexion = new bdConexion();
+            try
+            {
+                conexion.egateHome = logs.egateHome;
+                conexion.conexionOpen();
+                recuperarDTEs(conexion);
+
+
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return dtes;
+        }
+
+        private void recuperarDTEs(bdConexion conexion)
+        { 
+            string sql = string.Empty;
+            DataTable result;
+
+            sql = "select codi_empr from empr";
+
+
+            result = conexion.EjecutaSelect(String.Format(sql));
+
+            if (result.Rows.Count == 0)
+            {
+                //mens.cantDTE = 0;
+                //mens.Mensajes = "No existen documentos a pendientes";
+                //return mens;
+            }
+            else
+            {
+                //mens.RuttEmis = result.Rows[0][0].ToString() + "-" + result.Rows[0][4].ToString();
+                //mens.TipoDoc = result.Rows[0][1].ToString();
+            }
+        }
+
+        #endregion
+
 
         #region Agregar/Quitar Emisor
         [WebMethod]
