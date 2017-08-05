@@ -10,3 +10,6 @@ Project > settings > Debug > Program arguments (or <kdb>alt</kdb> + <kdb>F7</kdb
 <kdb>Crtl</kdb> + <kdb>F2</kdb> => Add/Remove bookmark  
 <kdb>F2</kdb> => Move to next bookmark  
 <kdb>Ctrl</kdb> + <kdb>H</kdb> => Replace dialog  
+
+### wcf webservices
+https://docs.microsoft.com/en-us/dotnet/framework/wcf/getting-started-tutorial
