@@ -272,8 +272,9 @@ namespace wssPortalEgresos
             sql += "     where dto.esta_docu in ('INI', 'ERA') ";
             sql += "     and dto.tipo_docu in ('33','34') ";
             sql += "     and ref.TIPO_REFE = 803 and ref.foli_refe = 'COM' ";
-            sql += " ) ";
+            sql += " ) --cantDTEOracle ";
 
+            cantidadDTE(ref sql, cantDTERecuperar, conexion.baseDatos);
 
             result = conexion.EjecutaSelect(sql);
 
@@ -332,6 +333,20 @@ namespace wssPortalEgresos
         private int cantDTERestantes()
         {
             return 0;
+        }
+
+        void cantidadDTE(ref string sql, int cantDTERecuperar, string tipoBD)
+        {
+            if (tipoBD.ToLower() == "oracle")
+            {
+                string strCantDTE = string.Format(" ) where rownum <= {0} ", cantDTERecuperar);
+                sql = sql.Replace("select distinct", "select * from (select distinct");
+                sql = sql.Replace("--cantDTEOracle", strCantDTE);
+            }
+            else if (tipoBD.ToLower() == "sqlserver")
+            {
+                //Falta implementar
+            }
         }
 
         #endregion
