@@ -282,7 +282,7 @@ namespace wssPortalEgresos
             if (dte_num == 0)
             {
                 dtes.mensaje = "No hay DTE pendientes por entregar";
-                dtes.restantes = 0;
+                dtes.cantRestantes = 0;
             }
             else
             {
@@ -304,7 +304,7 @@ namespace wssPortalEgresos
                     Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, Refencias);
                     dtes.DTE.Add(dte_temp);
                 }
-
+                dtes.cantRestantes = cantDTERestantes(sql, conexion) - dte_num;
             }
         }
 
@@ -330,12 +330,20 @@ namespace wssPortalEgresos
             return list_refe_temp;
         }
 
-        private int cantDTERestantes()
+        private int cantDTERestantes(string sql, bdConexion conexion)
         {
-            return 0;
+            string strCount = string.Empty;
+            DataTable result;
+
+            strCount = sql.Replace("select distinct", "select count(*) from (select distinct");
+            strCount = strCount.Replace("--cantDTEOracle", " ) ");
+
+            result = conexion.EjecutaSelect(strCount);
+            
+            return Int32.Parse(result.Rows[0][0].ToString());
         }
 
-        string cantidadDTE(string sql, int cantDTERecuperar, string tipoBD)
+        private string cantidadDTE(string sql, int cantDTERecuperar, string tipoBD)
         {
             string result = string.Empty;
             if (tipoBD.ToLower() == "oracle")
