@@ -11,6 +11,10 @@ using System.Configuration;
 using conexionBaseDatos;
 using Tool;
 
+using System.Xml;
+using System.Text;
+
+
 namespace wssPortalEgresos
 {
     /// <summary>
@@ -301,7 +305,11 @@ namespace wssPortalEgresos
                     string corrDocu = result.Rows[i][10].ToString();
                     List<Referencia> Refencias = new List<Referencia>();
                     Refencias = getRefencias(corrDocu, conexion);
-                    Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, Refencias);
+                    string xml = getXML(corrDocu, conexion);
+
+                    getPDF(ruttRece, ruttRece, tipoDocu, foliDocu);
+
+                    Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, xml, Refencias);
                     dtes.DTE.Add(dte_temp);
                 }
                 dtes.cantRestantes = cantDTERestantes(sql, conexion) - dte_num;
@@ -357,6 +365,174 @@ namespace wssPortalEgresos
                 //Falta implementar
             }
             return result;
+        }
+
+        private string getXML(string corrDocu, bdConexion conexion)
+        {
+            string xmlResult = string.Empty;
+            string xml = string.Empty;
+            string sql = "select clob_docu from dto_docu_lob where corr_docu = {0} and tipo_arch = 'XML'";
+            try
+            {
+                xml = conexion.SelectText(String.Format(sql, corrDocu));
+                xml.Trim();
+            }
+            catch (Exception ex)
+            {
+            }
+            return xml;
+        }
+
+        private void getPDF(string _sRutRece, string _sRut, string sTipoDocu, string sFoliDocu)
+        {
+            string _sRutaPdf = "";
+            string sParametros = string.Empty;
+            string sSalida = string.Empty;
+            SetParametros(_sRutRece);
+            string sArchivo =  FormateaNombre(_sRut, sTipoDocu, sFoliDocu, false);
+            _sRutaPdf += sArchivo;
+
+            if (!File.Exists(_sRutaPdf))
+            {
+                //egateDTE -h prod_0100_home -tl 3 -v -empr 1 -te bd -ts html -fdte 21 -tdte 33
+                //Log.putLog(_sDirectorio, "Generando pdf");
+                //proceso de generar xml desde BD
+                string sProceso = "egateDTE";
+                sParametros = GeneraCmdEgateDte("egateDTE ", _sRut/*_sEgateHome*/, "1", sTipoDocu, sFoliDocu, _sRut /*sRuttEmis*/);
+                sParametros = " -h EGATE_HOME -tl 3 -v -te dto -ts html -empr 2 -tdte 33 -fdte 1320 -re 78079790";
+                //Log.putLog(_sDirectorio, sProceso + " " + sParametros);
+                sSalida = EjecutaProceso(/*_sCodiEmex*/ "EGATE_HOME", sProceso, sParametros);
+            }
+            else
+            {
+                //Log.putLog(_sDirectorio, "Pdf se encontraba generado");
+                string sProceso = "egateDTE"; //quitar
+            }
+        }
+
+        #region FormateaNombre
+        public string FormateaNombre(string sRutt, string sTipoDocu, string sFoliDocu, bool bMerito)
+        {
+            string sArchivo = string.Empty;
+            string sDato = string.Empty;
+            int iContador = 0;
+
+            sDato = sRutt;
+            for (iContador = sDato.Length; iContador < 9; iContador++)
+                sDato = "0" + sDato;
+
+            sArchivo = "E" + sDato;
+
+            sDato = sTipoDocu;
+            for (iContador = sDato.Length; iContador < 3; iContador++)
+                sDato = "0" + sDato;
+
+            sArchivo += "T" + sDato;
+
+            sDato = sFoliDocu;
+            for (iContador = sDato.Length; iContador < 10; iContador++)
+                sDato = "0" + sDato;
+
+            sArchivo += "F" + sDato;
+            if (bMerito)
+                sArchivo += "_me";
+
+            sArchivo = sArchivo + ".pdf";
+
+            return sArchivo;
+        }
+        #endregion
+        public void SetParametros(string sRut)
+        {
+            const int _ICCERO = 0;
+            string sRutP = string.Empty;
+            string sHome = string.Empty;
+            string _sCodiEmex = string.Empty;
+            string _sEgateHome = string.Empty;
+            string _sRutaPdf = string.Empty;
+            string _sRutaBin = string.Empty;
+            string _sDirectorio = string.Empty;
+            string _sBaseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string EmpresaPath = Path.Combine(_sBaseDir, "librerias\\empresas.xml");
+            sHome = ConfigurationManager.AppSettings.Get("Entorno");
+            if (string.IsNullOrEmpty(sHome))
+                sHome = "EGATE_HOME";
+            _sDirectorio = Convert.ToString(Environment.GetEnvironmentVariable(sHome));
+
+            if (File.Exists(EmpresaPath))
+            {
+                XmlDocument xDoc = new XmlDocument();
+                xDoc.Load(EmpresaPath);
+                XmlNodeList empresas = xDoc.GetElementsByTagName("empresas");
+                XmlNodeList lista = ((XmlElement)empresas[0]).GetElementsByTagName("empresa");
+
+                foreach (XmlElement nodo in lista)
+                {
+                    XmlNodeList uno = nodo.GetElementsByTagName("rut");
+                    sRutP = uno[_ICCERO].InnerText.ToString();
+                    if (sRutP == sRut)
+                    {
+                        XmlNodeList dos = nodo.GetElementsByTagName("codi_emex");
+                        _sCodiEmex = dos[_ICCERO].InnerText.ToString();
+                        XmlNodeList tres = nodo.GetElementsByTagName("path");
+                        _sDirectorio = tres[_ICCERO].InnerText.ToString();
+                        XmlNodeList cuatro = nodo.GetElementsByTagName("home");
+                        sHome = cuatro[_ICCERO].InnerText.ToString();
+                        break;
+                    }
+                }
+            }
+            _sEgateHome = sHome;
+            _sRutaPdf = _sDirectorio + @"\in\pdf\";
+            _sRutaBin = _sDirectorio + @"\bin\";
+            //Log.putLog(_sDirectorio, "Parametros empresa cargados");
+        }
+
+        private string GeneraCmdEgateDte(string sNombreProceso, string sEgateDte, string sCodEmpr,
+                                 string sTipoDocu, string sFoliDocu, string sRuttEmis)
+        {
+            string sProceso = string.Empty;
+            StringBuilder sbProceso = new StringBuilder();
+            //sbProceso.Append(sNombreProceso);
+            sbProceso.Append(" -h " + sEgateDte);
+            sbProceso.Append(" -empr " + sCodEmpr);
+            sbProceso.Append(" -tdte " + sTipoDocu);
+            sbProceso.Append(" -fdte " + sFoliDocu);
+            sbProceso.Append(" -tl 3 ");
+            sbProceso.Append(" -te dto ");
+            sbProceso.Append(" -ts html ");
+            sbProceso.Append(" -re " + sRuttEmis);
+            sProceso = sbProceso.ToString();
+            return sProceso;
+        }
+
+        public string EjecutaProceso(string sEgateHome, string sProceso, string sParametros)
+        {
+            string sSalida = string.Empty;
+            try
+            {
+                //Log.putLog(_sDirectorio, "Generando Archvio");
+                System.Diagnostics.ProcessStartInfo pInfo = new System.Diagnostics.ProcessStartInfo();
+                pInfo.UseShellExecute = true;
+                pInfo.RedirectStandardOutput = false;
+                pInfo.FileName = sProceso;
+
+                pInfo.Arguments = sParametros;
+
+                sSalida += "Proceso Ejecutado:<br>";
+
+                System.Diagnostics.Process p = System.Diagnostics.Process.Start(pInfo);
+                //Log.putLog(_sDirectorio, "Esperando a servidor");
+                p.WaitForExit();
+                //Log.putLog(_sDirectorio, "Generacion de archivo terminado");
+            }
+            catch (Exception ex)
+            {
+                //Log.putLog(sEgateHome, Convert.ToString(ex.Message));
+                //Excepciones.Error(ex, true);
+                sSalida = "error 1";
+            }
+            return sSalida;
         }
 
         #endregion
