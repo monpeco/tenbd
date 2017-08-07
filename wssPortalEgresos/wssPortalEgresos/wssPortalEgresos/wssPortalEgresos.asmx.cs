@@ -242,7 +242,8 @@ namespace wssPortalEgresos
             {
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
-                recuperarDTEs(dtes, conexion);
+                int cantDTERecuperar = Int32.Parse(ConfigurationManager.AppSettings["cantDTE"]);
+                recuperarDTEs(dtes, cantDTERecuperar, conexion);
 
 
             }
@@ -253,7 +254,7 @@ namespace wssPortalEgresos
             return dtes;
         }
 
-        private void recuperarDTEs(DTEPendietes dtes, bdConexion conexion)
+        private void recuperarDTEs(DTEPendietes dtes, int cantDTERecuperar, bdConexion conexion)
         { 
             string sql = string.Empty;
             DataTable result;
@@ -326,6 +327,11 @@ namespace wssPortalEgresos
                 list_refe_temp.Add(ref_temp);
             }
             return list_refe_temp;
+        }
+
+        private int cantDTERestantes()
+        {
+            return 0;
         }
 
         #endregion
