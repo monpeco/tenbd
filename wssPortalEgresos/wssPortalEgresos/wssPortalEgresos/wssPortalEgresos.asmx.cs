@@ -37,6 +37,8 @@ namespace wssPortalEgresos
 
         string ERROR_EMISOR_INVALIDO_EMIS = "6";
 
+        string _sRutaPdf = string.Empty;
+        string _sEgateHome = string.Empty;
 
         [WebMethod]
         public Mensaje SupplierTrasETD(int Rut)
@@ -263,7 +265,7 @@ namespace wssPortalEgresos
             string sql = string.Empty;
             DataTable result;
 
-            sql = " select distinct dto.rutt_rece, dto.digi_rece, dto.rutt_emis, dto.digi_emis, dto.tipo_docu, dto.foli_docu, dto.fech_emis, dto.mont_neto, dto.mont_exen, dto.mont_tota, dto.corr_docu ";
+            sql = " select distinct dto.rutt_rece, dto.digi_rece, dto.rutt_emis, dto.digi_emis, dto.tipo_docu, dto.foli_docu, dto.fech_emis, dto.mont_neto, dto.mont_exen, dto.mont_tota, dto.corr_docu, dto.codi_empr ";
             sql += " FROM dto_enca_docu_p dto ";
             sql += " LEFT OUTER JOIN dto_docu_refe_p ref ON dto.corr_docu=ref.corr_docu ";
             sql += " where dto.esta_docu in ('INI', 'ERA') ";
@@ -303,11 +305,12 @@ namespace wssPortalEgresos
                     string montExen = result.Rows[i][8].ToString();
                     string montTota = result.Rows[i][9].ToString();
                     string corrDocu = result.Rows[i][10].ToString();
+                    string codiEmpr = result.Rows[i][11].ToString();
                     List<Referencia> Refencias = new List<Referencia>();
                     Refencias = getRefencias(corrDocu, conexion);
                     string xml = getXML(corrDocu, conexion);
 
-                    getPDF(ruttRece, ruttRece, tipoDocu, foliDocu);
+                    getPDF(codiEmpr, ruttRece, ruttEmis, tipoDocu, foliDocu);
 
                     Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, xml, Refencias);
                     dtes.DTE.Add(dte_temp);
@@ -383,24 +386,20 @@ namespace wssPortalEgresos
             return xml;
         }
 
-        private void getPDF(string _sRutRece, string _sRut, string sTipoDocu, string sFoliDocu)
+        private void getPDF(string codiEmpr, string _sRutRece, string _sRuttEmis, string sTipoDocu, string sFoliDocu)
         {
-            string _sRutaPdf = "";
             string sParametros = string.Empty;
             string sSalida = string.Empty;
             SetParametros(_sRutRece);
-            string sArchivo =  FormateaNombre(_sRut, sTipoDocu, sFoliDocu, false);
+            string sArchivo = FormateaNombre(_sRuttEmis, sTipoDocu, sFoliDocu, false);
             _sRutaPdf += sArchivo;
 
             if (!File.Exists(_sRutaPdf))
             {
-                //egateDTE -h prod_0100_home -tl 3 -v -empr 1 -te bd -ts html -fdte 21 -tdte 33
-                //Log.putLog(_sDirectorio, "Generando pdf");
-                //proceso de generar xml desde BD
                 string sProceso = "egateDTE";
-                sParametros = GeneraCmdEgateDte("egateDTE ", _sRut/*_sEgateHome*/, "1", sTipoDocu, sFoliDocu, _sRut /*sRuttEmis*/);
-                sParametros = " -h EGATE_HOME -tl 3 -v -te dto -ts html -empr 2 -tdte 33 -fdte 1320 -re 78079790";
-                //Log.putLog(_sDirectorio, sProceso + " " + sParametros);
+                //GeneraCmdEgateDte(string sNombreProceso, string sEgateDte, string sCodEmpr, string sTipoDocu, string sFoliDocu, string sRuttEmis)
+                sParametros = GeneraCmdEgateDte("egateDTE ", _sEgateHome, codiEmpr, sTipoDocu, sFoliDocu, _sRuttEmis /*sRuttEmis*/);
+                //sParametros = " -h EGATE_HOME -tl 3 -v -te dto -ts html -empr 2 -tdte 33 -fdte 1320 -re 78079790";
                 sSalida = EjecutaProceso(/*_sCodiEmex*/ "EGATE_HOME", sProceso, sParametros);
             }
             else
@@ -448,8 +447,7 @@ namespace wssPortalEgresos
             string sRutP = string.Empty;
             string sHome = string.Empty;
             string _sCodiEmex = string.Empty;
-            string _sEgateHome = string.Empty;
-            string _sRutaPdf = string.Empty;
+            //string _sEgateHome = string.Empty;
             string _sRutaBin = string.Empty;
             string _sDirectorio = string.Empty;
             string _sBaseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -488,8 +486,7 @@ namespace wssPortalEgresos
             //Log.putLog(_sDirectorio, "Parametros empresa cargados");
         }
 
-        private string GeneraCmdEgateDte(string sNombreProceso, string sEgateDte, string sCodEmpr,
-                                 string sTipoDocu, string sFoliDocu, string sRuttEmis)
+        private string GeneraCmdEgateDte(string sNombreProceso, string sEgateDte, string sCodEmpr, string sTipoDocu, string sFoliDocu, string sRuttEmis)
         {
             string sProceso = string.Empty;
             StringBuilder sbProceso = new StringBuilder();
