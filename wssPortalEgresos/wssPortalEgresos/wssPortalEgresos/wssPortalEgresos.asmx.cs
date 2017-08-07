@@ -258,7 +258,7 @@ namespace wssPortalEgresos
             string sql = string.Empty;
             DataTable result;
 
-            sql = " select dto.rutt_rece, dto.digi_rece, dto.rutt_emis, dto.digi_emis, dto.tipo_docu, dto.foli_docu, dto.fech_emis, dto.mont_neto, dto.mont_exen, dto.mont_tota, dto.corr_docu ";
+            sql = " select distinct dto.rutt_rece, dto.digi_rece, dto.rutt_emis, dto.digi_emis, dto.tipo_docu, dto.foli_docu, dto.fech_emis, dto.mont_neto, dto.mont_exen, dto.mont_tota, dto.corr_docu ";
             sql += " FROM dto_enca_docu_p dto ";
             sql += " LEFT OUTER JOIN dto_docu_refe_p ref ON dto.corr_docu=ref.corr_docu ";
             sql += " where dto.esta_docu in ('INI', 'ERA') ";
