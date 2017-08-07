@@ -274,9 +274,9 @@ namespace wssPortalEgresos
             sql += "     and ref.TIPO_REFE = 803 and ref.foli_refe = 'COM' ";
             sql += " ) --cantDTEOracle ";
 
-            cantidadDTE(ref sql, cantDTERecuperar, conexion.baseDatos);
+            string sqlCantDTE = cantidadDTE(sql, cantDTERecuperar, conexion.baseDatos);
 
-            result = conexion.EjecutaSelect(sql);
+            result = conexion.EjecutaSelect(sqlCantDTE);
 
             int dte_num = result.Rows.Count;
             if (dte_num == 0)
@@ -335,18 +335,20 @@ namespace wssPortalEgresos
             return 0;
         }
 
-        void cantidadDTE(ref string sql, int cantDTERecuperar, string tipoBD)
+        string cantidadDTE(string sql, int cantDTERecuperar, string tipoBD)
         {
+            string result = string.Empty;
             if (tipoBD.ToLower() == "oracle")
             {
                 string strCantDTE = string.Format(" ) where rownum <= {0} ", cantDTERecuperar);
-                sql = sql.Replace("select distinct", "select * from (select distinct");
-                sql = sql.Replace("--cantDTEOracle", strCantDTE);
+                result = sql.Replace("select distinct", "select * from (select distinct");
+                result = result.Replace("--cantDTEOracle", strCantDTE);
             }
             else if (tipoBD.ToLower() == "sqlserver")
             {
                 //Falta implementar
             }
+            return result;
         }
 
         #endregion
