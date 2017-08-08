@@ -98,6 +98,7 @@ public class Documento
     public string montExen = string.Empty;
     public string montTota = string.Empty;
     //public string corrDocu = string.Empty;
+    public string xml = string.Empty;
     public List<Referencia> Refencias = new List<Referencia>();
     
     public Documento() { }
@@ -114,7 +115,7 @@ public class Documento
         this.montExen = montExen;
         this.montTota = montTota;
     }
-    public Documento(string ruttRece, string digiRece, string ruttEmis, string digiEmis, string tipoDocu, string foliDocu, string fechEmis, string montNeto, string montExen, string montTota, List<Referencia> Refencias)
+    public Documento(string ruttRece, string digiRece, string ruttEmis, string digiEmis, string tipoDocu, string foliDocu, string fechEmis, string montNeto, string montExen, string montTota, string xml, List<Referencia> Refencias)
     {
         this.ruttRece = ruttRece;
         this.digiRece = digiRece;
@@ -126,6 +127,7 @@ public class Documento
         this.montNeto = montNeto;
         this.montExen = montExen;
         this.montTota = montTota;
+        this.xml = xml;
         this.Refencias = Refencias;
     }
 }
