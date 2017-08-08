@@ -37,6 +37,8 @@ namespace wssPortalEgresos
 
         string ERROR_EMISOR_INVALIDO_EMIS = "6";
 
+        string ERROR_MARCAR_DTE_TRASPASADO = "7";
+
         string _sRutaPdf = string.Empty;
         string _sEgateHome = string.Empty;
 
@@ -232,6 +234,76 @@ namespace wssPortalEgresos
                 return true;
         }
 
+
+
+        #region marcarDTETraspasado
+        [WebMethod]
+        public Respuesta marcarDTETraspasado(string sCodEmpr, string sTipoDocu, string sFoliDocu, string sRuttEmis)
+        {
+            Respuesta resp = new Respuesta();
+            log logs = new log();
+            logs.nombreLog = "marcarDTETraspasado";
+            logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
+
+            if (!validaRut(Convert.ToInt32(sRuttEmis), resp))
+            {
+                return resp;
+            }
+
+            setEgateHome(Convert.ToInt32(sRuttEmis), logs);
+
+            logs.putLog(1, "");
+            logs.putLog(1, "INICIO marcarDTETraspasado");
+
+            bdConexion conexion = new bdConexion();
+            try
+            {
+                conexion.egateHome = logs.egateHome;
+                conexion.conexionOpen();
+                logs.putLog(1, "conexionOpen(): OK");
+
+                marcarDTE(sCodEmpr, sTipoDocu, sFoliDocu, sRuttEmis, conexion, resp, logs);
+                logs.putLog(1, "marcarDTE finaliza normalmente");
+            }
+            catch (Exception ex)
+            {
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
+            }
+
+            return resp;
+        }
+
+        private void marcarDTE(string sCodEmpr, string sTipoDocu, string sFoliDocu, string sRuttEmis, bdConexion conexion, Respuesta resp, log logs)
+        {
+            try
+            {
+                string sql = " UPDATE DTO_ENCA_DOCU_P SET ESTA_TRAS = 'S' ";
+                sql += " WHERE CODI_EMPR = {0} ";
+                sql += " AND TIPO_DOCU = {1} ";
+                sql += " AND FOLI_DOCU = {2} ";
+                sql += " AND RUTT_EMIS = {3} ";
+
+                if (conexion.EjecutaNonQuery(String.Format(sql, sCodEmpr, sTipoDocu, sFoliDocu, sRuttEmis)) == 0)
+                {
+                    resp.SCodigo = ERROR_MARCAR_DTE_TRASPASADO;
+                    resp.SMensaje = "No se pudo marcar el DTE como traspasado";
+                    logs.putLog(1, "-- No se pudo marcar el DTE como traspasado");
+                }
+                else
+                {
+                    conexion.confirma();
+                    resp.SCodigo = CONSULTA_OK;
+                    resp.SMensaje = "Se marca exitosamente DTE como traspasado";
+                    logs.putLog(1, "-- Se marca exitosamente DTE como traspasado");
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        #endregion
+
         #region entregarDTEPendientes
         [WebMethod]
         public DTEPendietes entregarDTEPendientes()
@@ -256,7 +328,7 @@ namespace wssPortalEgresos
                 logs.putLog(1, "Cantidad de DTE a recuperar: " + cantDTERecuperar);
                 
                 recuperarDTEs(dtes, cantDTERecuperar, conexion, logs);
-                logs.putLog(1, "recuperarDTEs: OK");
+                logs.putLog(1, "recuperarDTEs finaliza normalmente");
 
             }
             catch (Exception ex)
@@ -454,7 +526,6 @@ namespace wssPortalEgresos
             return result;
         }
 
-        #region FormateaNombre
         public string FormateaNombre(string sRutt, string sTipoDocu, string sFoliDocu, bool bMerito)
         {
             string sArchivo = string.Empty;
@@ -485,7 +556,7 @@ namespace wssPortalEgresos
 
             return sArchivo;
         }
-        #endregion
+       
         public void SetParametros(string sRut)
         {
             const int _ICCERO = 0;
