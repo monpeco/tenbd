@@ -242,25 +242,32 @@ namespace wssPortalEgresos
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
             setEgateHome(000, logs);
+            logs.putLog(1, "");
+            logs.putLog(1, "INICIO entregarDTEPendientes");
 
             bdConexion conexion = new bdConexion();
             try
             {
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
+                logs.putLog(1, "conexionOpen(): OK" );
+                
                 int cantDTERecuperar = Int32.Parse(ConfigurationManager.AppSettings["cantDTE"]);
-                recuperarDTEs(dtes, cantDTERecuperar, conexion);
-
+                logs.putLog(1, "Cantidad de DTE a recuperar: " + cantDTERecuperar);
+                
+                recuperarDTEs(dtes, cantDTERecuperar, conexion, logs);
+                logs.putLog(1, "recuperarDTEs: OK");
 
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
 
             return dtes;
         }
 
-        private void recuperarDTEs(DTEPendietes dtes, int cantDTERecuperar, bdConexion conexion)
+        private void recuperarDTEs(DTEPendietes dtes, int cantDTERecuperar, bdConexion conexion, log logs)
         { 
             string sql = string.Empty;
             DataTable result;
@@ -283,12 +290,16 @@ namespace wssPortalEgresos
             string sqlCantDTE = cantidadDTE(sql, cantDTERecuperar, conexion.baseDatos);
 
             result = conexion.EjecutaSelect(sqlCantDTE);
-
+            
             int dte_num = result.Rows.Count;
+            logs.putLog(1, "-- Cantidad de DTE a entregar (dte_num): " + dte_num);
+
             if (dte_num == 0)
             {
                 dtes.mensaje = "No hay DTE pendientes por entregar";
                 dtes.cantRestantes = 0;
+                logs.putLog(1, "-- No hay DTE pendientes por entregar: ");
+                logs.putLog(1, "-- cantRestantes: 0");
             }
             else
             {
@@ -306,6 +317,7 @@ namespace wssPortalEgresos
                     string montTota = result.Rows[i][9].ToString();
                     string corrDocu = result.Rows[i][10].ToString();
                     string codiEmpr = result.Rows[i][11].ToString();
+
                     List<Referencia> Refencias = new List<Referencia>();
                     Refencias = getRefencias(corrDocu, conexion);
                     string xml = getXML(corrDocu, conexion);
@@ -314,8 +326,11 @@ namespace wssPortalEgresos
 
                     Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, xml, pdf, Refencias);
                     dtes.DTE.Add(dte_temp);
+                    
+                    logs.putLog(1, "-- Recuperado DTE Folio: " + foliDocu);
                 }
                 dtes.cantRestantes = cantDTERestantes(sql, conexion) - dte_num;
+                logs.putLog(1, "-- Cantidad restante de DTE (cantRestantes) " + dtes.cantRestantes);
             }
         }
 
