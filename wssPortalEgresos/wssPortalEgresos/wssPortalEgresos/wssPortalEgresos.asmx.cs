@@ -277,7 +277,7 @@ namespace wssPortalEgresos
         {
             try
             {
-                string sql = " UPDATE DTO_ENCA_DOCU_P SET ESTA_TRAS = 'S' ";
+                string sql = " UPDATE DTO_ENCA_DOCU_P SET ESTA_TRAS = 'TRA' ";
                 sql += " WHERE CODI_EMPR = {0} ";
                 sql += " AND TIPO_DOCU = {1} ";
                 sql += " AND FOLI_DOCU = {2} ";
@@ -559,7 +559,7 @@ namespace wssPortalEgresos
        
         public void SetParametros(string sRut)
         {
-            const int _ICCERO = 0;
+            //const int _ICCERO = 0;
             string sRutP = string.Empty;
             string sHome = string.Empty;
             string _sCodiEmex = string.Empty;
@@ -567,35 +567,15 @@ namespace wssPortalEgresos
             string _sRutaBin = string.Empty;
             string _sDirectorio = string.Empty;
             string _sBaseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string EmpresaPath = Path.Combine(_sBaseDir, "librerias\\empresas.xml");
-            sHome = ConfigurationManager.AppSettings.Get("Entorno");
-            if (string.IsNullOrEmpty(sHome))
+            //string EmpresaPath = Path.Combine(_sBaseDir, "librerias\\empresas.xml");
+            //sHome = ConfigurationManager.AppSettings.Get("Entorno");
+            if (ConfigurationManager.AppSettings["eHome:" + sRut.ToString()] != null)
+                sHome = ConfigurationManager.AppSettings["eHome:" + sRut.ToString()];
+            else
                 sHome = "EGATE_HOME";
+                
             _sDirectorio = Convert.ToString(Environment.GetEnvironmentVariable(sHome));
 
-            if (File.Exists(EmpresaPath))
-            {
-                XmlDocument xDoc = new XmlDocument();
-                xDoc.Load(EmpresaPath);
-                XmlNodeList empresas = xDoc.GetElementsByTagName("empresas");
-                XmlNodeList lista = ((XmlElement)empresas[0]).GetElementsByTagName("empresa");
-
-                foreach (XmlElement nodo in lista)
-                {
-                    XmlNodeList uno = nodo.GetElementsByTagName("rut");
-                    sRutP = uno[_ICCERO].InnerText.ToString();
-                    if (sRutP == sRut)
-                    {
-                        XmlNodeList dos = nodo.GetElementsByTagName("codi_emex");
-                        _sCodiEmex = dos[_ICCERO].InnerText.ToString();
-                        XmlNodeList tres = nodo.GetElementsByTagName("path");
-                        _sDirectorio = tres[_ICCERO].InnerText.ToString();
-                        XmlNodeList cuatro = nodo.GetElementsByTagName("home");
-                        sHome = cuatro[_ICCERO].InnerText.ToString();
-                        break;
-                    }
-                }
-            }
             _sEgateHome = sHome;
             _sRutaPdf = _sDirectorio + @"\in\pdf\";
             _sRutaBin = _sDirectorio + @"\bin\";
