@@ -42,199 +42,6 @@ namespace wssPortalEgresos
         string _sRutaPdf = string.Empty;
         string _sEgateHome = string.Empty;
 
-        [WebMethod]
-        public Mensaje SupplierTrasETD(int Rut)
-        {
-            string sql = "", xml = "", xmlBase64 = "", corr_docu = "", sEmex = "";
-            byte[] bytes;
-            string codi_empr = "";
-            DataTable result;
-            Mensaje mens = new Mensaje();
-            log logs = new log();
-            logs.nombreLog = "WssSupplierETD";
-            logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
-
-            if (Rut == 0)
-            {
-                mens.Codigo = "ER0";
-                mens.Mensajes = "Rut No puede estar vacio";
-                logs.putLog(1, mens.Mensajes);
-                return mens;
-            }
-
-            if (ConfigurationManager.AppSettings["eHome:" + Rut.ToString()] != null)
-            {
-                logs.egateHome = ConfigurationManager.AppSettings["eHome:" + Rut.ToString()];
-            }
-            else
-            {
-                logs.egateHome = "EGATE_HOME";
-                logs.putLog(1, "Empresa no registra Home: " + Rut);
-            }
-
-            bdConexion conexion = new bdConexion();
-            try
-            {
-                conexion.egateHome = logs.egateHome;
-                conexion.conexionOpen();
-                sEmex = conexion.Emex;
-
-                if (!string.IsNullOrEmpty(sEmex))
-                    sql = "select codi_empr from empr_hold where rutt_empr = {0}";
-                else
-                    sql = "select codi_empr from empr where rutt_empr = {0} ";
-
-                codi_empr = conexion.SelectInto(String.Format(sql, Rut));
-                if (string.IsNullOrEmpty(codi_empr))
-                {
-                    mens.cantDTE = 0;
-                    mens.DTE = "";
-                    mens.Codigo = "ER1";
-                    mens.Mensajes = "Empresa no se encuentra configurada";
-                    return mens;
-                }
-
-                sql = "";
-                if (conexion.baseDatos.CompareTo("oracle".ToLower()) == 0)
-                {
-                    sql = "SELECT nvl(rutt_emis, 0), nvl(tipo_docu,0), nvl(foli_docu,0), corr_docu, nvl(digi_emis,'0') ";
-                    sql += "FROM  dto_enca_docu_p ";
-                    sql += "WHERE codi_empr = {1} ";
-                    sql += "AND   esta_docu in ('INI','ERA') ";
-                    sql += "AND   esta_tras is null ";
-                    sql += "AND   rownum < 2 ";
-                    sql += "ORDER BY fech_carg asc";
-                }
-                else
-                {
-                    // Si es CLOUD, se rescata desde la tabla HOLD
-                    if (!string.IsNullOrEmpty(sEmex))
-                    {
-                        sql = "SELECT top 1 isnull(rutt_emis, 0), isnull(tipo_docu,0), isnull(foli_docu,0), corr_docu, isnull(digi_emis,'0') ";
-                        sql += "FROM  dto_enca_docu_p_hold WITH (NOLOCK) ";
-                        sql += "WHERE codi_emex='{0}'  ";
-                        sql += "AND   codi_empr={1} ";
-                        sql += "AND   esta_docu in ('INI','ERA') ";
-                        sql += "AND   esta_tras is null ";
-                        sql += "ORDER BY fech_carg asc";
-                    }
-                    else
-                    {
-                        sql = "SELECT top 1 isnull(rutt_emis, 0), isnull(tipo_docu,0), isnull(foli_docu,0), corr_docu, isnull(digi_emis,'0') ";
-                        sql += "FROM  dto_enca_docu_p WITH (NOLOCK) ";
-                        sql += "WHERE codi_empr = {1} ";
-                        sql += "AND   esta_docu in ('INI','ERA') ";
-                        sql += "AND   esta_tras is null ";
-                        sql += "ORDER BY fech_carg asc";
-                    }
-                }
-                result = conexion.EjecutaSelect(String.Format(sql, sEmex, codi_empr));
-                if (result.Rows.Count == 0)
-                {
-                    mens.cantDTE = 0;
-                    mens.DTE = "";
-                    mens.Codigo = "DON";
-                    mens.Mensajes = "No existen documentos a pendientes";
-                    return mens;
-                }
-                else
-                {
-                    mens.RuttEmis = result.Rows[0][0].ToString() + "-" + result.Rows[0][4].ToString();
-                    mens.TipoDoc = result.Rows[0][1].ToString();
-                    if (result.Rows[0][2].ToString().Contains(".0"))
-                        mens.FolioDoc = result.Rows[0][2].ToString().Remove(result.Rows[0][2].ToString().IndexOf(".0"), 2);
-                    else
-                        mens.FolioDoc = result.Rows[0][2].ToString();
-                    corr_docu = result.Rows[0][3].ToString();
-
-                    if (!string.IsNullOrEmpty(sEmex))
-                        sql = "select clob_docu from dto_docu_lob_hold WITH (NOLOCK) where codi_emex = '{0}' and corr_docu = {1} and tipo_arch = 'XML'";
-                    else
-                        sql = "select clob_docu from dto_docu_lob where corr_docu = {1} and tipo_arch = 'XML'";
-
-                    xml = conexion.SelectText(String.Format(sql, sEmex, corr_docu));
-                    xml.Trim();
-                    if (!string.IsNullOrEmpty(xml))
-                    {
-                        mens.Codigo = "DOK";
-                        mens.Mensajes = "Documento Retornado OK";
-                        if (!EsBase64(xml.TrimEnd()))
-                        {
-                            bytes = System.Text.ASCIIEncoding.ASCII.GetBytes(xml.TrimEnd());
-                            xmlBase64 = Convert.ToBase64String(bytes);
-                        }
-                        else
-                        {
-                            xmlBase64 = xml.TrimEnd();
-                        }
-                        mens.DTE = xmlBase64.TrimEnd();
-                    }
-                    else
-                    {
-                        mens.Codigo = "ER2";
-                        mens.Mensajes = "Documento NO tiene XML disponible, correlativo: " + corr_docu;
-                        mens.DTE = "";
-                    }
-
-                    if (!string.IsNullOrEmpty(sEmex))
-                        sql = "update dto_enca_docu_p_hold set esta_tras = 'TRA' where codi_emex = '{0}' and corr_docu = {1}";
-                    else
-                        sql = "update dto_enca_docu_p set esta_tras = 'TRA' where corr_docu = {1}";
-                    if (conexion.EjecutaNonQuery(String.Format(sql, sEmex, corr_docu)) == 0)
-                    {
-                        mens.Codigo = "ER3";
-                        mens.Mensajes = "No se puede cambiar estado a Documento Correlativo: " + corr_docu;
-                        mens.DTE = "";
-                    }
-                    else
-                    {
-                        conexion.confirma();
-                    }
-                    if (!string.IsNullOrEmpty(sEmex))
-                    {
-                        sql = "SELECT count(*) ";
-                        sql += "FROM  dto_enca_docu_p_hold WITH (NOLOCK) ";
-                        sql += "WHERE codi_emex = '{0}' ";
-                        sql += "AND   codi_empr = {1} ";
-                        sql += "AND   esta_docu in ('INI','ERA') ";
-                        sql += "AND   esta_tras is null ";
-                    }
-                    else
-                    {
-                        sql = "SELECT count(*) ";
-                        sql += "FROM  dto_enca_docu_p /*WITH (NOLOCK)*/ ";
-                        sql += "WHERE codi_empr = {1} ";
-                        sql += "AND   esta_docu in ('INI','ERA') ";
-                        sql += "AND   esta_tras is null ";
-                    }
-                    mens.cantDTE = Convert.ToInt32(conexion.SelectInto(String.Format(sql, sEmex, codi_empr)));
-                }
-            }
-            catch (Exception ex)
-            {
-                conexion.rechaza();
-                logs.putLog(1, Convert.ToString(ex.Message));
-                mens.cantDTE = 0;
-                mens.DTE = "";
-                mens.Codigo = "ERR";
-                mens.Mensajes = "Problemas en el proceso";
-            }
-            finally
-            {
-                conexion.closeConexion();
-            }
-            return mens;
-        }
-
-        private static bool EsBase64(string str)
-        {
-            if (str.IndexOf("<") > 0 && str.IndexOf(">") > 0)
-                return false;
-            else
-                return true;
-        }
-
-
 
         #region marcarDTETraspasado
         [WebMethod]
@@ -245,7 +52,7 @@ namespace wssPortalEgresos
             logs.nombreLog = "marcarDTETraspasado";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
-            if (!validaRut(Convert.ToInt32(sRuttEmis), resp))
+            if (!validaRut(Convert.ToInt32(sRuttEmis), resp, logs))
             {
                 return resp;
             }
@@ -267,6 +74,7 @@ namespace wssPortalEgresos
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: " + logs.nombreLog);
                 logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
 
@@ -299,6 +107,8 @@ namespace wssPortalEgresos
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: marcarDTE");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
 
@@ -333,6 +143,7 @@ namespace wssPortalEgresos
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: " + logs.nombreLog);
                 logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
 
@@ -392,9 +203,9 @@ namespace wssPortalEgresos
 
                     List<Referencia> Refencias = new List<Referencia>();
                     Refencias = getRefencias(corrDocu, conexion);
-                    string xml = getXML(corrDocu, conexion);
+                    string xml = getXML(corrDocu, conexion, logs);
 
-                    string pdf = getPDF(codiEmpr, ruttRece, ruttEmis, tipoDocu, foliDocu);
+                    string pdf = getPDF(codiEmpr, ruttRece, ruttEmis, tipoDocu, foliDocu, logs);
 
                     Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, xml, pdf, Refencias);
                     dtes.DTE.Add(dte_temp);
@@ -457,7 +268,7 @@ namespace wssPortalEgresos
             return result;
         }
 
-        private string getXML(string corrDocu, bdConexion conexion)
+        private string getXML(string corrDocu, bdConexion conexion, log logs)
         {
             string xmlResult = string.Empty;
             string xml = string.Empty;
@@ -469,11 +280,13 @@ namespace wssPortalEgresos
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: getXML");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
             return xml;
         }
 
-        private string getPDF(string codiEmpr, string _sRutRece, string _sRuttEmis, string sTipoDocu, string sFoliDocu)
+        private string getPDF(string codiEmpr, string _sRutRece, string _sRuttEmis, string sTipoDocu, string sFoliDocu, log logs)
         {
             string sParametros = string.Empty;
             string sSalida = string.Empty;
@@ -487,7 +300,7 @@ namespace wssPortalEgresos
                 string sProceso = "egateDTE";
                 
                 sParametros = GeneraCmdEgateDte("egateDTE ", _sEgateHome, codiEmpr, sTipoDocu, sFoliDocu, _sRuttEmis);
-                sSalida = EjecutaProceso(_sEgateHome, sProceso, sParametros);
+                sSalida = EjecutaProceso(_sEgateHome, sProceso, sParametros, logs);
             }
             else
             {
@@ -506,14 +319,13 @@ namespace wssPortalEgresos
                         //this._Mensaje.vCodigo = "DOK";
                         //this._Mensaje.vMensaje = Transformar(_sRutaPdf, out PDF);
                         //this._Mensaje.vPDF = PDF;
-                        string pdf = Transformar(_sRutaPdf, out PDF);
+                        string pdf = Transformar(_sRutaPdf, out PDF, logs);
                         result = PDF;
                     }
-                    catch (Exception Ex)
+                    catch (Exception ex)
                     {
-                        //sBaseSeisCuatro = "Error No se puede acceder a PDF";
-                        //this._Mensaje.vCodigo = "ERR1";
-                        string te = "";
+                        logs.putLog(1, "Proceso: getPDF");
+                        logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
                     }
                 }
                 else
@@ -599,7 +411,7 @@ namespace wssPortalEgresos
             return sProceso;
         }
 
-        public string EjecutaProceso(string sEgateHome, string sProceso, string sParametros)
+        public string EjecutaProceso(string sEgateHome, string sProceso, string sParametros, log logs)
         {
             string sSalida = string.Empty;
             try
@@ -621,15 +433,14 @@ namespace wssPortalEgresos
             }
             catch (Exception ex)
             {
-                //Log.putLog(sEgateHome, Convert.ToString(ex.Message));
-                //Excepciones.Error(ex, true);
-                sSalida = "error 1";
+                logs.putLog(1, "Proceso: EjecutaProceso");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
             return sSalida;
         }
 
 
-        private string Transformar(string sNombreArchivo, out string PDF)
+        private string Transformar(string sNombreArchivo, out string PDF, log logs)
         {
             string sBaseSeisCuatro = string.Empty;
             FileStream fsStream = new FileStream(sNombreArchivo, FileMode.Open);
@@ -642,9 +453,10 @@ namespace wssPortalEgresos
                 PDF = sBaseSeisCuatro;
                 return "OK";
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                //Excepciones.Error(Ex, true);
+                logs.putLog(1, "Proceso: Transformar");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
                 PDF = "";
                 return "Error";
             }
@@ -669,12 +481,15 @@ namespace wssPortalEgresos
             logs.nombreLog = "AgregarRutEmisor";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
-            if (!validaRut(Rut, resp))
+            if (!validaRut(Rut, resp, logs))
             {
                 return resp;
             }
 
             setEgateHome(Rut, logs);
+
+            logs.putLog(1, "");
+            logs.putLog(1, "INICIO AgregarRutEmisor");
 
             bdConexion conexion = new bdConexion();
             try
@@ -682,18 +497,16 @@ namespace wssPortalEgresos
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
 
-                if (!existeEmisor(Rut, conexion, resp))
+                if (existeEmisor(Rut, conexion, resp, logs))
                 {
-                    //emisorInvalido(resp);
-                }
-                else
-                {
-                    habilitarEmisor(Rut, conexion, resp);
+                    habilitarEmisor(Rut, conexion, resp, logs);
                 }
 
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: " + logs.nombreLog);
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
 
             return resp;
@@ -708,12 +521,15 @@ namespace wssPortalEgresos
             logs.nombreLog = "QuitarRutEmisor";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
-            if (!validaRut(Rut, resp))
+            if (!validaRut(Rut, resp, logs))
             {
                 return resp;
             }
 
             setEgateHome(Rut, logs);
+
+            logs.putLog(1, "");
+            logs.putLog(1, "INICIO QuitarRutEmisor");
 
             bdConexion conexion = new bdConexion();
             try
@@ -721,18 +537,16 @@ namespace wssPortalEgresos
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
 
-                if (!existeEmisor(Rut, conexion, resp))
+                if (existeEmisor(Rut, conexion, resp, logs))
                 {
-                    //emisorInvalido(resp);
-                }
-                else
-                {
-                    deshabilitarEmisor(Rut, conexion, resp);
+                    deshabilitarEmisor(Rut, conexion, resp, logs);
                 }
 
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: " + logs.nombreLog);
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
 
             return resp;
@@ -758,12 +572,15 @@ namespace wssPortalEgresos
             logs.nombreLog = "AgregarRutReceptor";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
-            if (!validaRut(Rut, resp))
+            if (!validaRut(Rut, resp, logs))
             {
                 return resp;
             }
 
             setEgateHome(Rut, logs);
+
+            logs.putLog(1, "");
+            logs.putLog(1, "INICIO AgregarRutReceptor");
 
             bdConexion conexion = new bdConexion();
             try
@@ -771,23 +588,20 @@ namespace wssPortalEgresos
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
 
-                /*if (!existeEmpresa(Rut, out codi_empr, conexion, resp))
+                if (!existeReceptor(Rut, conexion, resp, logs))
                 {
-                    return resp;
-                }*/
-
-                if (!existeReceptor(Rut, conexion, resp))
-                {
-                    agregarReceptor(Rut, digiVeri, nombre, conexion, resp);
+                    agregarReceptor(Rut, digiVeri, nombre, conexion, resp, logs);
                 }
                 else
                 {
-                    habilitarReceptor(Rut, conexion, resp);
+                    habilitarReceptor(Rut, conexion, resp, logs);
                 }
 
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: " + logs.nombreLog);
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
             return resp;
         }
@@ -809,12 +623,15 @@ namespace wssPortalEgresos
             logs.nombreLog = "QuitarRutReceptor";
             logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
 
-            if(!validaRut(Rut, resp))
+            if(!validaRut(Rut, resp, logs))
             {
                 return resp;
             }
 
             setEgateHome(Rut, logs);
+
+            logs.putLog(1, "");
+            logs.putLog(1, "INICIO QuitarRutReceptor");
 
             bdConexion conexion = new bdConexion();
             try
@@ -822,23 +639,20 @@ namespace wssPortalEgresos
                 conexion.egateHome = logs.egateHome;
                 conexion.conexionOpen();
 
-                /*if (!existeEmpresa(Rut, out codi_empr, conexion, resp))
+                if (!existeReceptor(Rut, conexion, resp, logs))
                 {
-                    return resp;
-                }*/
-
-                if (!existeReceptor(Rut, conexion, resp))
-                {
-                    quitarReceptor(Rut, digiVeri, nombre, conexion, resp);
+                    quitarReceptor(Rut, digiVeri, nombre, conexion, resp, logs);
                 }
                 else
                 {
-                    deshabilitarReceptor(Rut, conexion, resp);
+                    deshabilitarReceptor(Rut, conexion, resp, logs);
                 }
 
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: " + logs.nombreLog);
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
             return resp;
         }
@@ -856,17 +670,8 @@ namespace wssPortalEgresos
         #endregion
 
         #region private methods Receptor
-        private static string tipoBD()
-        {
-            return "";
-        }
 
-        private static Boolean Emex()
-        {
-            return false;
-        }
-
-        private Boolean validaRut(int Rut, Respuesta resp)
+        private Boolean validaRut(int Rut, Respuesta resp, log logs)
         {
             Boolean result = true;
             if (Rut == 0)
@@ -874,8 +679,7 @@ namespace wssPortalEgresos
                 resp.SCodigo = ERROR_RUT_VACIO;
                 resp.SMensaje = "Rut No puede estar vacio";
                 result = false;
-                // FIX logs.putLog(1, resp.SMensaje);
-                //return resp;
+                logs.putLog(1, "-- Rut No puede estar vacio");
             }
             return result;
         }
@@ -889,36 +693,11 @@ namespace wssPortalEgresos
             else
             {
                 logs.egateHome = "EGATE_HOME";
-                logs.putLog(1, "Empresa no registra Home: " + Rut);
+                logs.putLog(1, "Se establece home (egateHome): " + logs.egateHome);
             }
         }
 
-        private Boolean existeEmpresa(int Rut, out string codi_empr, bdConexion conexion, Respuesta resp)
-        {
-            Boolean result = true;
-            string sql = string.Empty;
-
-            if (!string.IsNullOrEmpty(conexion.Emex))
-            {
-                sql = "select codi_empr from empr_hold where rutt_empr = {0}";
-            }
-            else
-            {
-                sql = "select codi_empr from empr where rutt_empr = {0} ";
-            }
-
-            codi_empr = conexion.SelectInto(String.Format(sql, Rut));
-
-
-            if (string.IsNullOrEmpty(codi_empr))
-            {
-                resp.SMensaje = "Empresa no se encuentra configurada";
-                result = false;
-            }
-            return result;
-        }
-
-        private Boolean existeReceptor(int Rut, bdConexion conexion, Respuesta resp)
+        private Boolean existeReceptor(int Rut, bdConexion conexion, Respuesta resp, log logs)
         {
             Boolean result = true;
             string sql = "SELECT COUNT(*) FROM PERSONAS WHERE RUTT_PERS = '{0}'";
@@ -927,11 +706,12 @@ namespace wssPortalEgresos
             {
                 result = false;
                 resp.SMensaje = "Rut no se encuentra";
+                logs.putLog(1, "-- Rut no se encuentra");
             }
             return result;
         }
 
-        private void agregarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp)
+        private void agregarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp, log logs)
         {
             try
             {
@@ -941,20 +721,24 @@ namespace wssPortalEgresos
                 {
                     resp.SCodigo = ERROR_AGREGAR_RUT_RECE;
                     resp.SMensaje = "No se pudo agregar Rut en receptores";
+                    logs.putLog(1, "-- No se pudo agregar Rut en receptores");
                 }
                 else
                 {
                     conexion.confirma();
                     resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se inserta Rut en receptores";
+                    logs.putLog(1, "-- Se inserta Rut en receptores");
                 }
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: agregarReceptor");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
 
-        private void habilitarReceptor(int Rut, bdConexion conexion, Respuesta resp)
+        private void habilitarReceptor(int Rut, bdConexion conexion, Respuesta resp, log logs)
         {
             try
             {
@@ -964,20 +748,24 @@ namespace wssPortalEgresos
                 {
                     resp.SCodigo = ERROR_HABILITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo habilitar Rut en receptores";
+                    logs.putLog(1, "-- No se pudo habilitar Rut en receptores");
                 }
                 else
                 {
                     conexion.confirma();
                     resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se habilita Rut en receptores";
+                    logs.putLog(1, "-- Se habilita Rut en receptores");
                 }
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: habilitarReceptor");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
     
-        private void quitarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp){
+        private void quitarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp, log logs){
             try
             {
                 string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, EMPR_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'S', 'N')";
@@ -986,20 +774,24 @@ namespace wssPortalEgresos
                 {
                     resp.SCodigo = ERROR_QUITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo quitar Rut en receptores";
+                    logs.putLog(1, "-- No se pudo quitar Rut en receptores");
                 }
                 else
                 {
                     conexion.confirma();
                     resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se quita Rut en receptores";
+                    logs.putLog(1, "-- Se quita Rut en receptores");
                 }
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: quitarReceptor");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
 
-        private void deshabilitarReceptor(int Rut, bdConexion conexion, Respuesta resp)
+        private void deshabilitarReceptor(int Rut, bdConexion conexion, Respuesta resp, log logs)
         {
             try
             {
@@ -1009,20 +801,24 @@ namespace wssPortalEgresos
                 {
                     resp.SCodigo = ERROR_DESHABILITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo deshabilitar Rut en receptores";
+                    logs.putLog(1, "-- No se pudo deshabilitar Rut en receptores");
                 }
                 else
                 {
                     conexion.confirma();
                     resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se deshabilita Rut en receptores";
+                    logs.putLog(1, "-- Se deshabilita Rut en receptores");
                 }
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: deshabilitarReceptor");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
 
-        private Boolean existeEmisor(int Rut, bdConexion conexion, Respuesta resp)
+        private Boolean existeEmisor(int Rut, bdConexion conexion, Respuesta resp, log logs)
         {
             Boolean result = true;
             string sql = "SELECT COUNT(*) FROM EMPR WHERE RUTT_EMPR = '{0}'";
@@ -1032,11 +828,12 @@ namespace wssPortalEgresos
                 result = false;
                 resp.SCodigo = ERROR_EMISOR_INVALIDO_EMIS;
                 resp.SMensaje = "No se encuentra Rut del emisor";
+                logs.putLog(1, "-- No se encuentra Rut del emisor");
             }
             return result;
         }
 
-        private void habilitarEmisor(int Rut, bdConexion conexion, Respuesta resp)
+        private void habilitarEmisor(int Rut, bdConexion conexion, Respuesta resp, log logs)
         {
             try
             {
@@ -1046,20 +843,24 @@ namespace wssPortalEgresos
                 {
                     resp.SCodigo = ERROR_HABILITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo habilitar Rut en emisores";
+                    logs.putLog(1, "-- No se pudo habilitar Rut en emisores");
                 }
                 else
                 {
                     conexion.confirma();
                     resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se habilita Rut en emisores";
+                    logs.putLog(1, "-- Se habilita Rut en emisores");
                 }
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: habilitarEmisor");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
 
-        private void deshabilitarEmisor(int Rut, bdConexion conexion, Respuesta resp)
+        private void deshabilitarEmisor(int Rut, bdConexion conexion, Respuesta resp, log logs)
         {
             try
             {
@@ -1069,25 +870,22 @@ namespace wssPortalEgresos
                 {
                     resp.SCodigo = ERROR_DESHABILITAR_RUT_RECE;
                     resp.SMensaje = "No se pudo deshabilitar Rut en emisores";
+                    logs.putLog(1, "-- No se pudo deshabilitar Rut en emisores");
                 }
                 else
                 {
                     conexion.confirma();
                     resp.SCodigo = CONSULTA_OK;
                     resp.SMensaje = "Se hdesabilita Rut en emisores";
+                    logs.putLog(1, "-- Se hdesabilita Rut en emisores");
                 }
             }
             catch (Exception ex)
             {
+                logs.putLog(1, "Proceso: deshabilitarEmisor");
+                logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
-
-
-        //private void emisorInvalido(Respuesta resp)
-        //{
-        //    resp.SCodigo = ERROR_EMISOR_INVALIDO_EMIS;
-        //    resp.SMensaje = "No se pudo habilitar Rut en emisores";
-        //}
 
         #endregion
     }
