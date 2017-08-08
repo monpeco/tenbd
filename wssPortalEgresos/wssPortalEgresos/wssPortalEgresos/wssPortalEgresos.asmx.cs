@@ -310,9 +310,9 @@ namespace wssPortalEgresos
                     Refencias = getRefencias(corrDocu, conexion);
                     string xml = getXML(corrDocu, conexion);
 
-                    getPDF(codiEmpr, ruttRece, ruttEmis, tipoDocu, foliDocu);
+                    string pdf = getPDF(codiEmpr, ruttRece, ruttEmis, tipoDocu, foliDocu);
 
-                    Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, xml, Refencias);
+                    Documento dte_temp = new Documento(ruttRece, digiRece, ruttEmis, digiEmis, tipoDocu, foliDocu, fechEmis, montNeto, montExen, montTota, xml, pdf, Refencias);
                     dtes.DTE.Add(dte_temp);
                 }
                 dtes.cantRestantes = cantDTERestantes(sql, conexion) - dte_num;
@@ -386,10 +386,11 @@ namespace wssPortalEgresos
             return xml;
         }
 
-        private void getPDF(string codiEmpr, string _sRutRece, string _sRuttEmis, string sTipoDocu, string sFoliDocu)
+        private string getPDF(string codiEmpr, string _sRutRece, string _sRuttEmis, string sTipoDocu, string sFoliDocu)
         {
             string sParametros = string.Empty;
             string sSalida = string.Empty;
+            string result = string.Empty;
             SetParametros(_sRutRece);
             string sArchivo = FormateaNombre(_sRuttEmis, sTipoDocu, sFoliDocu, false);
             _sRutaPdf += sArchivo;
@@ -397,10 +398,9 @@ namespace wssPortalEgresos
             if (!File.Exists(_sRutaPdf))
             {
                 string sProceso = "egateDTE";
-                //GeneraCmdEgateDte(string sNombreProceso, string sEgateDte, string sCodEmpr, string sTipoDocu, string sFoliDocu, string sRuttEmis)
-                sParametros = GeneraCmdEgateDte("egateDTE ", _sEgateHome, codiEmpr, sTipoDocu, sFoliDocu, _sRuttEmis /*sRuttEmis*/);
-                //sParametros = " -h EGATE_HOME -tl 3 -v -te dto -ts html -empr 2 -tdte 33 -fdte 1320 -re 78079790";
-                sSalida = EjecutaProceso(/*_sCodiEmex*/ "EGATE_HOME", sProceso, sParametros);
+                
+                sParametros = GeneraCmdEgateDte("egateDTE ", _sEgateHome, codiEmpr, sTipoDocu, sFoliDocu, _sRuttEmis);
+                sSalida = EjecutaProceso(_sEgateHome, sProceso, sParametros);
             }
             else
             {
@@ -420,8 +420,9 @@ namespace wssPortalEgresos
                         //this._Mensaje.vMensaje = Transformar(_sRutaPdf, out PDF);
                         //this._Mensaje.vPDF = PDF;
                         string pdf = Transformar(_sRutaPdf, out PDF);
+                        result = PDF;
                     }
-                    catch
+                    catch (Exception Ex)
                     {
                         //sBaseSeisCuatro = "Error No se puede acceder a PDF";
                         //this._Mensaje.vCodigo = "ERR1";
@@ -435,6 +436,7 @@ namespace wssPortalEgresos
                     string err = "";
                 }
             }
+            return result;
         }
 
         #region FormateaNombre
