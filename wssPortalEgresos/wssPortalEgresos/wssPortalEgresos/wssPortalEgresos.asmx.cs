@@ -407,6 +407,34 @@ namespace wssPortalEgresos
                 //Log.putLog(_sDirectorio, "Pdf se encontraba generado");
                 string sProceso = "egateDTE"; //quitar
             }
+
+
+            if (sSalida != "error")
+            {
+                if (File.Exists(_sRutaPdf))
+                {
+                    try
+                    {
+                        string PDF;
+                        //this._Mensaje.vCodigo = "DOK";
+                        //this._Mensaje.vMensaje = Transformar(_sRutaPdf, out PDF);
+                        //this._Mensaje.vPDF = PDF;
+                        string pdf = Transformar(_sRutaPdf, out PDF);
+                    }
+                    catch
+                    {
+                        //sBaseSeisCuatro = "Error No se puede acceder a PDF";
+                        //this._Mensaje.vCodigo = "ERR1";
+                        string te = "";
+                    }
+                }
+                else
+                {
+                    //sBaseSeisCuatro = "Error No se encuentra PDF, no pudo ser generado";
+                    //this._Mensaje.vCodigo = "ERR1";
+                    string err = "";
+                }
+            }
         }
 
         #region FormateaNombre
@@ -532,6 +560,35 @@ namespace wssPortalEgresos
             return sSalida;
         }
 
+
+        private string Transformar(string sNombreArchivo, out string PDF)
+        {
+            string sBaseSeisCuatro = string.Empty;
+            FileStream fsStream = new FileStream(sNombreArchivo, FileMode.Open);
+            BinaryReader brLector = new BinaryReader(fsStream);
+            byte[] bBytes = new byte[(int)fsStream.Length];
+            try
+            {
+                brLector.Read(bBytes, 0, bBytes.Length);
+                sBaseSeisCuatro = Convert.ToBase64String(bBytes);
+                PDF = sBaseSeisCuatro;
+                return "OK";
+            }
+            catch (Exception Ex)
+            {
+                //Excepciones.Error(Ex, true);
+                PDF = "";
+                return "Error";
+            }
+            // Se cierran los archivos para liberar memoria.
+            finally
+            {
+                fsStream.Close();
+                fsStream = null;
+                brLector = null;
+                bBytes = null;
+            }
+        }
         #endregion
 
 
