@@ -179,7 +179,6 @@ namespace wssPortalEgresos
 
             if (dte_num == 0)
             {
-                dtes.mensaje = "No hay DTE pendientes por entregar";
                 dtes.cantRestantes = 0;
                 logs.putLog(1, "-- No hay DTE pendientes por entregar: ");
                 logs.putLog(1, "-- cantRestantes: 0");
@@ -764,8 +763,9 @@ namespace wssPortalEgresos
                 logs.putLog(1, "Error: " + Convert.ToString(ex.Message));
             }
         }
-    
-        private void quitarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp, log logs){
+
+        private void quitarReceptor(int Rut, int digiVeri, string nombre, bdConexion conexion, Respuesta resp, log logs)
+        {
             try
             {
                 string sql = "INSERT INTO PERSONAS (RUTT_PERS, DGTO_PERS, NOMB_PERS, EMPR_PERS, INDI_WSS) VALUES ({0}, {1}, '{2}', 'S', 'N')";

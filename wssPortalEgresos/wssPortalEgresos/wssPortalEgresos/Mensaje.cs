@@ -137,6 +137,5 @@ public class Documento
 public class DTEPendietes
 {
     public List<Documento> DTE = new List<Documento>();
-    public string mensaje;
     public int cantRestantes; 
 }
