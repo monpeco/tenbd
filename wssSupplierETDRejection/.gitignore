@@ -1,0 +1,8 @@
+#solution user options
+*.suo
+
+#documentation
+\doc
+
+#binary
+\bin

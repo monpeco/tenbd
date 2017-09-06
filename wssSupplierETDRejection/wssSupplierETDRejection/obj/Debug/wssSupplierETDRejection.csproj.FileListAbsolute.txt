@@ -1,0 +1,8 @@
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\obj\Debug\ResolveAssemblyReference.cache
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\obj\Debug\WssSupplierETDBusinessStateASP.dll
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\obj\Debug\WssSupplierETDBusinessStateASP.pdb
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\bin\WssSupplierETDBusinessStateASP.dll
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\bin\WssSupplierETDBusinessStateASP.pdb
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\bin\dbnetWssSecurity.dll
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\bin\Microsoft.Web.Services3.dll
+C:\desarrolloSuite\dbsWss50\wssSupplierETDRejection\wssSupplierETDRejection\bin\dbnetWssSecurity.pdb

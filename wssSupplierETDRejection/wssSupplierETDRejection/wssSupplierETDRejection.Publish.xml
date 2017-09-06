@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<publishData>
+  <publishProfile publishUrl="C:\desarrolloSuite\dbsWss50\wssSupplierETDBusinessStateASP\bin\PrecompiledWeb" deleteExistingFiles="True" ftpAnonymousLogin="False" ftpPassiveMode="True" msdeploySite="" msdeploySiteID="" msdeployRemoteSitePhysicalPath="" msdeployAllowUntrustedCertificate="False" msdeploySkipExtraFilesOnServer="True" msdeployMarkAsApp="False" profileName="Perfil1" publishMethod="FileSystem" replaceMatchingFiles="False" userName="" savePWD="False" userPWD="" SelectedForPublish="True">
+    <file relUrl="wse3policyCache.config" publishTime="10/14/2015 11:57:35" />
+    <file relUrl="bin/Tool.dll" publishTime="10/14/2015 11:57:35" />
+    <file relUrl="bin/dbnetWssSecurity.pdb" publishTime="02/13/2017 12:42:04" />
+    <file relUrl="bin/Microsoft.Web.Services3.dll" publishTime="11/01/2005 17:28:12" />
+    <file relUrl="Web.config" publishTime="02/13/2017 15:06:16" />
+    <file relUrl="bin/dbnetWssSecurity.dll" publishTime="02/13/2017 12:42:04" />
+    <file relUrl="SupplierETDBusinessStateASP.asmx" publishTime="10/14/2015 11:57:35" />
+    <file relUrl="bin/WssSupplierETDBusinessStateASP.dll" publishTime="02/13/2017 16:07:28" />
+    <file relUrl="bin/WssSupplierETDBusinessStateASP.pdb" publishTime="02/13/2017 16:07:28" />
+  </publishProfile>
+</publishData>

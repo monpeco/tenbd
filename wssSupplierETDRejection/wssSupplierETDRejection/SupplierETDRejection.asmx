@@ -1,0 +1,1 @@
+<%@ WebService Language="C#" CodeBehind="SupplierETDRejection.asmx.cs" Class="SupplierETDRejection" %>
