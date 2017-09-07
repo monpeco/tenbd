@@ -11,17 +11,17 @@ using Tool;
 public class SupplierETDRejection : WebService
 {
 
-    [WebMethod(Description = "Metodo que permite realizar la aceptacion o rechazo comercial, asociado a un DTE")]
-    public Mensaje setSupplierETDBusinessState(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
+    [WebMethod(Description = "Metodo que permite realizar el reclamo o aceptacion de un DTE")]
+    public Mensaje setRejection(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
     {
         string ErrLugar = "";
         ErrLugar="Se crea instancia Mensaje()";
         Mensaje mens = new Mensaje();
-        // Seguridad de Servicios Web (Validando Autorización del usuario para ese RUT)
-        if (string.IsNullOrEmpty(company))
+        // Seguridad de Servicios Web (Validando presencia de todos los campos)
+        if ((company ?? companyCodeSii ?? documentType.ToString() ?? documentNumber.ToString() ?? statusCode ?? reasonDesc) == null) 
         {
             mens.Codigo = "ER0";
-            mens.Descripcion = "company no puede ser vacio.";
+            mens.Descripcion = "Todos los parÃ¡metros deben contener valor";
             return mens;
         }
         if (!DbnetWssSecurity.DbnetWssAutorizador.validaUsuario(company))
@@ -52,7 +52,7 @@ public class SupplierETDRejection : WebService
             ListaParametros = "Parametros : Empresa [" + company + "].";
             ListaParametros = "Parametros : [Emisor - " + companyCodeSii + "][TipoDocumento - " + documentType + "][Folio - " + documentNumber + "][Estado - " + statusCode + "][Descripcion - " + reasonDesc + "].";
             Servicio = "SupplierETDRejection";
-            Metodo   = "setSupplierETDBusinessState";
+            Metodo = "setRejection";
             #endregion Inicializacion Nombre de WSS y Metodo
 
             #region Calcula RutEmpresa sin DV
@@ -103,7 +103,7 @@ public class SupplierETDRejection : WebService
                 statusCode == "" || reasonDesc == "")
             {
                 mens.Codigo = "ER0";
-                mens.Descripcion = "Faltan Parámetros";
+                mens.Descripcion = "Faltan ParÃ¡metros";
                 log_mensaje += " - " + mens.Descripcion;
                 logs.putLog(1, log_mensaje);
                 return mens;
@@ -125,7 +125,7 @@ public class SupplierETDRejection : WebService
                 if (!Validaciones.validaRut(company))
                 {
                     mens.Codigo = "ER1";
-                    mens.Descripcion = "Rut Receptor no Válido";
+                    mens.Descripcion = "Rut Receptor no VÃ¡lido";
                     log_mensaje += " - " + mens.Descripcion;
                     logs.putLog(1, log_mensaje);
                     return mens;
@@ -162,7 +162,7 @@ public class SupplierETDRejection : WebService
                 #region Valida Estado de Aprob/Rechazo
                 ErrLugar = "Valida Estado de Aprob/Rechazo";
                 mens.Codigo = "ER4";
-                mens.Descripcion = "Estado no es Válido, Estados Posibles APR: Aprobado, ARE: Aprobado con reparos, REC: Rechazado";
+                mens.Descripcion = "Estado no es VÃ¡lido, Estados Posibles APR: Aprobado, ARE: Aprobado con reparos, REC: Rechazado";
                 log_mensaje += " - " + mens.Descripcion;
                 logs.putLog(1, log_mensaje);
                 return mens;
@@ -265,7 +265,7 @@ public class SupplierETDRejection : WebService
     public Mensaje setSupplierETDReception(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode, string place)
     {
         Mensaje mens = new Mensaje();
-        // Seguridad de Servicios Web (Validando Autorización del usuario para ese RUT)
+        // Seguridad de Servicios Web (Validando AutorizaciÃ³n del usuario para ese RUT)
         if (string.IsNullOrEmpty(company))
         {
             mens.Codigo = "ER0";
@@ -355,7 +355,7 @@ public class SupplierETDRejection : WebService
             if (company == "" || companyCodeSii == "" || documentType.ToString() == "" || documentNumber.ToString() == "" || statusCode == "" || place == "")
             {
                 mens.Codigo = "ER0";
-                mens.Descripcion = "Faltan Parámetros";
+                mens.Descripcion = "Faltan ParÃ¡metros";
                 log_mensaje += " - " + mens.Descripcion;
                 logs.putLog(1, log_mensaje);
                 return mens;
@@ -369,7 +369,7 @@ public class SupplierETDRejection : WebService
                 if (!Validaciones.validaRut(company))
                 {
                     mens.Codigo = "ER1";
-                    mens.Descripcion = "Rut Receptor no Válido";
+                    mens.Descripcion = "Rut Receptor no VÃ¡lido";
                     log_mensaje += " - " + mens.Descripcion;
                     logs.putLog(1, log_mensaje);
                     return mens;
@@ -405,7 +405,7 @@ public class SupplierETDRejection : WebService
             if (statusCode != "RME")
             {
                 mens.Codigo = "ER4";
-                mens.Descripcion = "Estado no es Válido, Estados Posibles RME: Recibo Mercaderia";
+                mens.Descripcion = "Estado no es VÃ¡lido, Estados Posibles RME: Recibo Mercaderia";
                 logs.putLog(1, statusCode + " - " + mens.Descripcion);
             }
             else
