@@ -167,7 +167,7 @@ namespace conexionBaseDatos
             catch (Exception ex)
             {
                 mensajeError = ex.Message;
-                return Convert.ToString(ex).Substring(Convert.ToString(ex).IndexOf("Se terminó la instrucción") + 28, 185);
+                return Convert.ToString(ex).Substring(Convert.ToString(ex).IndexOf("Se terminÃ³ la instrucciÃ³n") + 28, 185);
             }
         }
 
@@ -300,10 +300,19 @@ namespace conexionBaseDatos
         {
             try
             {
-                if (v_codi_esap != "APR")
-                    if (v_codi_esap != "ARE")
-                        if (v_codi_esap != "REC")
-                            return false;
+                if (v_codi_esap != "ACD")
+                    if (v_codi_esap != "ERM")
+                        if (v_codi_esap != "RCD")
+                            if (v_codi_esap != "RFP")
+                                if (v_codi_esap != "RFT")
+                                    if (v_codi_esap != "FRS")
+                                        return false;
+                                    else
+                                        return true;
+                                else
+                                    return true;
+                            else
+                                return true;
                         else
                             return true;
                     else
