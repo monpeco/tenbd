@@ -377,10 +377,57 @@ namespace conexionBaseDatos
             return codigo;
         }
 
-        public Boolean ActualizaEstado(int companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
+        public Boolean applyRejection(int companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
         {
             bool oData = false;
+            String emex = "PROD_0121";
             try
+            {
+                /*String pi_codi_appl = "suite no 5.0";
+                int pi_rutt_empr = 121;
+                String pi_digi_empr = "1";
+                String pi_name_msge = "kaka";
+                String pi_name_addr = "gfgfgf";
+                String pi_curl_para = "gfgfgf";
+                int pi_codi_erro = 12;
+                String pi_mens_erro = "sksj";
+                int pi_corr_qmsg = 12;*/
+
+                String pi_codi_appl = "suite no 5.0";
+                String pi_rutt_empr = "121";
+                String pi_digi_empr = "1";
+                String pi_name_msge = "kaka";
+                String pi_name_addr = "gfgfgf";
+                String pi_curl_para = "gfgfgf";
+                String pi_codi_erro = "12";
+                String pi_mens_erro = "sksj";
+                String pi_corr_qmsg = "12";
+                
+                //EjectProcedure("dbnet_set_emex", "p_codi_emex", emex, "varchar", 30, "in");
+                //EjectProcedure("get_dummy", "sql_corr_cesi", emex, "varchar", 30, "out");
+                EjectProcedure9("PRC_PUT_MESSAGE"
+                , "pi_codi_appl", pi_codi_appl, "varchar", 40, "in"
+                , "pi_rutt_empr", pi_rutt_empr, "DECIMAL", 8, "in"
+                , "pi_digi_empr", pi_digi_empr, "varchar", 1, "in"
+                , "pi_name_msge", pi_name_msge, "varchar", 20, "in"
+                , "pi_name_addr", pi_name_addr, "varchar", 20, "in"
+                , "pi_curl_para", pi_curl_para, "varchar", 200, "in"
+                , "pi_codi_erro", pi_codi_erro, "DECIMAL", 5, "out"
+                , "pi_mens_erro", pi_mens_erro, "varchar", 80, "out"
+                , "pi_corr_qmsg", pi_corr_qmsg, "DECIMAL", 22, "out");
+                string tem_ = return_String("pi_codi_erro");
+                string tem_2 = return_String("pi_mens_erro");
+                string tem_3 = return_String("pi_corr_qmsg");
+                oData = true;
+                
+            } 
+            catch (Exception ex)
+            {
+                mensajeError = ex.Message;
+                oData = false;
+            }
+
+            /*try
             {
                 string sql = "";
                 mensajeError = "";
@@ -427,7 +474,7 @@ namespace conexionBaseDatos
             {
                 mensajeError = ex.Message;
                 oData = false; 
-            }
+            }*/
             return oData;
         }
 
@@ -596,6 +643,91 @@ namespace conexionBaseDatos
             this.sp.CommandType = CommandType.StoredProcedure;
 
             param_procedures();
+        }
+
+        //REjecuta un procedimiento almacenado de 9 parametros. 07-09-2017|AM
+		public void EjectProcedure9(string nombre_proc
+		, string nombre1, string valor1, string tipo1, int largo1, string inout1,
+			string nombre2, string valor2, string tipo2, int largo2, string inout2,
+			string nombre3, string valor3, string tipo3, int largo3, string inout3,
+			string nombre4, string valor4, string tipo4, int largo4, string inout4,
+			string nombre5, string valor5, string tipo5, int largo5, string inout5,
+			string nombre6, string valor6, string tipo6, int largo6, string inout6,
+			string nombre7, string valor7, string tipo7, int largo7, string inout7,
+			string nombre8, string valor8, string tipo8, int largo8, string inout8,
+			string nombre9, string valor9, string tipo9, int largo9, string inout9)
+		{
+			this.nombres = new string[9];
+			this.valores = new string[9];
+			this.tipos = new string[9];
+			this.largos = new int[9];
+			this.inout = new string[9];
+
+			this.nombres[0] = nombre1;
+			this.nombres[1] = nombre2;
+			this.nombres[2] = nombre3;
+			this.nombres[3] = nombre4;
+			this.nombres[4] = nombre5;
+			this.nombres[5] = nombre6;
+			this.nombres[6] = nombre7;
+			this.nombres[7] = nombre8;
+			this.nombres[8] = nombre9;
+			
+			this.valores[0] = valor1;
+			this.valores[1] = valor2;
+			this.valores[2] = valor3;
+			this.valores[3] = valor4;
+			this.valores[4] = valor5;
+			this.valores[5] = valor6;
+			this.valores[6] = valor7;
+			this.valores[7] = valor8;
+			this.valores[8] = valor9;
+			
+			this.tipos[0] = tipo1;
+			this.tipos[1] = tipo2;
+			this.tipos[2] = tipo3;
+			this.tipos[3] = tipo4;
+			this.tipos[4] = tipo5;
+			this.tipos[5] = tipo6;
+			this.tipos[6] = tipo7;
+			this.tipos[7] = tipo8;
+			this.tipos[8] = tipo9;
+			
+			this.largos[0] = largo1;
+			this.largos[1] = largo2;
+			this.largos[2] = largo3;
+			this.largos[3] = largo4;
+			this.largos[4] = largo5;
+			this.largos[5] = largo6;
+			this.largos[6] = largo7;
+			this.largos[7] = largo8;
+			this.largos[8] = largo9;
+			
+			this.inout[0] = inout1;
+			this.inout[1] = inout2;
+			this.inout[2] = inout3;
+			this.inout[3] = inout4;
+			this.inout[4] = inout5;
+			this.inout[5] = inout6;
+			this.inout[6] = inout7;
+			this.inout[7] = inout8;
+			this.inout[8] = inout9;
+
+            this.sp = new OleDbCommand(nombre_proc, conn);
+            this.sp.Transaction = trans;
+            this.sp.CommandTimeout = 900;
+			this.sp.CommandType = CommandType.StoredProcedure;
+			param_procedures();
+		}
+
+        //Recupera parametro de salida en la ejecución de un procedimiento almacenado. 07-09-2017|AM
+        public string return_String(string nombre_parametro)
+        {
+            if (bd.ToLower() == "sqlserver")
+            {
+                nombre_parametro = "@" + nombre_parametro;
+            }
+            return this.sp.Parameters[nombre_parametro].Value.ToString();
         }
 
         private void param_procedures()
