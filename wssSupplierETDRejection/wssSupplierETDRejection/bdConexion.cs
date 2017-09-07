@@ -362,7 +362,8 @@ namespace conexionBaseDatos
             return codigo;
         }
 
-        public Boolean applyRejection(string company, string digitoCompany, string companyCodeSii, string digitoCompanyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
+        //public Boolean applyRejection(string company, string digitoCompany, string companyCodeSii, string digitoCompanyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc, string pi_codi_erro, string pi_mens_erro, string pi_corr_qmsg)
+        public Boolean applyRejection(string company, string digitoCompany, string companyCodeSii, string digitoCompanyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc, out string  pi_codi_erro, out string  pi_mens_erro, out string  pi_corr_qmsg)
         {
             bool oData = false;
             //String emex = "PROD_0121";
@@ -378,15 +379,16 @@ namespace conexionBaseDatos
                 String pi_mens_erro = "sksj";
                 int pi_corr_qmsg = 12;*/
 
+                pi_codi_erro = "-10";
+                pi_mens_erro = "-20";
+                pi_corr_qmsg = "-30";
+
                 String pi_codi_appl = "SUITE5";
                 String pi_rutt_empr = String.Empty;
                 String pi_digi_empr = String.Empty;
                 String pi_name_msge = String.Empty;
                 String pi_name_addr = String.Empty;
                 String pi_curl_para = String.Empty;
-                String pi_codi_erro = "12";
-                String pi_mens_erro = "sksj";
-                String pi_corr_qmsg = "12";
 
                 if (new string[] { "ACD", "ERM", "RCD", "RFP", "RFT",   "FRS" }.Contains(statusCode))    //Si es caso de Recepcion 
                 {
@@ -442,15 +444,22 @@ namespace conexionBaseDatos
                 , "pi_codi_erro", pi_codi_erro, "DECIMAL", 5, "out"
                 , "pi_mens_erro", pi_mens_erro, "varchar", 80, "out"
                 , "pi_corr_qmsg", pi_corr_qmsg, "DECIMAL", 22, "out");
-                string tem_ = return_String("pi_codi_erro");
-                string tem_2 = return_String("pi_mens_erro");
-                string tem_3 = return_String("pi_corr_qmsg");
+
+                pi_codi_erro = return_String("pi_codi_erro");
+                pi_mens_erro = return_String("pi_mens_erro");
+                pi_corr_qmsg = return_String("pi_corr_qmsg");
+
                 oData = true;
                 
             } 
             catch (Exception ex)
             {
                 mensajeError = ex.Message;
+
+                pi_codi_erro = ex.Message;
+                pi_mens_erro = ex.Message;
+                pi_corr_qmsg = ex.Message;
+
                 oData = false;
             }
 

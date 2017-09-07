@@ -186,9 +186,17 @@ public class SupplierETDRejection : WebService
                 {
                     #region Documento Existe
                     ErrLugar = "Aplica Rejection";
-                    if (conexion.applyRejection(company, digitoCompany, companyCodeSii, digitoCompanyCodeSii, documentType, documentNumber, statusCode, reasonDesc))
+                    string pi_codi_erro = String.Empty;
+                    string pi_mens_erro = String.Empty;
+                    string pi_corr_qmsg = String.Empty;
+
+                    if (conexion.applyRejection(company, digitoCompany, companyCodeSii, digitoCompanyCodeSii, documentType, documentNumber, statusCode, reasonDesc, out pi_codi_erro, out pi_mens_erro, out pi_corr_qmsg))
                     {
                         conexion.confirma();
+                        mens.CodigoSolicitud = pi_corr_qmsg ;
+                        mens.Codigo = pi_codi_erro;
+                        mens.Descripcion = pi_mens_erro;
+
                         return mens;
                     }
                     else
