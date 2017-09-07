@@ -13,13 +13,26 @@ using System.Web.UI.HtmlControls;
 /// </summary>
 public class Mensaje
 {
+    protected String lCodigoSolicitud;
     protected String lCodigo;
     protected String lMensaje;
 
 	public Mensaje()
 	{
-        lCodigo = lMensaje = "";
+        lCodigoSolicitud = lCodigo = lMensaje = "";
 	}
+
+    public String CodigoSolicitud
+    {
+        get
+        {
+            return lCodigoSolicitud;
+        }
+        set
+        {
+            lCodigoSolicitud = value;
+        }
+    }
 
     public String Codigo
     {
