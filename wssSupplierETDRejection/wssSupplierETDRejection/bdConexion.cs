@@ -8,6 +8,7 @@ using System.Data;
 using WssSupplierETDRejection;
 using Tool;
 using System.Configuration;
+using System.Linq;
 
 namespace conexionBaseDatos
 {
@@ -300,26 +301,10 @@ namespace conexionBaseDatos
         {
             try
             {
-                if (v_codi_esap != "ACD")
-                    if (v_codi_esap != "ERM")
-                        if (v_codi_esap != "RCD")
-                            if (v_codi_esap != "RFP")
-                                if (v_codi_esap != "RFT")
-                                    if (v_codi_esap != "FRS")
-                                        return false;
-                                    else
-                                        return true;
-                                else
-                                    return true;
-                            else
-                                return true;
-                        else
-                            return true;
-                    else
-                        return true;
-                else
+                if (new string[] { "ACD", "ERM", "RCD", "RFP", "RFT", "FRS", "CED", "CCD" }.Contains(v_codi_esap))
                     return true;
-
+                else
+                    return false;
             }
             catch (Exception ex)
             {
