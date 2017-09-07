@@ -378,18 +378,60 @@ namespace conexionBaseDatos
                 String pi_mens_erro = "sksj";
                 int pi_corr_qmsg = 12;*/
 
-                String pi_codi_appl = "suite no 5.0";
-                String pi_rutt_empr = "121";
-                String pi_digi_empr = "1";
-                String pi_name_msge = "kaka";
-                String pi_name_addr = "gfgfgf";
-                String pi_curl_para = "gfgfgf";
+                String pi_codi_appl = "SUITE5";
+                String pi_rutt_empr = String.Empty;
+                String pi_digi_empr = String.Empty;
+                String pi_name_msge = String.Empty;
+                String pi_name_addr = String.Empty;
+                String pi_curl_para = String.Empty;
                 String pi_codi_erro = "12";
                 String pi_mens_erro = "sksj";
                 String pi_corr_qmsg = "12";
-                
-                //EjectProcedure("dbnet_set_emex", "p_codi_emex", emex, "varchar", 30, "in");
-                //EjectProcedure("get_dummy", "sql_corr_cesi", emex, "varchar", 30, "out");
+
+                if (new string[] { "ACD", "ERM", "RCD", "RFP", "RFT",   "FRS" }.Contains(statusCode))    //Si es caso de Recepcion 
+                {
+                    pi_rutt_empr = company;
+                    pi_digi_empr = digitoCompany;
+
+                    pi_name_msge = "MSG_INGREC";
+                    pi_name_addr = "AD_INGREC";
+
+                    if (statusCode == "FRS"){
+                        pi_name_msge = "MSG_FCHRCP";
+                        pi_name_addr = "AD_FCHRCP";
+                    }
+
+                }
+                else if (new string[] { "CED", "CCD" }.Contains(statusCode))   //Si es caso de Emision 
+                {
+                    pi_rutt_empr = companyCodeSii;
+                    pi_digi_empr = digitoCompanyCodeSii;
+
+                    if (statusCode == "CCD")
+                    {
+                        pi_name_msge = "MSG_QRYCED";
+                        pi_name_addr = "AD_QRYCED";
+                    }
+                    else    
+                    {
+                        pi_name_msge = "MSG_LISEVE";
+                        pi_name_addr = "AD_LISEVE";
+                    }
+                }
+
+                /*	SET @curl_para	= '{ "RUT_EMIS" : "' + (select convert(varchar(10),@rutt_emis)) 
+					+ '", "DV_EMIS" : "' + @digi_emis 
+					+ '", "TIPO_DOC" : "' + (select convert(varchar(4),@tipo_docu))
+					+ '", "FOLIO" : "' + (select convert(varchar(10),@foli_docu))
+					+ '", "ACCION" : "' + @even_sii
+					+ '" }';*/
+                pi_curl_para = "{ \"RUT_EMIS\" : \"" + companyCodeSii
+                             + "\", \"DV_EMIS\" : \"" + digitoCompanyCodeSii
+                             + "\", \"TIPO_DOC\" : \"" + documentType.ToString()
+                             + "\", \"FOLIO\" : \"" + documentNumber.ToString()
+                             + "\", \"ACCION\" : \"" + statusCode
+                             + "\" }";
+
                 EjectProcedure9("PRC_PUT_MESSAGE"
                 , "pi_codi_appl", pi_codi_appl, "varchar", 40, "in"
                 , "pi_rutt_empr", pi_rutt_empr, "DECIMAL", 8, "in"
