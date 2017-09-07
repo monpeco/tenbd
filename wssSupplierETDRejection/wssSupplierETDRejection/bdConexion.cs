@@ -377,10 +377,10 @@ namespace conexionBaseDatos
             return codigo;
         }
 
-        public Boolean applyRejection(int companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
+        public Boolean applyRejection(string company, string digitoCompany, string companyCodeSii, string digitoCompanyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
         {
             bool oData = false;
-            String emex = "PROD_0121";
+            //String emex = "PROD_0121";
             try
             {
                 /*String pi_codi_appl = "suite no 5.0";

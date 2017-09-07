@@ -39,7 +39,8 @@ public class SupplierETDRejection : WebService
         int posicion;
         string companySinDV;
         string companyCodeSiiSinDV;
-        string digito="";
+        string digitoCompanyCodeSii = String.Empty;
+        string digitoCompany = String.Empty;
         String LogAplica = "N";
         String ListaParametros = "";
         #endregion Define Variables
@@ -61,8 +62,8 @@ public class SupplierETDRejection : WebService
             companySinDV = company;
             if (company.IndexOf("-") >= 0)
             {
-                digito = company.Substring(posicion + 1, 1);
-                if (digito != "")
+                digitoCompany = company.Substring(posicion + 1, 1);
+                if (digitoCompany != "")
                 {
                     companySinDV = company.Substring(0, posicion);
                 }
@@ -120,7 +121,7 @@ public class SupplierETDRejection : WebService
 
             #region Valida DV RutReceptor
             ErrLugar = "Valida DV RutReceptor";
-            if (digito != "")
+            if (digitoCompany != "")
             {
                 if (!Validaciones.validaRut(company))
                 {
@@ -140,8 +141,8 @@ public class SupplierETDRejection : WebService
             companyCodeSiiSinDV = companyCodeSii;
             if (companyCodeSii.IndexOf("-") >= 0)
             {
-                digito = companyCodeSii.Substring(posicion + 1, 1);
-                if (digito != "")
+                digitoCompanyCodeSii = companyCodeSii.Substring(posicion + 1, 1);
+                if (digitoCompanyCodeSii != "")
                 {
                     if (!Validaciones.validaRut(companyCodeSii))
                     {
@@ -185,7 +186,7 @@ public class SupplierETDRejection : WebService
                 {
                     #region Documento Existe
                     ErrLugar = "Aplica Rejection";
-                    if (conexion.applyRejection(Convert.ToInt32(companyCodeSii), documentType, documentNumber, statusCode, reasonDesc))
+                    if (conexion.applyRejection(company, digitoCompany, companyCodeSii, digitoCompanyCodeSii, documentType, documentNumber, statusCode, reasonDesc))
                     {
                         conexion.confirma();
                         return mens;
