@@ -10,24 +10,26 @@ using Tool;
 [Microsoft.Web.Services3.Policy("DbnetWssPoliticaSeguridad")]
 public class SupplierETDRejection : WebService
 {
+    String ER0 = "ER0";
+    String DOK = "DOK";
 
     [WebMethod(Description = "Metodo que permite realizar el reclamo o aceptacion de un DTE")]
-    public Mensaje setRejection(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
+    public Response setRejection(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
     {
         string ErrLugar = "";
         ErrLugar="Se crea instancia Mensaje()";
-        Mensaje mens = new Mensaje();
+        Response mens = new Response();
         // Seguridad de Servicios Web (Validando presencia de todos los campos)
         if ((company ?? companyCodeSii ?? documentType.ToString() ?? documentNumber.ToString() ?? statusCode ?? reasonDesc) == null) 
         {
             mens.Codigo = "ER0";
-            mens.Descripcion = "Todos los parámetros deben contener valor";
+            mens.Mensaje = "Todos los parámetros deben contener valor";
             return mens;
         }
         if (!DbnetWssSecurity.DbnetWssAutorizador.validaUsuario(company))
         {
             mens.Codigo = "ER1";
-            mens.Descripcion = "Empresa no se encuentra configurada.";
+            mens.Mensaje = "Empresa no se encuentra configurada.";
             return mens;
         }
 
@@ -74,7 +76,7 @@ public class SupplierETDRejection : WebService
             #region Verifica Empresa Autorizada a trabajar con WebService
             ErrLugar = "Verifica Empresa Autorizada a trabajar con WebService";
             mens.Codigo = "INI";
-            mens.Descripcion = "Inicializacion. Company ["+companySinDV+"]";
+            mens.Mensaje = "Inicializacion. Company ["+companySinDV+"]";
             if (ConfigurationManager.AppSettings["eHome:" +companySinDV] != null) 
             {
                 #region Manejo Logs
@@ -83,20 +85,20 @@ public class SupplierETDRejection : WebService
                 logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
                 logs.egateHome = ConfigurationManager.AppSettings["eHome:" +companySinDV];
 
-                mens.Descripcion = "Rut Empresa : " + company;
-                log_mensaje = mens.Descripcion;
+                mens.Mensaje = "Rut Empresa : " + company;
+                log_mensaje = mens.Mensaje;
                 #endregion Manejo Logs
             }
             else
             {
                 mens.Codigo = "ER7";
-                mens.Descripcion = "Empresa [ " + companySinDV + " ] no autorizada a operar en WebService.";
+                mens.Mensaje = "Empresa [ " + companySinDV + " ] no autorizada a operar en WebService.";
                 return mens;
             }
             #endregion Verifica Empresa Autorizada a trabajar con WebService
 
             mens.Codigo = "INI";
-            mens.Descripcion = "Entra.";
+            mens.Mensaje = "Entra.";
 
             #region Validacion de Parametros
             ErrLugar = "Validacion de Parametros";
@@ -104,8 +106,8 @@ public class SupplierETDRejection : WebService
                 statusCode == "" || reasonDesc == "")
             {
                 mens.Codigo = "ER0";
-                mens.Descripcion = "Faltan Parámetros";
-                log_mensaje += " - " + mens.Descripcion;
+                mens.Mensaje = "Faltan Parámetros";
+                log_mensaje += " - " + mens.Mensaje;
                 logs.putLog(1, log_mensaje);
                 return mens;
             }
@@ -126,8 +128,8 @@ public class SupplierETDRejection : WebService
                 if (!Validaciones.validaRut(company))
                 {
                     mens.Codigo = "ER1";
-                    mens.Descripcion = "Rut Receptor no Válido";
-                    log_mensaje += " - " + mens.Descripcion;
+                    mens.Mensaje = "Rut Receptor no Válido";
+                    log_mensaje += " - " + mens.Mensaje;
                     logs.putLog(1, log_mensaje);
                     return mens;
                 }
@@ -147,8 +149,8 @@ public class SupplierETDRejection : WebService
                     if (!Validaciones.validaRut(companyCodeSii))
                     {
                         mens.Codigo = "ER0";
-                        mens.Descripcion = "DV RutEmisor no corresponde.";
-                        log_mensaje += " - " + mens.Descripcion;
+                        mens.Mensaje = "DV RutEmisor no corresponde.";
+                        log_mensaje += " - " + mens.Mensaje;
                         logs.putLog(1, log_mensaje);
                         return mens;
                     }
@@ -163,8 +165,8 @@ public class SupplierETDRejection : WebService
                 #region Valida Estado de Aprob/Rechazo
                 ErrLugar = "Valida Estado de Aprob/Rechazo";
                 mens.Codigo = "ER4";
-                mens.Descripcion = "Estado no es Válido, Estados Posibles APR: Aprobado, ARE: Aprobado con reparos, REC: Rechazado";
-                log_mensaje += " - " + mens.Descripcion;
+                mens.Mensaje = "Estado no es Válido, Estados Posibles APR: Aprobado, ARE: Aprobado con reparos, REC: Rechazado";
+                log_mensaje += " - " + mens.Mensaje;
                 logs.putLog(1, log_mensaje);
                 return mens;
                 #endregion Valida Estado de Aprob/Rechazo
@@ -176,8 +178,8 @@ public class SupplierETDRejection : WebService
                     #region Documento no existe
                     ErrLugar = "Documento no existe";
                     mens.Codigo = "ER5";
-                    mens.Descripcion = "Documento no existe o posee estado que no permite ser aceptado comercialmente.";
-                    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                    mens.Mensaje = "Documento no existe o posee estado que no permite ser aceptado comercialmente.";
+                    log_mensaje += " - " + mens.Mensaje + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
                     logs.putLog(1, log_mensaje);
                     return mens;
                     #endregion Documento no existe
@@ -195,7 +197,7 @@ public class SupplierETDRejection : WebService
                         conexion.confirma();
                         mens.CodigoSolicitud = pi_corr_qmsg ;
                         mens.Codigo = pi_codi_erro;
-                        mens.Descripcion = pi_mens_erro;
+                        mens.Mensaje = pi_mens_erro;
 
                         return mens;
                     }
@@ -203,8 +205,8 @@ public class SupplierETDRejection : WebService
                     {
                         ErrLugar = "Error al aplicar Rejection";
                         mens.Codigo = "DON";
-                        mens.Descripcion = "Error al aplicar Rejection";
-                        log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                        mens.Mensaje = "Error al aplicar Rejection";
+                        log_mensaje += " - " + mens.Mensaje + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
                         logs.putLog(1, log_mensaje);
                         conexion.rechaza();
                     }
@@ -224,7 +226,7 @@ public class SupplierETDRejection : WebService
                     largo = 100;
                 }
                 mens.Codigo = "ERR";
-                mens.Descripcion = "Se ha producido el error : " + Convert.ToString(ex.Message) + ".";
+                mens.Mensaje = "Se ha producido el error : " + Convert.ToString(ex.Message) + ".";
 
                 log_mensaje = "Rut Empresa : " + company + ". Error en " + ErrLugar + " : " + Convert.ToString(ex.Message).Substring(1, largo) + ". " + ListaParametros;
                 logs.putLog(1, log_mensaje);
@@ -232,7 +234,7 @@ public class SupplierETDRejection : WebService
             else
             {
                 mens.Codigo = "ERR";
-                mens.Descripcion = "Se ha producido el error : " + ErrLugar + Convert.ToString(ex.Message) + ".";
+                mens.Mensaje = "Se ha producido el error : " + ErrLugar + Convert.ToString(ex.Message) + ".";
             }
 
             return mens;
@@ -249,20 +251,20 @@ public class SupplierETDRejection : WebService
     }
 
     [WebMethod(Description = "Metodo que permite consultar el estado de una solicitud de reclamo")]
-    public Mensaje getStateRejection(string company, string CodigoSolicitud)
+    public ResponseGet getStateRejection(string company, string CodigoSolicitud)
     {
-        Mensaje mens = new Mensaje();
+        ResponseGet mens = new ResponseGet();
         // Seguridad de Servicios Web (Validando Autorización del usuario para ese RUT)
         if (string.IsNullOrEmpty(company))
         {
             mens.Codigo = "ER0";
-            mens.Descripcion = "company no puede ser vacio.";
+            mens.Mensaje = "company no puede ser vacio.";
             return mens;
         }
         if (!DbnetWssSecurity.DbnetWssAutorizador.validaUsuario(company))
         {
             mens.Codigo = "ER1";
-            mens.Descripcion = "Empresa no se encuentra configurada.";
+            mens.Mensaje = "Empresa no se encuentra configurada.";
             return mens;
         }
 
@@ -306,7 +308,7 @@ public class SupplierETDRejection : WebService
             #region Verifica Empresa Autorizada a trabajar con WebService
             ErrLugar = "Verifica Empresa Autorizada a trabajar con WebService";
             mens.Codigo = "INI";
-            mens.Descripcion = "Inicializacion. Company [" + companySinDV + "]";
+            mens.Mensaje = "Inicializacion. Company [" + companySinDV + "]";
             if (ConfigurationManager.AppSettings["eHome:" +companySinDV] != null)
             {
                 #region Manejo Logs
@@ -314,20 +316,20 @@ public class SupplierETDRejection : WebService
                 logs.tipoLog = Convert.ToInt32(ConfigurationManager.AppSettings["tl"]);
                 logs.egateHome = ConfigurationManager.AppSettings["eHome:" + companySinDV];
 
-                mens.Descripcion = "Rut Empresa : " + company;
-                log_mensaje = mens.Descripcion;
+                mens.Mensaje = "Rut Empresa : " + company;
+                log_mensaje = mens.Mensaje;
                 #endregion Manejo Logs
             }
             else
             {
                 mens.Codigo = "ER7";
-                mens.Descripcion = "Empresa [ " + companySinDV + " ] no autorizada a operar en WebService.";
+                mens.Mensaje = "Empresa [ " + companySinDV + " ] no autorizada a operar en WebService.";
                 return mens;
             }
             #endregion Verifica Empresa Autorizada a trabajar con WebService
 
             mens.Codigo = "INI";
-            mens.Descripcion = "Entra.";
+            mens.Mensaje = "Entra.";
 
             #region Conexion a BD
             ErrLugar = "Conexion a BD";
@@ -342,8 +344,8 @@ public class SupplierETDRejection : WebService
             if (company == "" || CodigoSolicitud == "" )
             {
                 mens.Codigo = "ER0";
-                mens.Descripcion = "Faltan Parámetros";
-                log_mensaje += " - " + mens.Descripcion;
+                mens.Mensaje = "Faltan Parámetros";
+                log_mensaje += " - " + mens.Mensaje;
                 logs.putLog(1, log_mensaje);
                 return mens;
             }
@@ -356,8 +358,8 @@ public class SupplierETDRejection : WebService
                 if (!Validaciones.validaRut(company))
                 {
                     mens.Codigo = "ER1";
-                    mens.Descripcion = "Rut Receptor no Válido";
-                    log_mensaje += " - " + mens.Descripcion;
+                    mens.Mensaje = "Rut Receptor no Válido";
+                    log_mensaje += " - " + mens.Mensaje;
                     logs.putLog(1, log_mensaje);
                     return mens;
                 }
@@ -374,8 +376,9 @@ public class SupplierETDRejection : WebService
                 #region Documento no existe
                 ErrLugar = "Documento no existe";
                 mens.Codigo = "ER5";
-                mens.Descripcion = "Documento no existe o no posee reclamo.";
-                log_mensaje += " - " + mens.Descripcion + " Emisor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "]." ;
+                mens.Estado = "0";
+                mens.Mensaje = "Documento no existe o posee estado que no permite ser reclamado";
+                log_mensaje += " - " + mens.Mensaje + " Emisor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "]." ;
                 logs.putLog(1, log_mensaje);
                 return mens;
                 #endregion Documento no existe
@@ -390,9 +393,9 @@ public class SupplierETDRejection : WebService
                 if (conexion.recoverRejection(company, CodigoSolicitud, rutt_empr,  digi_empr, out pi_codi_erro, out pi_mens_erro, out pi_resp_msge))
                 {
                     conexion.confirma();
-                    mens.CodigoSolicitud = pi_codi_erro;
-                    mens.Codigo = pi_codi_erro;
-                    mens.Descripcion = pi_mens_erro;
+                    mens.Codigo = DOK;
+                    mens.Estado = pi_codi_erro;
+                    mens.Mensaje = pi_mens_erro;
 
                     return mens;
                 }
@@ -400,8 +403,8 @@ public class SupplierETDRejection : WebService
                 {
                     ErrLugar = "Error al aplicar Rejection";
                     mens.Codigo = "DON";
-                    mens.Descripcion = "Error al aplicar Rejection";
-                    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "].";
+                    mens.Mensaje = "Error al aplicar Rejection";
+                    log_mensaje += " - " + mens.Mensaje + " Emisor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "].";
                     logs.putLog(1, log_mensaje);
                     conexion.rechaza();
                 }
@@ -423,7 +426,7 @@ public class SupplierETDRejection : WebService
                     largo = 100;
                 }
                 mens.Codigo = "ERR";
-                mens.Descripcion = "Se ha producido el error : " + Convert.ToString(ex.Message) + ".";
+                mens.Mensaje = "Se ha producido el error : " + Convert.ToString(ex.Message) + ".";
 
                 log_mensaje = "Rut Empresa : " + company + ". Error en " + ErrLugar + " : " + Convert.ToString(ex.Message) + ". " + ListaParametros;
                 logs.putLog(1, log_mensaje);
@@ -431,7 +434,7 @@ public class SupplierETDRejection : WebService
             else
             {
                 mens.Codigo = "ERR";
-                mens.Descripcion = "Se ha producido el error : " + ErrLugar + Convert.ToString(ex.Message) + ".";
+                mens.Mensaje = "Se ha producido el error : " + ErrLugar + Convert.ToString(ex.Message) + ".";
             }
             return mens;
             #endregion Tratamiento de Error
