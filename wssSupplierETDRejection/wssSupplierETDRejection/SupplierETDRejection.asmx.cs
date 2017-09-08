@@ -366,14 +366,16 @@ public class SupplierETDRejection : WebService
             #endregion Valida Rut Receptor
 
 
-            //if (!conexion.validaExistencia(Convert.ToInt32(company),33, 101) )
-            if (!conexion.validaExistenciaReclamo( company, CodigoSolicitud))
+            String rutt_empr = String.Empty;
+            String digi_empr = String.Empty;
+
+            if (!conexion.validaExistenciaReclamo(company, CodigoSolicitud, out rutt_empr, out digi_empr))
             {
                 #region Documento no existe
                 ErrLugar = "Documento no existe";
                 mens.Codigo = "ER5";
-                mens.Descripcion = "Documento no existe o posee estado que no permite ser aceptado comercialmente.";
-                log_mensaje += " - " + mens.Descripcion + " Emisor : [" + company + "]" + " Tipo : [" + 33+ "]" + " Folio : [" + 101+ "].";
+                mens.Descripcion = "Documento no existe o no posee reclamo.";
+                log_mensaje += " - " + mens.Descripcion + " Emisor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "]." ;
                 logs.putLog(1, log_mensaje);
                 return mens;
                 #endregion Documento no existe

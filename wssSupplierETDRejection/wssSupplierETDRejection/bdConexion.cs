@@ -297,7 +297,7 @@ namespace conexionBaseDatos
             }
         }
 
-        public Boolean validaExistenciaReclamo(string company, string corr_qmsg)
+        public Boolean validaExistenciaReclamo(string company, string corr_qmsg, out string rutt_empr, out string digi_empr )
         {
             try
             {
@@ -307,13 +307,13 @@ namespace conexionBaseDatos
                 switch (bd.ToLower())
                 {
                     case "oracle":
-                        sql = "select 1 " +
+                        sql = "select rutt_empr,digi_empr " +
                               " from dtec_queue_msge " +
                               " where rutt_empr = {0} " +
                               " and corr_qmsg = {1} ";
                         break;
                     case "sqlserver":
-                        sql = "select 1 " +
+                        sql = "select rutt_empr,digi_empr " +
                               " from dtec_queue_msge " +
                               " where rutt_empr = {0} " +
                               " and corr_qmsg = {1} ";
@@ -328,8 +328,15 @@ namespace conexionBaseDatos
 
                 OleDbDataReader reader = comandos.ExecuteReader();
 
+                rutt_empr = "-1";
+                digi_empr = "-1";
                 while (reader.Read())
-                { esta = 1; }
+                { 
+                    esta = 1;
+                    rutt_empr = Convert.ToString(reader.GetValue(0));
+                    digi_empr = Convert.ToString(reader.GetValue(1));
+
+                }
                 reader.Close();
                 reader.Dispose();
 
@@ -341,6 +348,8 @@ namespace conexionBaseDatos
             catch (Exception ex)
             {
                 mensajeError = ex.Message;
+                rutt_empr = "err";
+                digi_empr = "e";
                 return false;
             }
         }
