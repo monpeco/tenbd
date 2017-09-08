@@ -381,49 +381,32 @@ public class SupplierETDRejection : WebService
             else
             {
                 logs.putLog(1, "Documento Existe");
+                String pi_codi_erro = String.Empty;
+                String pi_mens_erro = String.Empty;
+                String pi_resp_msge = String.Empty;
+                
+                if (conexion.recoverRejection(company, CodigoSolicitud, rutt_empr,  digi_empr, out pi_codi_erro, out pi_mens_erro, out pi_resp_msge))
+                {
+                    conexion.confirma();
+                    mens.CodigoSolicitud = pi_codi_erro;
+                    mens.Codigo = pi_codi_erro;
+                    mens.Descripcion = pi_mens_erro;
+
+                    return mens;
+                }
+                else
+                {
+                    ErrLugar = "Error al aplicar Rejection";
+                    mens.Codigo = "DON";
+                    mens.Descripcion = "Error al aplicar Rejection";
+                    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "].";
+                    logs.putLog(1, log_mensaje);
+                    conexion.rechaza();
+                }
+
+                //oData = true;
             }
-            #region Documento Existe
-            //ErrLugar = "Documento Existe";
-            //if (conexion.ActualizaEstadoRecibo(Convert.ToInt32(companyCodeSii),documentType, documentNumber, statusCode, place))
-            //{
-            //    int codi_empr = 0;
-            //    int corr_docu = 0;
 
-                //if (conexion.RegistraTraza(Metodo, "DTO", statusCode, codi_empr, documentType, documentNumber, corr_docu, Servicio))
-                //{
-                //    ErrLugar = "Registra Traza";
-                //    mens.Codigo = "DOK";
-                //    mens.Descripcion = "Recepcion de mercaderia registrada ";
-                //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                //    logs.putLog(1, log_mensaje);
-                //    conexion.confirma();
-                //    return mens;
-                //}
-                //else
-                //{
-                //    ErrLugar = "Error al registrar Traza";
-                //    mens.Codigo = "DON";
-                //    mens.Descripcion = "Error al registrar Traza";
-                //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                //    logs.putLog(1, log_mensaje);
-                //    logs.putLog(1, "Error: " + conexion.MensajeError);
-                //    conexion.rechaza();
-                //    return mens;
-                //}
-
-
-            //}
-            //else
-            //{
-            //    ErrLugar = "Error al actualizar Documento";
-            //    mens.Codigo = "DON";
-            //    mens.Descripcion = "Error al actualizar Documento";
-            //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-            //    logs.putLog(1, log_mensaje);
-            //    logs.putLog(1, "Error: " + conexion.MensajeError);
-            //    conexion.rechaza();
-            //}
-            #endregion Documento Existe
             return mens;
         }
         catch (Exception ex)

@@ -511,56 +511,63 @@ namespace conexionBaseDatos
                 oData = false;
             }
 
-            /*try
+            return oData;
+        }
+
+
+        public Boolean recoverRejection(string company, string CodigoSolicitud, string rutt_empr, string digi_empr, out string pi_codi_erro, out string pi_mens_erro, out string pi_resp_msge)
+        {
+            bool oData = false;
+            //String emex = "PROD_0121";
+            try
             {
-                string sql = "";
-                mensajeError = "";
-                switch (bd.ToLower())
-                {
-                    case "oracle":
-                        sql = "UPDATE dto_enca_docu_p" +
-                              " SET 	codi_esap = '{0}'," +
-                              " razo_esap = '{1}'," +
-                              " fech_esap = sysdate " +
-                              " WHERE rutt_emis = {2}" +
-                              " AND   tipo_docu = {3}" +
-                              " AND   esta_docu in ('INI','ERA')" +
-                              " AND   foli_docu = {4}";
-                        break;
-                    case "sqlserver":
-                        sql = "UPDATE dto_enca_docu_p" +
-                              " SET 	codi_esap = '{0}'," +
-                              " razo_esap = '{1}'," +
-                              " fech_esap = getdate()" +
-                              " WHERE rutt_emis = {2}" +
-                              " AND   tipo_docu = {3}" +
-                              " AND   esta_docu in ('INI','ERA')" +
-                              " AND   Convert(numeric,foli_docu) = {4}";
-                        break;
-                }
+                /*String pi_codi_appl = "suite no 5.0";
+                int pi_rutt_empr = 121;
+                String pi_digi_empr = "1";
+                String pi_name_msge = "kaka";
+                String pi_name_addr = "gfgfgf";
+                String pi_curl_para = "gfgfgf";
+                int pi_codi_erro = 12;
+                String pi_mens_erro = "sksj";
+                int pi_corr_qmsg = 12;*/
 
-                comandos = conn.CreateCommand();
-                comandos.Connection = conn;
-                comandos.Transaction = trans;
-                comandos.CommandText = String.Format(sql, statusCode, reasonDesc, companyCodeSii, documentType, documentNumber);
-                oData = comandos.ExecuteNonQuery() != 0 ? true : false;
+                pi_codi_erro = "-10";
+                pi_mens_erro = "-20";
+                pi_resp_msge = "-30";
 
-                string sqlTraza = "insert into dbn_traza_docu (codi_serv, docu_tipo, esta_docu, fech_esta, codi_empr, tipo_docu, foli_docu, obse_esta) " +
-                                  "select 'SupplierETDRejection', 'DTO', codi_esap, fech_esap, codi_empr, tipo_Docu, convert(numeric,foli_docu), razo_esap " +
-                                  "from dto_enca_docu_p where rutt_emis = {0} and tipo_docu = {1} and convert(numeric,foli_docu) = {2} and esta_docu in ('INI','ERA')";
-                comandos = conn.CreateCommand();
-                comandos.Connection = conn;
-                comandos.Transaction = trans;
-                comandos.CommandText = String.Format(sqlTraza, companyCodeSii, documentType, documentNumber);
-                oData = comandos.ExecuteNonQuery() != 0 ? true : false;
+
+
+
+                EjectProcedure7("PRC_GET_MESSAGE"
+                , "pi_codi_appl", PI_CODI_APPL, "varchar", 40, "in"
+                , "pi_rutt_empr", rutt_empr, "DECIMAL", 8, "in"
+                , "pi_digi_empr", digi_empr, "varchar", 1, "in"
+                , "pi_name_msge", CodigoSolicitud, "DECIMAL", 22, "in"
+                , "pi_codi_erro", pi_codi_erro, "DECIMAL", 5, "out"
+                , "pi_mens_erro", pi_mens_erro, "varchar", 80, "out"
+                , "pi_corr_qmsg", pi_resp_msge, "varchar", 80000, "out");
+
+                pi_codi_erro = return_String("pi_codi_erro");
+                pi_mens_erro = return_String("pi_mens_erro");
+                pi_resp_msge = return_String("pi_corr_qmsg");
+
+                oData = true;
+
             }
             catch (Exception ex)
             {
                 mensajeError = ex.Message;
-                oData = false; 
-            }*/
+
+                pi_codi_erro = ex.Message;
+                pi_mens_erro = ex.Message;
+                pi_resp_msge = ex.Message;
+
+                oData = false;
+            }
+
             return oData;
         }
+
 
         public Boolean RegistraTraza(string Servicio, string Tipo, string Estado, int Codi_Empr,
             int Tipo_Docu, int Folio, int Corr_Docu, string Desc)
