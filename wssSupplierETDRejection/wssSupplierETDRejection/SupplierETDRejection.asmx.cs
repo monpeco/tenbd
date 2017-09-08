@@ -14,13 +14,13 @@ public class SupplierETDRejection : WebService
     String DOK = "DOK";
 
     [WebMethod(Description = "Metodo que permite realizar el reclamo o aceptacion de un DTE")]
-    public Response setRejection(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc)
+    public Response setRejection(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode)
     {
         string ErrLugar = "";
         ErrLugar="Se crea instancia Mensaje()";
         Response mens = new Response();
         // Seguridad de Servicios Web (Validando presencia de todos los campos)
-        if ((company ?? companyCodeSii ?? documentType.ToString() ?? documentNumber.ToString() ?? statusCode ?? reasonDesc) == null) 
+        if ((company ?? companyCodeSii ?? documentType.ToString() ?? documentNumber.ToString() ?? statusCode) == null) 
         {
             mens.Codigo = "ER0";
             mens.Mensaje = "Todos los parámetros deben contener valor";
@@ -53,7 +53,7 @@ public class SupplierETDRejection : WebService
             #region Inicializacion Nombre de WSS y Metodo
             ErrLugar = "Inicializacion Nombre de WSS y Metodo";
             ListaParametros = "Parametros : Empresa [" + company + "].";
-            ListaParametros = "Parametros : [Emisor - " + companyCodeSii + "][TipoDocumento - " + documentType + "][Folio - " + documentNumber + "][Estado - " + statusCode + "][Descripcion - " + reasonDesc + "].";
+            ListaParametros = "Parametros : [Emisor - " + companyCodeSii + "][TipoDocumento - " + documentType + "][Folio - " + documentNumber + "][Estado - " + statusCode + "].";
             Servicio = "SupplierETDRejection";
             Metodo = "setRejection";
             #endregion Inicializacion Nombre de WSS y Metodo
@@ -103,7 +103,7 @@ public class SupplierETDRejection : WebService
             #region Validacion de Parametros
             ErrLugar = "Validacion de Parametros";
             if (company == "" || companyCodeSii == "" || documentType.ToString() == "" || documentNumber.ToString() == "" || 
-                statusCode == "" || reasonDesc == "")
+                statusCode == "")
             {
                 mens.Codigo = "ER0";
                 mens.Mensaje = "Faltan Parámetros";
@@ -192,7 +192,7 @@ public class SupplierETDRejection : WebService
                     string pi_mens_erro = String.Empty;
                     string pi_corr_qmsg = String.Empty;
 
-                    if (conexion.applyRejection(company, digitoCompany, companyCodeSii, digitoCompanyCodeSii, documentType, documentNumber, statusCode, reasonDesc, out pi_codi_erro, out pi_mens_erro, out pi_corr_qmsg))
+                    if (conexion.applyRejection(company, digitoCompany, companyCodeSii, digitoCompanyCodeSii, documentType, documentNumber, statusCode, out pi_codi_erro, out pi_mens_erro, out pi_corr_qmsg))
                     {
                         conexion.confirma();
                         mens.CodigoSolicitud = pi_corr_qmsg ;

@@ -420,7 +420,7 @@ namespace conexionBaseDatos
         }
 
         //public Boolean applyRejection(string company, string digitoCompany, string companyCodeSii, string digitoCompanyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc, string pi_codi_erro, string pi_mens_erro, string pi_corr_qmsg)
-        public Boolean applyRejection(string company, string digitoCompany, string companyCodeSii, string digitoCompanyCodeSii, int documentType, int documentNumber, string statusCode, string reasonDesc, out string  pi_codi_erro, out string  pi_mens_erro, out string  pi_corr_qmsg)
+        public Boolean applyRejection(string company, string digitoCompany, string companyCodeSii, string digitoCompanyCodeSii, int documentType, int documentNumber, string statusCode, out string  pi_codi_erro, out string  pi_mens_erro, out string  pi_corr_qmsg)
         {
             bool oData = false;
             //String emex = "PROD_0121";
