@@ -23,7 +23,7 @@ namespace conexionBaseDatos
         protected String home = "", sLine = "", rutaConn = "", userConn = "", conexion = "", emex = "";
         protected String passConn = "", servConn = "", baseconn = "", svrtemp = "", bd = "", _egateHome = "";
         protected String mensajeError = "";
-
+        String PI_CODI_APPL = "SUITE5";
         #region base
         public bdConexion()
         {}
@@ -440,7 +440,7 @@ namespace conexionBaseDatos
                 pi_mens_erro = "-20";
                 pi_corr_qmsg = "-30";
 
-                String pi_codi_appl = "SUITE5";
+                
                 String pi_rutt_empr = String.Empty;
                 String pi_digi_empr = String.Empty;
                 String pi_name_msge = String.Empty;
@@ -492,7 +492,7 @@ namespace conexionBaseDatos
                              + "\" }";
 
                 EjectProcedure9("PRC_PUT_MESSAGE"
-                , "pi_codi_appl", pi_codi_appl, "varchar", 40, "in"
+                , "pi_codi_appl", PI_CODI_APPL, "varchar", 40, "in"
                 , "pi_rutt_empr", pi_rutt_empr, "DECIMAL", 8, "in"
                 , "pi_digi_empr", pi_digi_empr, "varchar", 1, "in"
                 , "pi_name_msge", pi_name_msge, "varchar", 20, "in"
