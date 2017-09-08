@@ -248,8 +248,8 @@ public class SupplierETDRejection : WebService
         return mens;
     }
 
-    [WebMethod(Description = "Metodo que permite realizar el recibo de mercaderia, asociado a un DTE")]
-    public Mensaje setSupplierETDReception(string company, string companyCodeSii, int documentType, int documentNumber, string statusCode, string place)
+    [WebMethod(Description = "Metodo que permite consultar el estado de una solicitud de reclamo")]
+    public Mensaje getStateRejection(string company, string CodigoSolicitud)
     {
         Mensaje mens = new Mensaje();
         // Seguridad de Servicios Web (Validando Autorización del usuario para ese RUT)
@@ -285,9 +285,9 @@ public class SupplierETDRejection : WebService
         {
             #region Inicializacion Nombre de WSS y Metodo
             ErrLugar = "Inicializacion de WSS y Metodo";
-            ListaParametros = "Parametros : [Emisor - " + companyCodeSii + "][TipoDocumento - " + documentType + "][Folio - " + documentNumber + "][Estado - "+ statusCode +"][Lugar - "+ place +"].";
+            ListaParametros = "Parametros : [company - " + company + "][CodigoSolicitud - " + CodigoSolicitud + "].";
             Servicio = "SupplierETDRejection";
-            Metodo = "setSupplierETDReception";
+            Metodo = "getStateRejection";
             #endregion Inicializacion Nombre de WSS y Metodo
 
             #region Calcula RutEmpresa sin DV
@@ -339,7 +339,7 @@ public class SupplierETDRejection : WebService
 
             #region Validacion de Parametros
             ErrLugar = "Validacion de Parametros";
-            if (company == "" || companyCodeSii == "" || documentType.ToString() == "" || documentNumber.ToString() == "" || statusCode == "" || place == "")
+            if (company == "" || CodigoSolicitud == "" )
             {
                 mens.Codigo = "ER0";
                 mens.Descripcion = "Faltan Parámetros";
@@ -366,96 +366,74 @@ public class SupplierETDRejection : WebService
             #endregion Valida Rut Receptor
 
             #region Valida DV RutEmisor
-            ErrLugar = "Valida DV RutEmisor";
-            posicion = companyCodeSii.IndexOf("-");
-            companyCodeSiiSinDV = companyCodeSii;
-            if (companyCodeSii.IndexOf("-") >= 0)
-            {
-                digito = companyCodeSii.Substring(posicion + 1, 1);
-                if (digito != "")
-                {
-                    if (!Validaciones.validaRut(companyCodeSii))
-                    {
-                        mens.Codigo = "ER0";
-                        mens.Descripcion = "DV RutEmisor no corresponde.";
-                        log_mensaje += " - " + mens.Descripcion;
-                        logs.putLog(1, log_mensaje);
-                        return mens;
-                    }
-                    companyCodeSiiSinDV = companyCodeSii.Substring(0, posicion);
-                }
-                companyCodeSii = companyCodeSiiSinDV;
-            }
+            //ErrLugar = "Valida DV RutEmisor";
+            //posicion = companyCodeSii.IndexOf("-");
+            //companyCodeSiiSinDV = companyCodeSii;
+            //if (companyCodeSii.IndexOf("-") >= 0)
+            //{
+            //    digito = companyCodeSii.Substring(posicion + 1, 1);
+            //    if (digito != "")
+            //    {
+            //        if (!Validaciones.validaRut(companyCodeSii))
+            //        {
+            //            mens.Codigo = "ER0";
+            //            mens.Descripcion = "DV RutEmisor no corresponde.";
+            //            log_mensaje += " - " + mens.Descripcion;
+            //            logs.putLog(1, log_mensaje);
+            //            return mens;
+            //        }
+            //        companyCodeSiiSinDV = companyCodeSii.Substring(0, posicion);
+            //    }
+            //    companyCodeSii = companyCodeSiiSinDV;
+            //}
             #endregion Valida DV RutEmisor
 
 
-            if (statusCode != "RME")
-            {
-                mens.Codigo = "ER4";
-                mens.Descripcion = "Estado no es Válido, Estados Posibles RME: Recibo Mercaderia";
-                logs.putLog(1, statusCode + " - " + mens.Descripcion);
-            }
-            else
-            {
-                if (!conexion.validaExistenciaRecibo(Convert.ToInt32(companyCodeSii), documentType, documentNumber))
-                {
-                    #region Documento no existe
-                    ErrLugar = "Documento no existe o mercaderia ya recepcionada";
-                    mens.Codigo = "ER5";
-                    mens.Descripcion = "Documento no existe o mercaderia ya recepcionada.";
-                    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                    logs.putLog(1, log_mensaje);
-                    if (conexion.MensajeError != "")
-                    {
-                        logs.putLog(1, "Error: " + conexion.MensajeError);
-                    }
-                    return mens;
-                    #endregion Documento no existe
-                }
-                else
-                {
-                    #region Documento Existe
-                    ErrLugar = "Documento Existe";
-                    if (conexion.ActualizaEstadoRecibo(Convert.ToInt32(companyCodeSii),documentType, documentNumber, statusCode, place))
-                    {
-                        int codi_empr = 0;
-                        int corr_docu = 0;
 
-                        if (conexion.RegistraTraza(Metodo, "DTO", statusCode, codi_empr, documentType, documentNumber, corr_docu, Servicio))
-                        {
-                            ErrLugar = "Registra Traza";
-                            mens.Codigo = "DOK";
-                            mens.Descripcion = "Recepcion de mercaderia registrada ";
-                            log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                            logs.putLog(1, log_mensaje);
-                            conexion.confirma();
-                            return mens;
-                        }
-                        else
-                        {
-                            ErrLugar = "Error al registrar Traza";
-                            mens.Codigo = "DON";
-                            mens.Descripcion = "Error al registrar Traza";
-                            log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                            logs.putLog(1, log_mensaje);
-                            logs.putLog(1, "Error: " + conexion.MensajeError);
-                            conexion.rechaza();
-                            return mens;
-                        }
-                    }
-                    else
-                    {
-                        ErrLugar = "Error al actualizar Documento";
-                        mens.Codigo = "DON";
-                        mens.Descripcion = "Error al actualizar Documento";
-                        log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                        logs.putLog(1, log_mensaje);
-                        logs.putLog(1, "Error: " + conexion.MensajeError);
-                        conexion.rechaza();
-                    }
+                    #region Documento Existe
+                    //ErrLugar = "Documento Existe";
+                    //if (conexion.ActualizaEstadoRecibo(Convert.ToInt32(companyCodeSii),documentType, documentNumber, statusCode, place))
+                    //{
+                    //    int codi_empr = 0;
+                    //    int corr_docu = 0;
+
+                        //if (conexion.RegistraTraza(Metodo, "DTO", statusCode, codi_empr, documentType, documentNumber, corr_docu, Servicio))
+                        //{
+                        //    ErrLugar = "Registra Traza";
+                        //    mens.Codigo = "DOK";
+                        //    mens.Descripcion = "Recepcion de mercaderia registrada ";
+                        //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                        //    logs.putLog(1, log_mensaje);
+                        //    conexion.confirma();
+                        //    return mens;
+                        //}
+                        //else
+                        //{
+                        //    ErrLugar = "Error al registrar Traza";
+                        //    mens.Codigo = "DON";
+                        //    mens.Descripcion = "Error al registrar Traza";
+                        //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                        //    logs.putLog(1, log_mensaje);
+                        //    logs.putLog(1, "Error: " + conexion.MensajeError);
+                        //    conexion.rechaza();
+                        //    return mens;
+                        //}
+
+
+                    //}
+                    //else
+                    //{
+                    //    ErrLugar = "Error al actualizar Documento";
+                    //    mens.Codigo = "DON";
+                    //    mens.Descripcion = "Error al actualizar Documento";
+                    //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                    //    logs.putLog(1, log_mensaje);
+                    //    logs.putLog(1, "Error: " + conexion.MensajeError);
+                    //    conexion.rechaza();
+                    //}
                     #endregion Documento Existe
-                }
-            }
+
+            return mens;
         }
         catch (Exception ex)
         {
@@ -489,7 +467,8 @@ public class SupplierETDRejection : WebService
                 conexion.closeConexion();
             }
         }
-        return mens;
-    }
+     }
+
+        
 
 }
