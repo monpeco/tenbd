@@ -365,74 +365,65 @@ public class SupplierETDRejection : WebService
             }
             #endregion Valida Rut Receptor
 
-            #region Valida DV RutEmisor
-            //ErrLugar = "Valida DV RutEmisor";
-            //posicion = companyCodeSii.IndexOf("-");
-            //companyCodeSiiSinDV = companyCodeSii;
-            //if (companyCodeSii.IndexOf("-") >= 0)
+
+            //if (!conexion.validaExistencia(Convert.ToInt32(company),33, 101) )
+            if (!conexion.validaExistenciaReclamo( company, CodigoSolicitud))
+            {
+                #region Documento no existe
+                ErrLugar = "Documento no existe";
+                mens.Codigo = "ER5";
+                mens.Descripcion = "Documento no existe o posee estado que no permite ser aceptado comercialmente.";
+                log_mensaje += " - " + mens.Descripcion + " Emisor : [" + company + "]" + " Tipo : [" + 33+ "]" + " Folio : [" + 101+ "].";
+                logs.putLog(1, log_mensaje);
+                return mens;
+                #endregion Documento no existe
+            }
+            else
+            {
+                logs.putLog(1, "Documento Existe");
+            }
+            #region Documento Existe
+            //ErrLugar = "Documento Existe";
+            //if (conexion.ActualizaEstadoRecibo(Convert.ToInt32(companyCodeSii),documentType, documentNumber, statusCode, place))
             //{
-            //    digito = companyCodeSii.Substring(posicion + 1, 1);
-            //    if (digito != "")
-            //    {
-            //        if (!Validaciones.validaRut(companyCodeSii))
-            //        {
-            //            mens.Codigo = "ER0";
-            //            mens.Descripcion = "DV RutEmisor no corresponde.";
-            //            log_mensaje += " - " + mens.Descripcion;
-            //            logs.putLog(1, log_mensaje);
-            //            return mens;
-            //        }
-            //        companyCodeSiiSinDV = companyCodeSii.Substring(0, posicion);
-            //    }
-            //    companyCodeSii = companyCodeSiiSinDV;
+            //    int codi_empr = 0;
+            //    int corr_docu = 0;
+
+                //if (conexion.RegistraTraza(Metodo, "DTO", statusCode, codi_empr, documentType, documentNumber, corr_docu, Servicio))
+                //{
+                //    ErrLugar = "Registra Traza";
+                //    mens.Codigo = "DOK";
+                //    mens.Descripcion = "Recepcion de mercaderia registrada ";
+                //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                //    logs.putLog(1, log_mensaje);
+                //    conexion.confirma();
+                //    return mens;
+                //}
+                //else
+                //{
+                //    ErrLugar = "Error al registrar Traza";
+                //    mens.Codigo = "DON";
+                //    mens.Descripcion = "Error al registrar Traza";
+                //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                //    logs.putLog(1, log_mensaje);
+                //    logs.putLog(1, "Error: " + conexion.MensajeError);
+                //    conexion.rechaza();
+                //    return mens;
+                //}
+
+
             //}
-            #endregion Valida DV RutEmisor
-
-
-
-                    #region Documento Existe
-                    //ErrLugar = "Documento Existe";
-                    //if (conexion.ActualizaEstadoRecibo(Convert.ToInt32(companyCodeSii),documentType, documentNumber, statusCode, place))
-                    //{
-                    //    int codi_empr = 0;
-                    //    int corr_docu = 0;
-
-                        //if (conexion.RegistraTraza(Metodo, "DTO", statusCode, codi_empr, documentType, documentNumber, corr_docu, Servicio))
-                        //{
-                        //    ErrLugar = "Registra Traza";
-                        //    mens.Codigo = "DOK";
-                        //    mens.Descripcion = "Recepcion de mercaderia registrada ";
-                        //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                        //    logs.putLog(1, log_mensaje);
-                        //    conexion.confirma();
-                        //    return mens;
-                        //}
-                        //else
-                        //{
-                        //    ErrLugar = "Error al registrar Traza";
-                        //    mens.Codigo = "DON";
-                        //    mens.Descripcion = "Error al registrar Traza";
-                        //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                        //    logs.putLog(1, log_mensaje);
-                        //    logs.putLog(1, "Error: " + conexion.MensajeError);
-                        //    conexion.rechaza();
-                        //    return mens;
-                        //}
-
-
-                    //}
-                    //else
-                    //{
-                    //    ErrLugar = "Error al actualizar Documento";
-                    //    mens.Codigo = "DON";
-                    //    mens.Descripcion = "Error al actualizar Documento";
-                    //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
-                    //    logs.putLog(1, log_mensaje);
-                    //    logs.putLog(1, "Error: " + conexion.MensajeError);
-                    //    conexion.rechaza();
-                    //}
-                    #endregion Documento Existe
-
+            //else
+            //{
+            //    ErrLugar = "Error al actualizar Documento";
+            //    mens.Codigo = "DON";
+            //    mens.Descripcion = "Error al actualizar Documento";
+            //    log_mensaje += " - " + mens.Descripcion + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+            //    logs.putLog(1, log_mensaje);
+            //    logs.putLog(1, "Error: " + conexion.MensajeError);
+            //    conexion.rechaza();
+            //}
+            #endregion Documento Existe
             return mens;
         }
         catch (Exception ex)

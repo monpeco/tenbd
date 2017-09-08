@@ -297,6 +297,54 @@ namespace conexionBaseDatos
             }
         }
 
+        public Boolean validaExistenciaReclamo(string company, string corr_qmsg)
+        {
+            try
+            {
+                mensajeError = "";
+                int esta = 0;
+                string sql = "";
+                switch (bd.ToLower())
+                {
+                    case "oracle":
+                        sql = "select 1 " +
+                              " from dtec_queue_msge " +
+                              " where rutt_empr = {0} " +
+                              " and corr_qmsg = {1} ";
+                        break;
+                    case "sqlserver":
+                        sql = "select 1 " +
+                              " from dtec_queue_msge " +
+                              " where rutt_empr = {0} " +
+                              " and corr_qmsg = {1} ";
+                        break;
+                }
+
+                comandos = conn.CreateCommand();
+                comandos.Connection = conn;
+                comandos.Transaction = trans;
+
+                comandos.CommandText = String.Format(sql, company, corr_qmsg);
+
+                OleDbDataReader reader = comandos.ExecuteReader();
+
+                while (reader.Read())
+                { esta = 1; }
+                reader.Close();
+                reader.Dispose();
+
+                if (esta == 0)
+                { return false; }
+                else
+                { return true; }
+            }
+            catch (Exception ex)
+            {
+                mensajeError = ex.Message;
+                return false;
+            }
+        }
+
         public Boolean estadoAprov(string v_codi_esap)
         {
             try
