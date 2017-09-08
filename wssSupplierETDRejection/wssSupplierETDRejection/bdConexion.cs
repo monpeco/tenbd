@@ -804,6 +804,70 @@ namespace conexionBaseDatos
 			param_procedures();
 		}
 
+
+        //REjecuta un procedimiento almacenado de 9 parametros. 07-09-2017|AM
+        public void EjectProcedure7(string nombre_proc
+        , string nombre1, string valor1, string tipo1, int largo1, string inout1,
+            string nombre2, string valor2, string tipo2, int largo2, string inout2,
+            string nombre3, string valor3, string tipo3, int largo3, string inout3,
+            string nombre4, string valor4, string tipo4, int largo4, string inout4,
+            string nombre5, string valor5, string tipo5, int largo5, string inout5,
+            string nombre6, string valor6, string tipo6, int largo6, string inout6,
+            string nombre7, string valor7, string tipo7, int largo7, string inout7)
+        {
+            this.nombres = new string[7];
+            this.valores = new string[7];
+            this.tipos = new string[7];
+            this.largos = new int[7];
+            this.inout = new string[7];
+
+            this.nombres[0] = nombre1;
+            this.nombres[1] = nombre2;
+            this.nombres[2] = nombre3;
+            this.nombres[3] = nombre4;
+            this.nombres[4] = nombre5;
+            this.nombres[5] = nombre6;
+            this.nombres[6] = nombre7;
+
+            this.valores[0] = valor1;
+            this.valores[1] = valor2;
+            this.valores[2] = valor3;
+            this.valores[3] = valor4;
+            this.valores[4] = valor5;
+            this.valores[5] = valor6;
+            this.valores[6] = valor7;
+
+            this.tipos[0] = tipo1;
+            this.tipos[1] = tipo2;
+            this.tipos[2] = tipo3;
+            this.tipos[3] = tipo4;
+            this.tipos[4] = tipo5;
+            this.tipos[5] = tipo6;
+            this.tipos[6] = tipo7;
+
+            this.largos[0] = largo1;
+            this.largos[1] = largo2;
+            this.largos[2] = largo3;
+            this.largos[3] = largo4;
+            this.largos[4] = largo5;
+            this.largos[5] = largo6;
+            this.largos[6] = largo7;
+
+            this.inout[0] = inout1;
+            this.inout[1] = inout2;
+            this.inout[2] = inout3;
+            this.inout[3] = inout4;
+            this.inout[4] = inout5;
+            this.inout[5] = inout6;
+            this.inout[6] = inout7;
+
+            this.sp = new OleDbCommand(nombre_proc, conn);
+            this.sp.Transaction = trans;
+            this.sp.CommandTimeout = 900;
+            this.sp.CommandType = CommandType.StoredProcedure;
+            param_procedures();
+        }
+
         //Recupera parametro de salida en la ejecución de un procedimiento almacenado. 07-09-2017|AM
         public string return_String(string nombre_parametro)
         {
