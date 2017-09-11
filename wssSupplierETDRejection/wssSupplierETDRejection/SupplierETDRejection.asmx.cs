@@ -11,6 +11,8 @@ using Tool;
 public class SupplierETDRejection : WebService
 {
     String ER0 = "ER0";
+    String ER4 = "ER4";
+    String ER5 = "ER5";
     String DOK = "DOK";
 
     [WebMethod(Description = "Metodo que permite realizar el reclamo o aceptacion de un DTE")]
@@ -146,13 +148,31 @@ public class SupplierETDRejection : WebService
                 companyCodeSii = companyCodeSiiSinDV;
             }
             #endregion Valida DV RutEmisor
+            
+            
+            int codi_empr = Convert.ToInt32(ConfigurationManager.AppSettings["codi_empr:" + company]);
+            string codi_emex = ConfigurationManager.AppSettings["codi_emex:" + company];
+
+            if ((codi_empr != 1) || string.IsNullOrEmpty(codi_emex))
+            {
+                ErrLugar = String.Format("Empresa [{0}] no autorizada a operar en WebService.", company);
+                mens.Codigo = ER5;
+                mens.Mensaje = ErrLugar;
+
+                log_mensaje += " - " + mens.Mensaje + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                logs.putLog(1, log_mensaje);
+                return mens;
+            }
+
+            string integracion = ConfigurationManager.AppSettings["integracion"];
+
 
             if (!conexion.estadoAprov(statusCode) )
             {
                 #region Valida Estado de Aprob/Rechazo
                 ErrLugar = "Valida Estado de Aprob/Rechazo";
-                mens.Codigo = "ER4";
-                mens.Mensaje = "Estado no es Válido, Estados Posibles APR: Aprobado, ARE: Aprobado con reparos, REC: Rechazado";
+                mens.Codigo = ER4;
+                mens.Mensaje = "Estado no es Válido";
                 log_mensaje += " - " + mens.Mensaje;
                 logs.putLog(1, log_mensaje);
                 return mens;
@@ -192,9 +212,7 @@ public class SupplierETDRejection : WebService
                                         "] mens.CodigoSolicitud : [" + mens.CodigoSolicitud + "]" + " mens.Codigo : [" + mens.Codigo + "]" + " mens.Mensaje : [" + mens.Mensaje + "]";
                         logs.putLog(1, log_mensaje);
 
-                        int codi_empr = Convert.ToInt32(ConfigurationManager.AppSettings["codi_empr"]);
-                        string codi_emex = ConfigurationManager.AppSettings["codi_emex"];
-                        string integracion = ConfigurationManager.AppSettings["integracion"];
+
 
                         // Valida si tiene integracion con SE
                         if (integracion == "1")
@@ -371,6 +389,20 @@ public class SupplierETDRejection : WebService
                 company = companySinDV;
             }
             #endregion Valida Rut Receptor
+
+            int codi_empr = Convert.ToInt32(ConfigurationManager.AppSettings["codi_empr:" + company]);
+            string codi_emex = ConfigurationManager.AppSettings["codi_emex:" + company];
+
+            if ((codi_empr != 1) || string.IsNullOrEmpty(codi_emex))
+            {
+                ErrLugar = String.Format("Empresa [{0}] no autorizada a operar en WebService.", company);
+                mens.Codigo = ER5;
+                mens.Mensaje = ErrLugar;
+
+                log_mensaje += " - " + mens.Mensaje + " Receptor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "].";
+                logs.putLog(1, log_mensaje);
+                return mens;
+            }
 
 
             String rutt_empr = String.Empty;
