@@ -20,9 +20,9 @@ public class SupplierETDRejection : WebService
         ErrLugar="Se crea instancia Mensaje()";
         Response mens = new Response();
         // Seguridad de Servicios Web (Validando presencia de todos los campos)
-        if ((company ?? companyCodeSii ?? documentType.ToString() ?? documentNumber.ToString() ?? statusCode) == null) //TODO acomodar estas condiciones
+        if (string.IsNullOrEmpty(company) || string.IsNullOrEmpty(companyCodeSii) || string.IsNullOrEmpty(documentType.ToString()) || string.IsNullOrEmpty(documentNumber.ToString()) || string.IsNullOrEmpty(statusCode)) 
         {
-            mens.Codigo = "ER0";
+            mens.Codigo = ER0;
             mens.Mensaje = "Todos los parámetros deben contener valor";
             return mens;
         }
@@ -100,19 +100,6 @@ public class SupplierETDRejection : WebService
             mens.Codigo = "INI";
             mens.Mensaje = "Entra.";
 
-            #region Validacion de Parametros
-            ErrLugar = "Validacion de Parametros";
-            if (company == "" || companyCodeSii == "" || documentType.ToString() == "" || documentNumber.ToString() == "" || 
-                statusCode == "")
-            {
-                mens.Codigo = "ER0";
-                mens.Mensaje = "Faltan Parámetros";
-                log_mensaje += " - " + mens.Mensaje;
-                logs.putLog(1, log_mensaje);
-                return mens;
-            }
-            #endregion Validacion de Parametros
-
             #region Conexion a BD
             ErrLugar = "Conexion a BD";
             conexion.egateHome = ConfigurationManager.AppSettings["eHome:" +companySinDV];
@@ -148,7 +135,7 @@ public class SupplierETDRejection : WebService
                 {
                     if (!Validaciones.validaRut(companyCodeSii))
                     {
-                        mens.Codigo = "ER0";
+                        mens.Codigo = ER0;
                         mens.Mensaje = "DV RutEmisor no corresponde.";
                         log_mensaje += " - " + mens.Mensaje;
                         logs.putLog(1, log_mensaje);
@@ -283,13 +270,14 @@ public class SupplierETDRejection : WebService
     public ResponseGet getStateRejection(string company, string CodigoSolicitud)
     {
         ResponseGet mens = new ResponseGet();
-        // Seguridad de Servicios Web (Validando Autorización del usuario para ese RUT)
-        if (string.IsNullOrEmpty(company))
+        // Seguridad de Servicios Web (Validando presencia de todos los campos)
+        if (string.IsNullOrEmpty(company) || string.IsNullOrEmpty(CodigoSolicitud))
         {
-            mens.Codigo = "ER0";
-            mens.Mensaje = "company no puede ser vacio.";
+            mens.Codigo = ER0;
+            mens.Mensaje = "Todos los parámetros deben contener valor";
             return mens;
         }
+
         if (!DbnetWssSecurity.DbnetWssAutorizador.validaUsuario(company))
         {
             mens.Codigo = "ER1";
@@ -368,26 +356,14 @@ public class SupplierETDRejection : WebService
 
             LogAplica = "S"; // A partir de aca puedo escribir en log
 
-            #region Validacion de Parametros
-            ErrLugar = "Validacion de Parametros";
-            if (company == "" || CodigoSolicitud == "" )
-            {
-                mens.Codigo = "ER0";
-                mens.Mensaje = "Faltan Parámetros";
-                log_mensaje += " - " + mens.Mensaje;
-                logs.putLog(1, log_mensaje);
-                return mens;
-            }
-            #endregion Validacion de Parametros
-
             #region Valida DV RutReceptor
             ErrLugar = "Valida DV RutReceptor";
             if (digito != "")
             {
                 if (!Validaciones.validaRut(company))
                 {
-                    mens.Codigo = "ER1";
-                    mens.Mensaje = "Rut Receptor no Válido";
+                    mens.Codigo = ER0;
+                    mens.Mensaje = "DV RutReceptor no corresponde";
                     log_mensaje += " - " + mens.Mensaje;
                     logs.putLog(1, log_mensaje);
                     return mens;
