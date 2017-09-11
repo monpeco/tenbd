@@ -24,6 +24,9 @@ namespace conexionBaseDatos
         protected String passConn = "", servConn = "", baseconn = "", svrtemp = "", bd = "", _egateHome = "";
         protected String mensajeError = "";
         String PI_CODI_APPL = "SUITE5";
+        String USUA_RECL = "AUTO";
+
+        
         #region base
         public bdConexion()
         {}
@@ -663,6 +666,56 @@ namespace conexionBaseDatos
                 return false;
             }
         }
+
+        public Boolean notificaReclamoASE(int codi_empr, string codi_emex, string statusCode, string companyCodeSii, int documentType, int documentNumber)
+        {
+            bool oData = false;
+            try
+            {
+                mensajeError = "";
+                string sql = "";
+                switch (bd.ToLower())
+                {
+                    case "oracle":
+                        sql = "UPDATE dto_enca_docu_p" +
+                              " SET   usua_recl = '{0}'," +
+                              "       even_recl = '{1}'," +
+                              "       fech_recl = sysdate" +
+                              " WHERE codi_empr = {2}" +
+                              " AND   codi_emex = '{3}'" +
+                              " AND   rutt_emis = {4}" +
+                              " AND   tipo_docu = {5}" +
+                              " AND   foli_docu = {6}" +
+                              " AND   esta_docu in ('INI', 'ERA')";
+                        break;
+                    case "sqlserver":
+                        sql = "UPDATE dto_enca_docu_p" +
+                              " SET   usua_recl = '{0}'," +
+                              "       even_recl = '{1}'," +
+                              "       fech_recl = getdate()" +
+                              " WHERE codi_empr = {2}" +
+                              " AND   codi_emex = '{3}'" +
+                              " AND   rutt_emis = {4}" +
+                              " AND   tipo_docu = {5}" +
+                              " AND   Convert(numeric,foli_docu) = {6}" +
+                              " AND   esta_docu in ('INI', 'ERA')";
+                        break;
+                }
+                comandos = conn.CreateCommand();
+                comandos.Connection = conn;
+                comandos.Transaction = trans;
+                comandos.CommandText = String.Format(sql, USUA_RECL, statusCode, codi_empr, codi_emex, companyCodeSii, documentType, documentNumber);
+                oData = comandos.ExecuteNonQuery() != 0 ? true : false;
+
+            }
+            catch (Exception ex)
+            {
+                mensajeError = ex.Message;
+                oData = false;
+            }
+            return oData;
+        }
+
 
         public Boolean ActualizaEstadoRecibo(int companyCodeSii, int documentType, int documentNumber, string statusCode, string place)
         {

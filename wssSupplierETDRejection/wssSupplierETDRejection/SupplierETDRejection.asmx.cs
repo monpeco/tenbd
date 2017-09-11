@@ -20,7 +20,7 @@ public class SupplierETDRejection : WebService
         ErrLugar="Se crea instancia Mensaje()";
         Response mens = new Response();
         // Seguridad de Servicios Web (Validando presencia de todos los campos)
-        if ((company ?? companyCodeSii ?? documentType.ToString() ?? documentNumber.ToString() ?? statusCode) == null) 
+        if ((company ?? companyCodeSii ?? documentType.ToString() ?? documentNumber.ToString() ?? statusCode) == null) //TODO acomodar estas condiciones
         {
             mens.Codigo = "ER0";
             mens.Mensaje = "Todos los parámetros deben contener valor";
@@ -199,14 +199,43 @@ public class SupplierETDRejection : WebService
                         mens.Codigo = pi_codi_erro;
                         mens.Mensaje = pi_mens_erro;
 
+                        logs.putLog(1, "Se aplica Reclamo");
+                        log_mensaje += " - company : [" + company + "-" + digitoCompany + "] companyCodeSii : [" + companyCodeSii + "-" + digitoCompanyCodeSii + 
+                                        "] documentType : [" + documentType + "] documentNumber : [" + documentNumber + "] statusCode : [" + statusCode +
+                                        "] mens.CodigoSolicitud : [" + mens.CodigoSolicitud + "]" + " mens.Codigo : [" + mens.Codigo + "]" + " mens.Mensaje : [" + mens.Mensaje + "]";
+                        logs.putLog(1, log_mensaje);
+
+                        int codi_empr = Convert.ToInt32(ConfigurationManager.AppSettings["codi_empr"]);
+                        string codi_emex = ConfigurationManager.AppSettings["codi_emex"];
+                        string integracion = ConfigurationManager.AppSettings["integracion"];
+
+                        // Valida si tiene integracion con SE
+                        if (integracion == "1")
+                        {
+                            logs.putLog(1, "Integracion con SE");
+
+                            if (conexion.notificaReclamoASE(codi_empr, codi_emex, statusCode, companyCodeSii, documentType, documentNumber))
+                            {
+                                logs.putLog(1, "Se actualiza SE con exito");
+                            }
+                            else
+                            {
+                                logs.putLog(1, "Fallo al intentar actualizar SE");
+                            }
+
+
+                        }
+
                         return mens;
                     }
                     else
                     {
-                        ErrLugar = "Error al aplicar Rejection";
+                        ErrLugar = "Error al aplicar Reclamo";
                         mens.Codigo = "DON";
-                        mens.Mensaje = "Error al aplicar Rejection";
-                        log_mensaje += " - " + mens.Mensaje + " Emisor : [" + companyCodeSii + "]" + " Tipo : [" + Convert.ToString(documentType) + "]" + " Folio : [" + Convert.ToString(documentNumber) + "].";
+                        mens.Mensaje = "Error al aplicar Reclamo";
+                        log_mensaje += " - " + mens.Mensaje + " - company : [" + company + "-" + digitoCompany + "] companyCodeSii : [" + companyCodeSii + "-" + digitoCompanyCodeSii +
+                                        "] documentType : [" + documentType + "] documentNumber : [" + documentNumber + "] statusCode : [" + statusCode +
+                                        "] mens.CodigoSolicitud : [" + mens.CodigoSolicitud + "]" + " mens.Codigo : [" + mens.Codigo + "]" + " mens.Mensaje : [" + mens.Mensaje + "]";
                         logs.putLog(1, log_mensaje);
                         conexion.rechaza();
                     }
@@ -396,15 +425,22 @@ public class SupplierETDRejection : WebService
                     mens.Codigo = DOK;
                     mens.Estado = pi_codi_erro;
                     mens.Mensaje = pi_mens_erro;
+                    logs.putLog(1, "Se recupera Reclamo");
+                    log_mensaje += " - company : [" + company + "] CodigoSolicitud : [" + CodigoSolicitud + 
+                                    "] rutt_empr : [" + rutt_empr + "-" + digi_empr + "mens.Codigo : [" + mens.Codigo + "]" + 
+                                    " mens.Estado : [" + mens.Estado + "]" + " mens.Mensaje : [" + mens.Mensaje + "]";
+                    logs.putLog(1, log_mensaje);
 
                     return mens;
                 }
                 else
                 {
-                    ErrLugar = "Error al aplicar Rejection";
+                    ErrLugar = "Error al aplicar Reclamo";
                     mens.Codigo = "DON";
-                    mens.Mensaje = "Error al aplicar Rejection";
-                    log_mensaje += " - " + mens.Mensaje + " Emisor : [" + company + "]" + " CodigoSolicitud : [" + CodigoSolicitud + "].";
+                    mens.Mensaje = "Error al aplicar Reclamo";
+                    log_mensaje += " - " + mens.Mensaje + " - company : [" + company + "] CodigoSolicitud : [" + CodigoSolicitud +
+                                    "] rutt_empr : [" + rutt_empr + "-" + digi_empr + "mens.Codigo : [" + mens.Codigo + "]" +
+                                    " mens.Estado : [" + mens.Estado + "]" + " mens.Mensaje : [" + mens.Mensaje + "]";
                     logs.putLog(1, log_mensaje);
                     conexion.rechaza();
                 }
