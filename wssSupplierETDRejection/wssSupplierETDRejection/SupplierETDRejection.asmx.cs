@@ -203,7 +203,7 @@ public class SupplierETDRejection : WebService
                     {
                         conexion.confirma();
                         mens.CodigoSolicitud = pi_corr_qmsg ;
-                        mens.Codigo = pi_codi_erro;
+                        mens.Codigo = DOK;
                         mens.Mensaje = pi_mens_erro;
 
                         logs.putLog(1, "Se aplica Reclamo");
@@ -227,8 +227,6 @@ public class SupplierETDRejection : WebService
                             {
                                 logs.putLog(1, "Fallo al intentar actualizar SE");
                             }
-
-
                         }
 
                         return mens;
@@ -433,6 +431,7 @@ public class SupplierETDRejection : WebService
                     mens.Codigo = DOK;
                     mens.Estado = pi_codi_erro;
                     mens.Mensaje = pi_mens_erro;
+
                     logs.putLog(1, "Se recupera Reclamo");
                     log_mensaje += " - company : [" + company + "] CodigoSolicitud : [" + CodigoSolicitud + 
                                     "] rutt_empr : [" + rutt_empr + "-" + digi_empr + "mens.Codigo : [" + mens.Codigo + "]" + 
