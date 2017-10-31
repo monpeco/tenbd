@@ -1,0 +1,1101 @@
+<%@ Register TagPrefix="cc1" Namespace="DbnetWebControl" Assembly="DbnetWebControl" %>
+
+<%@ Page Language="C#" CodeFile="facLisMonitorServRecl.aspx.cs" CodeBehind="~/factura/facLisMonitorServRecl.aspx.cs"
+    AutoEventWireup="false" Inherits="facLisMonitorServicio" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>Suite Electr&#243;nica - <% = lbTitulo.Text %></title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="-1" />
+    <script src="../librerias/js/jscal2.js" type="text/javascript"></script>
+    <script src="../librerias/js/lang/es.js" type="text/javascript"></script>
+    <script src="../librerias/js/enter.js" type="text/javascript"></script>
+    <script src="../librerias/js/busqueda.js" type="text/javascript"></script>
+    <script src="../librerias/js/rollover.js" type="text/javascript"></script>
+    <script src="../librerias/js/facLisMonitor3.js" type="text/javascript"></script>
+    <script src="../librerias/js/overlib.js" type="text/javascript"></script>
+    <script src="../librerias/js/prototype.js" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/librerias/js/jquery/jquery-1.10.2.min.js") %>" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/librerias/js/jquery/jquery.json.min.js") %>" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/librerias/js/jquery/bPopup.js")%>" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/librerias/js/jquery/underscore.js")%>" type="text/javascript"></script>
+    <link href="../librerias/css/dbnEstiloServicios.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../librerias/css/jscal2.css" />
+    <link rel="stylesheet" type="text/css" href="../librerias/css/border-radius.css" />
+    <link rel="stylesheet" type="text/css" href="../librerias/css/steel/steel.css" />
+    <link rel="alternate stylesheet" type="text/css" href="../librerias/css/reduce-spacing.css" id="skinhelper-compact" />
+    <style type="text/css">
+    </style>
+    <script type="text/javascript">
+        var lastSeen = [0, 0];
+        function checkScroll(div1, div2) {
+            if (!div1 || !div2) return;
+            var control = null;
+            if (div1.scrollTop != lastSeen[0]) control = div1;
+            else if (div2.scrollTop != lastSeen[1]) control = div2;
+            if (control == null) return;
+            else div1.scrollTop = div2.scrollTop = control.scrollTop;
+            lastSeen[0] = div1.scrollTop;
+            lastSeen[1] = div2.scrollTop;
+        }
+        window.setInterval("checkScroll(document.getElementById('positiongrid1'), document.getElementById('positiongrid2'))", 1);
+        function verOcultarError(controlDiv, controlCheck, checkDespliega) {
+            if (this.document.getElementById(checkDespliega).checked == true) {
+                this.document.getElementById(controlCheck).checked = !this.document.getElementById(controlCheck).checked;
+                if (this.document.getElementById(controlCheck).checked == true) {
+                    Effect.BlindDown(controlDiv);
+                    return false;
+                }
+                else {
+                    Effect.BlindUp(controlDiv);
+                    return false;
+                }
+            }
+        }
+        function solonumeros() {
+            var tecla = window.event.keyCode;
+            if (tecla < 48 || tecla > 57) {
+                window.event.keyCode = 0;
+            }
+        }
+
+        function jsDecimals(e) {
+            var evt = (e) ? e : window.event;
+            var key = (evt.keyCode) ? evt.keyCode : evt.which;
+            if (key != null) {
+                key = parseInt(key, 10);
+                if ((key < 48 || key > 57) && (key < 96 || key > 105)) {
+                    //Aca tenemos que reemplazar "Decimals" por "NoDecimals" si queremos que no se permitan decimales
+                    if (!jsIsUserFriendlyChar(key, "Decimals")) {
+                        return false;
+                    }
+                }
+                else {
+                    if (evt.shiftKey) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    </script>
+</head>
+<body onload="MM_load()">
+    <input type="hidden" id="_ispostback" value="<%=Page.IsPostBack.ToString()%>" />
+    <form id="dbnForm" method="post" runat="server">
+        <asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ToolkitScriptManager>
+        <div style="width: 680px; position: relative; height: 90px;" class="fondo1">
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <asp:Label ID="lbTitulo" Style="z-index: 110;" runat="server" BorderColor="Transparent"
+                            BackColor="Transparent" CssClass="barTitulo" Width="624px">Titulo</asp:Label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:Image ID="imgTitulo" Style="z-index: 101;" runat="server" Width="656px" ImageUrl="../librerias/img/titulo_01.jpg"
+                            Height="34px" Visible="False"></asp:Image>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table border="0" cellpadding="0">
+                            <tr>
+                                <td width="33px">
+                                    <asp:ImageButton ID="barFirst" onmouseover="this.src='../librerias/img/page_first_over.png'"
+                                        onmouseout="this.src='../librerias/img/page_first.png'" runat="server" ToolTip="Primera Pagina"
+                                        ImageUrl="../librerias/img/page_first.png"/>
+                                </td>
+                                <td width="33px">
+                                    <asp:ImageButton ID="barBack" onmouseover="this.src='../librerias/img/page_back_over.png'"
+                                        onmouseout="this.src='../librerias/img/page_back.png'" runat="server" ToolTip="Pagina anterior"
+                                        ImageUrl="../librerias/img/page_back.png"/>
+                                </td>
+                                <td width="33px">
+                                    <asp:ImageButton ID="barNext" onmouseover="this.src='../librerias/img/page_next_over.png'"
+                                        onmouseout="this.src='../librerias/img/page_next.png'" runat="server" ToolTip="Pagina siguiente"
+                                        ImageUrl="../librerias/img/page_next.png"/>
+                                </td>
+                                <td width="33px">
+                                    <asp:ImageButton ID="barLast" onmouseover="this.src='../librerias/img/page_last_over.png'"
+                                        onmouseout="this.src='../librerias/img/page_last.png'" runat="server" ToolTip="Ultima Pagina"
+                                        ImageUrl="../librerias/img/page_last.png"/>
+                                </td>
+                                <td width="33px">
+                                    <asp:ImageButton ID="barExcel" onmouseover="this.src='../librerias/img/page_save_over.png'"
+                                        onmouseout="this.src='../librerias/img/page_save.png'" runat="server" ToolTip="Dercargar en Formato Excel"
+                                        ImageUrl="../librerias/img/page_save.png"></asp:ImageButton>
+                                </td>
+                                <td width="33px"></td>
+                                <td width="33px"></td>
+                                <td width="33px"></td>
+                                <td width="33px"></td>
+                                <td>
+                                    <asp:Label ID="lbPag" runat="server" CssClass="barLabel">Paginas:</asp:Label>
+                                </td>
+                                <td>
+                                    <asp:Label ID="lbPagina" runat="server" CssClass="barLabel" Style="z-index: 105;"></asp:Label>
+                                </td>
+                                <td width="33px"></td>
+                                <td>
+                                    <asp:Label ID="lbReg" runat="server" CssClass="barLabel" Style="z-index: 106;">Registros:</asp:Label>
+                                </td>
+                                <td>
+                                    <asp:Label ID="lbRegistro" runat="server" CssClass="barLabel" Style="z-index: 107;"></asp:Label>
+                                </td>
+                                <td width="100px">&nbsp;
+                                </td>
+                                <td>
+                                    <asp:Label ID="lbRegPag" runat="server" CssClass="barLabel" Style="z-index: 111">Reg/Pag:</asp:Label>
+                                </td>
+                                <td width="12px">&nbsp;
+                                </td>
+                                <td>
+                                    <asp:DropDownList ID="txtRegPag" runat="server" AutoPostBack="True" Style="z-index: 114" OnSelectedIndexChanged="txtRegPag_SelectedIndexChanged"
+                                        Width="50px">
+                                        <asp:ListItem Value="10">10</asp:ListItem>
+                                        <asp:ListItem Value="15">15</asp:ListItem>
+                                        <asp:ListItem Value="25">25</asp:ListItem>
+                                        <asp:ListItem Value="30">30</asp:ListItem>
+                                        <asp:ListItem Value="50">50</asp:ListItem>
+                                        <asp:ListItem Value="100">100</asp:ListItem>
+                                        <asp:ListItem Value="200">200</asp:ListItem>
+                                    </asp:DropDownList>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--PopUp para el ingreso de la glosa para parametro de empresa-->
+        <div id="modalParametros" class="modal">
+            <div id="header" class="headerModal">
+                <input type="button" class="cerrarModal" value="Cerrar" data-div="modalParametros" style="float: right; position: relative;" />
+            </div>
+            <div id="body" class="bodyModal" style="position: relative; float: left;">
+                <span class="dbnLabel">Descripci&#243;n</span>
+                <br />
+                <input class="dbnTextBox" id="txtDescripcion" maxlength="100" style="width: 340px;" />
+                <br />
+                <label id="lblMensaje" style="font-style: italic;">
+                </label>
+                <input type="hidden" id="hdCodigo" value="" />
+                <input type="hidden" id="hdValor" value="" />
+                <input type="hidden" id="bAceptacion" value="" />
+            </div>
+            <div id="footer" class="footerModal">
+                <input id="btnEnviar" type="button" title="Enviar" value="Enviar" />
+            </div>
+        </div>
+        <!--Fin popUp-->
+        <!--Inicio Modal Confirmacion-->
+        <div id="modalConfimacion" class="modal">
+            <div id="headerConfirmacion" class="headerModal">
+                <input type="button" class="cerrarModal" value="Cerrar" data-div="modalConfimacion" style="float: right; position: relative;" />
+            </div>
+            <div id="bodyConfirmacion" style="width: 350px;">
+                <label id="lblAviso" class="dbnLabel">
+                    Los documentos seleccionados no cumplen con condiciones para realizar la acci&#243;n</label><br>
+                <label id="lbDeseaContinuar" style="text-align: center;">
+                    ¿Desea Continuar?</label>
+            </div>
+            <div id="footerConfirmacion" class="footerModal">
+                <input class="btnConfirmacion" id="btnConfirmacionSi" type="button" value="Si" />
+                <input id="btnConfirmacionNo" type="button" value="No" data-div="modalConfirmacion" />
+            </div>
+        </div>
+        <!--Fin Modal Confirmacion-->
+        <div id="modalResumen" class="modal">
+            <div id="headerResumen">
+                <input type="button" class="cerrarModal" value="Cerrar" data-div="modalResumen" style="float: right; position: relative;" />
+            </div>
+            <div id="bodyResumen">
+                <h3>Resumen de Documentos Actualizados</h3>
+                <label>
+                    Documentos Seleccionados :&nbsp;</label>
+                <label id="lblDocSelect">
+                </label>
+                <br />
+                <label>
+                    Documentos Actualizados con <span id="sAccion"></span>:&nbsp;</label>
+                <label id="lblRegSatis">
+                </label>
+                <br />
+                <div id="div1" style="display: none;">
+                    <label>
+                        Documentos no Actualizados por los siguientes motivos:&nbsp;</label>
+                    <label id="lblDocNoAct">
+                    </label>
+                    <br />
+                    <div id="div2" style="display: none;">
+                        <label>
+                            &nbsp;Rechazado Comercialmente :&nbsp;</label>
+                        <label id="lblRecTec">
+                        </label>
+                        <br />
+                    </div>
+                    <div id="div3" style="display: none;">
+                        <label>
+                            &nbsp;Respuesta Comercial ya emitida:&nbsp;</label>
+                        <label id="lblRespComeEmi">
+                        </label>
+                        <br />
+                    </div>
+                    <div id="div4" style="display: none;">
+                        <label>
+                            &nbsp;Recibo de Mercader&#237;a ya generado:&nbsp;</label>
+                        <label id="lblReciMercGen">
+                        </label>
+                        <br />
+                    </div>
+                    <div id="div6" style="display: none;">
+                        <label>
+                            &nbsp;Recibo de Mercader&#237;a ya generado:&nbsp;</label>
+                        <label id="Label2">
+                        </label>
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <div id="footerResumen">
+            </div>
+        </div>        
+		
+		<!-- OT 9376978 08-05-2017|AM -->
+        <div id="modalResumenReclamo" class="modal">
+            <div id="headerResumenReclamo">
+                <input type="button" class="cerrarModal" value="Cerrar" data-div="modalResumenReclamo" style="float: right; position: relative;" />
+            </div>
+            <div id="bodyResumenReclamo">
+                <h3>Resumen de Documentos Actualizados</h3>
+                <label>
+                    Documentos Seleccionados:&nbsp;</label>
+                <label id="lblDocSelectReclamo">
+                </label>
+                <br />
+                <label>
+                    Documentos Actualizados con <span id="sAccionReclamo"></span>:&nbsp;</label>
+                <label id="lblRegSatisReclamo">
+                </label>
+				<br />                
+				<label id="lblReclamoNoProcesado">
+                </label>
+                <br />
+                <div id="div1Reclamo" style="display: none;">
+                    <label>
+                        Documentos no Actualizados por los siguientes motivos:&nbsp;</label>
+                    <label id="lblDocNoActReclamo">
+                    </label>
+                    <br />
+                    <div id="div2Reclamo" style="display: none;">
+                        <label>
+                            &nbsp;Rechazado Comercialmente :&nbsp;</label>
+                        <label id="lblRecTecReclamo">
+                        </label>
+                        <br />
+                    </div>
+                    <div id="div3Reclamo" style="display: none;">
+                        <label>
+                            &nbsp;Respuesta Comercial ya emitida:&nbsp;</label>
+                        <label id="lblRespComeEmiReclamo">
+                        </label>
+                        <br />
+                    </div>
+                    <div id="div4Reclamo" style="display: none;">
+                        <label>
+                            &nbsp;Recibo de Mercader&#237;a ya generado:&nbsp;</label>
+                        <label id="lblReciMercGenReclamo">
+                        </label>
+                        <br />
+                    </div>
+                    <div id="div6Reclamo" style="display: none;">
+                        <label>
+                            &nbsp;Recibo de Mercader&#237;a ya generado:&nbsp;</label>
+                        <label id="Label2Reclamo">
+                        </label>
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <div id="footerResumenReclamo">
+            </div>
+        </div>
+		<!-- OT 9376978 08-05-2017|AM -->		
+		
+        <table border="0" cellpadding="0" cellspacing="0" style="background-color: Silver;">
+            <tr>
+                <td colspan="3">
+                    <div id="ayuda" style="display: none; overflow: auto; width: 680px; position: relative; top: 0px; height: 25px">
+                        <asp:Label ID="barDescripcion" runat="server" CssClass="dbnTexto" Height="15px" Style="z-index: 103"
+                            Width="630px">Permite subir a Suite Electr&#243;nica el archivo del libro de compra venta y de guias de despacho</asp:Label>
+                    </div>
+                    <div id="Div2" style="width: 630px; position: relative; height: auto;">
+                        <asp:Label ID="lbMensaje" runat="server" CssClass="dbnError" Style="height: auto; width: 630px; position: relative; top: 1px; left: 1px;"
+                            Width="630px" Enabled="False"
+                            onclick="verOcultarError('divEx', 'chkEx', 'chkDespliega'); return false;">
+                        </asp:Label>
+                    </div>
+                    <div id="divEx" style="display: none; background-color: #FFFF80; width: 631px; position: relative; height: auto">
+                        <asp:Label ID="lbEx" runat="server" CssClass="dbnError" Style="z-index: 101; height: auto;"
+                            Width="630px">
+                        </asp:Label>
+                        <asp:CheckBox ID="chkEx" runat="server" Style="visibility: hidden;" />
+                        <asp:CheckBox ID="chkDespliega" runat="server" Style="visibility: hidden;" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div id="master">
+            <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                <ContentTemplate>
+                    <div id="divMaster">
+                        <div id="divCol1">
+                            <div id="divRows11" class="divRow1">
+                                <div class="divMid1">
+                                    <div id="fechaDesde" class="divFecha">
+                                        <div class="divEspacioCol11">
+                                            <asp:Label ID="DbnetWebLabel1" Width="78px" runat="server" CssClass="dbnLabel">Fecha Desde</asp:Label>
+                                        </div>
+                                        <asp:TextBox ID="Fecha_desde" runat="server" Width="72px" MaxLength="10" TabIndex="1" CssClass="dbnTextBox">27-10-2010</asp:TextBox>
+                                        <img alt="" id="Fecha_desdeCal" src="../librerias/img/cal.gif" style="z-index: 900; cursor: pointer;" />
+                                    </div>
+                                    <div id="divFechaHasta" class="divFecha">
+                                        <div class="divEspacioCol11 espaciado">
+                                            <asp:Label ID="DbnetWebLabel2" runat="server" Width="75px" CssClass="dbnLabel">Fecha Hasta</asp:Label>
+                                        </div>
+                                        <asp:TextBox ID="Fecha_hasta" runat="server" Width="72px" MaxLength="10" TabIndex="2" CssClass="dbnTextBox">19-11-2010</asp:TextBox>
+                                        <img id="Fecha_hastaCal" src="../librerias/img/cal.gif" style="z-index: 901; cursor: pointer; margin-top: 5px;" alt="fecha hasta" />
+                                        <script type="text/javascript">
+                                            var cal = Calendar.setup({
+                                                onSelect: function (cal) { cal.hide() }
+                                            });
+                                            cal.manageFields("Fecha_desdeCal", "Fecha_desde", "%Y-%m-%d");
+                                            cal.manageFields("Fecha_hastaCal", "Fecha_hasta", "%Y-%m-%d");
+                                        </script>
+                                    </div>
+                                </div>
+                                <div class="divMid2">
+                                    <div id="folioDesde" class="divFolio">
+                                        <div class="divEspacioCol1">
+                                            <asp:Label ID="DbnetWebLabel4" Width="74px" CssClass="dbnLabel" runat="server">Folio Desde</asp:Label>
+                                        </div>
+                                        <cc1:DbnetWebTextBox_NumeroServ ID="Foli_docu1" Style="z-index: 101;" runat="server"
+                                            Width="79px" TabIndex="3">1</cc1:DbnetWebTextBox_NumeroServ>
+                                        <cc1:DbnetWebTextBox ID="Foli_erp1" runat="server" CssClass="dbnTextBox_Numero" Width="79px"
+                                            Visible="False" MaxLength="10" TabIndex="3">5</cc1:DbnetWebTextBox>
+                                    </div>
+                                    <div id="divFolioHasta" class="divFolio espaciado">
+                                        <div class="divEspacioCol1">
+                                            <asp:Label ID="lblFolioHasta" CssClass="dbnLabel" Width="70px" runat="server">Folio Hasta</asp:Label>
+                                        </div>
+                                        <cc1:DbnetWebTextBox_NumeroServ ID="Foli_docu2" Style="z-index: 102;" runat="server"
+                                            CssClass="dbnTextBox_Numero" Width="79px" TabIndex="4">9999999999</cc1:DbnetWebTextBox_NumeroServ>
+
+                                        <cc1:DbnetWebTextBox ID="Foli_erp2" Style="z-index: 124;" runat="server" CssClass="dbnTextBox_Numero"
+                                            Width="79px" Visible="false" MaxLength="10" TabIndex="4">99999</cc1:DbnetWebTextBox>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divRows12" class="divRow1">
+                                <div id="divPara">
+                                    <cc1:DbnetWebLabel ID="DbnetWebLabel20" runat="server" CssClass="dbnLabel" Width="30px">
+                                    &nbsp;&nbsp;Para:&nbsp;
+                                    </cc1:DbnetWebLabel>
+                                    <asp:RadioButton ID="rdEmision" Style="margin-top: 9px; margin-bottom: 0px;" runat="server"
+                                        CssClass="dbnRadio" Width="68px" GroupName="Mensajes" Text="Emision" Checked="True"
+                                        TabIndex="15"></asp:RadioButton>
+                                    <asp:RadioButton ID="rdRecepcion" Style="margin-top: 9px;" runat="server"
+                                        CssClass="dbnRadio" Width="137px" GroupName="Mensajes" Text="Recepcion" Checked="True"
+                                        TabIndex="16"></asp:RadioButton>
+                                </div>
+                            </div>
+                            <div id="divRows13" class="divRow1">
+                                <asp:CheckBox ID="chkServicio" runat="server" Style="z-index: 1001; margin-top: 0;" OnCheckedChanged="todo_chec_CheckedChanged" AutoPostBack="True" />
+                                <div id="procesarDTE">
+                                    <asp:Label ID="lbServicio" runat="server" CssClass="dbnLabel">Acción:</asp:Label>
+                                    <asp:DropDownList ID="lv_Servicio" runat="server" Width="150px" AutoPostBack="false">
+                                        <asp:ListItem Selected="True" Value="AAAAA">Seleccionar Servicio</asp:ListItem>
+                                        <asp:ListItem Value="dte_gen_pdf">Impresión</asp:ListItem>
+                                        <asp:ListItem Value="dte_envi_clie-1">Env. XML a Cliente</asp:ListItem>
+                                        <asp:ListItem Value="dte_envi_clie-2">Env. PDF a Cliente</asp:ListItem>
+                                        <asp:ListItem Value="dte_envi_clie-0">Env. XML/PDF a Cliente</asp:ListItem>
+                                    </asp:DropDownList>
+                                    <asp:Button ID="btnServicio" ToolTip="Envia DTE a la cola del Servicio" runat="server" Text="Procesar" Width="66px" OnClick="btnImprimirSel_Click" />
+                                </div>
+                                <div id="divDllAccion" runat="server">
+                                    <asp:DropDownList id="ddlAccion" style="width: 180px;" tabindex="17" runat="server">
+                                        
+                                    </asp:DropDownList>
+                                    <input type="button" id="btnProcesar" value="Procesar" tabindex="18" 
+                                        style="position: relative; top: 0px; left: 0px;" />
+                                </div>
+                            </div>
+                            
+                            <%-- OT 9376978 27-04-2017|AM --%>
+                            <div id="divRows13_a" class="divRow1">
+                                <div id="div7_a" runat="server">
+                                <asp:CheckBox ID="chkServicioReclamo" runat="server" Style="z-index: 1001; margin-top: 0;" OnCheckedChanged="todo_chec_CheckedChanged" AutoPostBack="True" />                                
+                                    <asp:DropDownList id="ddlAccionReclamo" style="width: 180px;" tabindex="17" runat="server">
+                                        
+                                    </asp:DropDownList>
+									<input type="button" id="btnProcesaReclamo" value="Procesar" tabindex="19" 
+                                        style="position: relative; top: 0px; left: 0px;" />
+                                </div>
+                            </div>
+                            <%-- OT 9376978 27-04-2017|AM --%>
+                            
+                        </div>
+                        <div id="divCol2">
+                            <div id="divRows21" class="divRow2 ">
+                                <div class="divEspacioCol2">
+                                    <asp:Label ID="DbnetWebLabel5" CssClass="dbnLabel" Width="30px" Style="z-index: 109;" runat="server">Tipo</asp:Label>
+                                </div>
+                                <cc1:DbnetWebTextBox_NumeroServ ID="Tipo_docu" Style="z-index: 111;" runat="server"
+                                    CssClass="dbnTextBox_Numero" Width="25px" TabIndex="5" OnTextChanged="Tipo_docu_TextChanged">0</cc1:DbnetWebTextBox_NumeroServ>
+                                <cc1:DbnetWebLov ID="lvTipo_docu" Style="z-index: 112;" runat="server" Width="194px"
+                                    AutoPostBack="True" TabIndex="6" OnSelectedIndexChanged="lvTipo_docu_SelectedIndexChanged">
+                                </cc1:DbnetWebLov>
+                            </div>
+                            <div id="divRows22" class="divRow2">
+                                <div class="divEspacioCol2">
+                                    <asp:Label ID="lbCodi_sucu" CssClass="dbnLabel" Style="z-index: 115;" Width="50px" runat="server">Sucursal</asp:Label>
+                                </div>
+                                <cc1:DbnetWebTextBox_NumeroServ ID="Codi_sucu" Style="z-index: 116;" runat="server"
+                                    CssClass="dbnTextbox_Numero" Width="57px" AutoPostBack="True" MaxLength="16" OnTextChanged="Codi_sucu_TextChanged"
+                                    TabIndex="6">0</cc1:DbnetWebTextBox_NumeroServ>
+                                <cc1:DbnetWebLov ID="lvCodi_sucu" Style="z-index: 117;" TabIndex="7" runat="server" OnSelectedIndexChanged="lvCodi_sucu_SelectedIndexChanged"
+                                    Width="162px" AutoPostBack="True">
+                                </cc1:DbnetWebLov>
+                            </div>
+                            <div id="divRows23" class="divRow2" runat="server">
+                                <div class="divEspacioCol2">
+                                    <asp:Label ID="lbCodi_pers" CssClass="dbnLabel" Width="50px" Style="z-index: 110;" runat="server">Receptor</asp:Label>
+                                </div>
+                                <asp:TextBox ID="Codi_pers" Style="z-index: 113;" runat="server" Width="57px" ToolTip=""
+                                    AutoPostBack="True" MaxLength="16" TabIndex="9" OnTextChanged="Codi_pers_TextChanged"></asp:TextBox>
+                                <asp:FilteredTextBoxExtender ID="FilteredTextBoxExtender2" runat="server" FilterMode="ValidChars"
+                                    FilterType="Numbers" TargetControlID="Codi_pers" ValidChars="0123456789">
+                                </asp:FilteredTextBoxExtender>
+                                <asp:AutoCompleteExtender ID="tb_filtroConcepto_AutoCompleteExtender2" runat="server"
+                                    CompletionListElementID="autocompleteDropDownPanel2" DelimiterCharacters=";"
+                                    Enabled="True" MinimumPrefixLength="3" ServiceMethod="GetCompletionList2" ServicePath=""
+                                    TargetControlID="Codi_pers" CompletionListCssClass="CompletionListCssClass" UseContextKey="True">
+                                </asp:AutoCompleteExtender>
+                                <asp:Panel ID="autocompleteDropDownPanel2" runat="server" CssClass="TextosNormales" />
+
+                                <asp:TextBox ID="Filtro_Empresa" Style="z-index: 113;" runat="server" AutoPostBack="True"
+                                    OnTextChanged="Filtro_Empresa_TextChanged" Width="158px" TabIndex="9" ToolTip="Debe Ingresar un minimo de 3 caracteres para poder desplegar una Lista"></asp:TextBox>
+                                <asp:AutoCompleteExtender ID="tb_filtroConcepto_AutoCompleteExtender" runat="server"
+                                    CompletionListElementID="autocompleteDropDownPanel" DelimiterCharacters=";" Enabled="True"
+                                    MinimumPrefixLength="3" ServiceMethod="GetCompletionList" ServicePath="" TargetControlID="Filtro_Empresa"
+                                    CompletionListCssClass="CompletionListCssClass" UseContextKey="True">
+                                </asp:AutoCompleteExtender>
+                                <asp:Panel ID="autocompleteDropDownPanel" runat="server" CssClass="TextosNormales" />
+
+                                <cc1:DbnetWebLov ID="lvCodi_pers" Style="z-index: 114;" TabIndex="16" runat="server"
+                                    Width="155px" AutoPostBack="True" Visible="false">
+                                </cc1:DbnetWebLov>
+                                <asp:ImageButton ID="lvCodi_persLoad" runat="server" ImageUrl="../librerias/img/load.jpg"
+                                    ToolTip="Carga Receptores" Width="14px" Visible="false" />
+                            </div>
+                            <div id="divRows24" class="divRow2">
+                                <div class="divEspacioCol2">
+                                    <asp:Label ID="lblUsuarios" runat="server" CssClass="dbnLabel">Usuario</asp:Label>
+                                </div>
+                                <cc1:DbnetWebLov ID="cmbUsuarios" TabIndex="12" runat="server" Width="227px"></cc1:DbnetWebLov>
+                                <%-- OT 9376978 02-05-2017|AM --%>
+									<div id="divReclamoSii" runat="server">
+                                        <div class="divRow2">
+                                            <div class="divEspacioCol3">
+                                                <asp:Label ID="Label4" runat="server" CssClass="dbnLabel">Reclamo</asp:Label>
+                                            </div>
+                                            <div id="div9">
+                                                <asp:DropDownList ID="dllEventoReclamo" TabIndex="11" runat="server" Width="200px">
+                                                    <asp:ListItem Value="TODOS">Todos los Documentos</asp:ListItem>
+                                                    <asp:ListItem Value="TOA">Todos con Aceptaciones</asp:ListItem>
+                                                    <asp:ListItem Value="TOR">Todos con Rechazo</asp:ListItem>
+                                                    <asp:ListItem Value="ACD">Acepta de Contenido del Documento</asp:ListItem>
+                                                    <asp:ListItem Value="ERM">Otorga Recibo de Mercadeías o Servicios</asp:ListItem>
+                                                    <asp:ListItem Value="RCD">Reclama Contenido del Documento</asp:ListItem>
+                                                    <asp:ListItem Value="RFP">Reclama Falta Parcial de Mercaderías</asp:ListItem>
+                                                    <asp:ListItem Value="RFT">Reclama Falta Total de Mercaderías</asp:ListItem>
+                                                    <asp:ListItem Value="PAG">DTE Pagado al Contado</asp:ListItem>
+                                                    <asp:ListItem Value="NCA">Recepción de NC de anulación que referencia al documento</asp:ListItem>
+                                                    <asp:ListItem Value="ENC">Recepción de NC, distinta de anulación, que referencia al documento</asp:ListItem>
+                                                </asp:DropDownList>
+                                            </div>
+                                        </div>
+                                    </div>
+									
+									<div id="divRespuestaReclamoSii" runat="server">
+                                        <div class="divRow2">
+                                            <div class="divEspacioCol3">
+                                                <asp:Label ID="Label4r" runat="server" CssClass="dbnLabel">Respuesta</asp:Label>
+                                            </div>
+                                            <div id="div9r">
+                                                <asp:DropDownList ID="dllRespuestaReclamo" TabIndex="11" runat="server" Width="200px">
+                                                    <asp:ListItem Value="TODOS">Todas las Respuestas</asp:ListItem>
+                                                    <asp:ListItem Value="0">0-Acción Completada OK</asp:ListItem>
+                                                    <asp:ListItem Value="3">3-Tipo de documento no corresponde</asp:ListItem>
+                                                    <asp:ListItem Value="5">5-DTE ya está reclamado (RFP, RFT, RCD)</asp:ListItem>
+                                                    <asp:ListItem Value="6">6-No se puede acusar recibo de mercadería de DTE previamente reclamado (RFP, RFT, RCD)</asp:ListItem>
+                                                    <asp:ListItem Value="7">7-Evento registrado previamente</asp:ListItem>
+                                                    <asp:ListItem Value="8">8-Pasados 8 días después de la recepción no es posible registrar reclamos o eventos</asp:ListItem>
+                                                    <asp:ListItem Value="9">9-No existen registros de acuerdo a los parámetros ingresados</asp:ListItem>
+													<asp:ListItem Value="10">10-Documento no emitido y/o recibido en el SII desde  el 14 de Enero de 2017 en adelante</asp:ListItem>
+                                                    <asp:ListItem Value="11">11-No se puede reclamar DTE previamente aceptado</asp:ListItem>
+                                                    <asp:ListItem Value="12">12-No se puede dar por aceptado DTE previamente rechazado (RFP, RFT, RCD)</asp:ListItem>
+                                                    <asp:ListItem Value="13">13-No se puede reclamar DTE previamente registrado como que acuso recibo mercadería</asp:ListItem>
+                                                    <asp:ListItem Value="16">16-Documento no presenta eventos de reclamos o acuse de recibo</asp:ListItem>
+                                                    <asp:ListItem Value="18">18-Documento no ha sido recibido</asp:ListItem>
+                                                </asp:DropDownList>
+                                                <asp:DropDownList ID="dllRespuestaReclamoDTE" TabIndex="11" runat="server" Width="200px">
+                                                    <asp:ListItem Value="TODOS">Todas las Respuestas</asp:ListItem>
+                                                    <asp:ListItem Value="10">10-Documento no emitido y/o recibido en el SII desde el 14 de Enero de 2017 en adelante</asp:ListItem>
+                                                    <asp:ListItem Value="18">18-Documento no ha sido recibido</asp:ListItem>
+                                                    <asp:ListItem Value="20">20-Tipo de documento no es cedible</asp:ListItem>
+                                                    <asp:ListItem Value="21">21-DTE No cedible, referenciado por nota de crédito de anulación del emisor dentro de los primeros 8 días</asp:ListItem>
+                                                    <asp:ListItem Value="22">22-No existe registro de reclamo o de recepción de mercadería o servicios</asp:ListItem>
+                                                    <asp:ListItem Value="23">23-DTE Cedible, sin reclamos</asp:ListItem>
+                                                    <asp:ListItem Value="24">24-DTE No Cedible, DTE reclamado por el receptor</asp:ListItem>
+													<asp:ListItem Value="25">25-DTE Cedible, habiendo pasado 8 días se entiende dado acuse de recibo</asp:ListItem>
+                                                </asp:DropDownList>
+                                            </div>
+                                        </div>
+                                    </div>
+									
+                                <%-- OT 9376978 02-05-2017|AM --%>
+                            </div>
+                            <div id="divRows25" class="divRow2" runat="server">
+                                <asp:CheckBox ID="ChkFoli_clie" runat="server" AutoPostBack="true" Style="z-index: 123;"  CssClass="dbnLabel" Text="Folio ERP" Visible="true" OnCheckedChanged="ChkFoli_clie_CheckedChanged"></asp:CheckBox>
+                                 <asp:CheckBox ID="FormatoRespuesta" Style="z-index: 120;" runat="server" CssClass="dbnTextbox" Visible="true" Font-Bold="True" Text="Resp. Formato XML"></asp:CheckBox></td>
+                                <div style="position: absolute; height: 12px; bottom: 0; right: 0;  left: 0; ">
+									<asp:ImageButton ID="btBuscar" onmouseover="this.src='../librerias/img/bt_buscar_over.png'"
+                                        Style="z-index: 100; vertical-align: middle;" onmouseout="this.src='../librerias/img/bt_buscar.png'"
+                                        runat="server" ToolTip="Buscar" ImageUrl="../librerias/img/bt_buscar.png" TabIndex="20" OnClientClick="buscar();"></asp:ImageButton>
+								</div>
+                            </div>
+                            <div id="divRows26" class="divRow2">
+                                <div style="position: relative; float: right;">
+                                    <img id="imgCargando" class="gifCargando" alt="cargando" src="../librerias/img/cargando-3.gif" style="display:none;" runat="server"/>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div id="divCol3">
+                            <div id="divRows31" class="divRow3">
+                                <div id="divDllEstados" class="divEspacioCol3" runat="server">
+                                    <asp:Label ID="lblEstados" CssClass="dbnLabel" Width="45px" Style="z-index: 118; margin-left: 0px;" runat="server">Estados</asp:Label>
+                                </div>
+                                <div id="Div5" class="divCmbEstados" runat="server">
+                                    <asp:DropDownList ID="cmbEstados" TabIndex="11" runat="server" Width="157px"
+                                        AutoPostBack="True" OnSelectedIndexChanged="cmbEstados_SelectedIndexChanged">
+                                        <asp:ListItem Value="TODOS">Todos</asp:ListItem>
+                                        <asp:ListItem Value="GREEN">Correctos</asp:ListItem>
+                                        <asp:ListItem Value="RED">Errores</asp:ListItem>
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+                            <div id="divRows32" class="divRow3">
+                                <div id="divEstadoSii" runat="server">
+                                    <label id="lblEstadoSii" runat="server">Estado SII</label>
+                                    <div id="divEstasii" runat="server">
+                                        <div class="divEspacioCol3" runat="server">
+                                            <asp:Label ID="lbEstadoDocumento" runat="server" CssClass="dbnLabel">Documento</asp:Label>
+                                        </div>
+                                        <div id="divDdlEstaDocu" class="divDocu" runat="server">
+                                            <asp:DropDownList ID="ddlEstaDocu" TabIndex="11" runat="server" Width="157px">
+                                                <asp:ListItem Value="TODOS">Todos los documentos</asp:ListItem>
+                                            </asp:DropDownList>
+                                        </div>
+                                        <div class="espaciado">
+                                            <div class="divEspacioCol3">
+                                                <asp:Label ID="lbEstaEnvi" runat="server" CssClass="dbnLabel">Envío</asp:Label>
+                                            </div>
+                                            <div id="divDdlEstaEnvi">
+                                                <asp:DropDownList ID="ddlEstaEnvi" TabIndex="11" runat="server" Width="157px">
+                                                    <asp:ListItem Value="TODOS">Todos los documentos</asp:ListItem>
+                                                    <asp:ListItem Value="EFI">Error Firma en DTES del envio</asp:ListItem>
+                                                    <asp:ListItem Value="EPR">Envio Procesado</asp:ListItem>
+                                                    <asp:ListItem Value="ERU">Error de Upload</asp:ListItem>
+                                                    <asp:ListItem Value="ESG">Envio al SII Generado</asp:ListItem>
+                                                    <asp:ListItem Value="RCT">Rechazado por error en Caratula</asp:ListItem>
+                                                    <asp:ListItem Value="RSC">Rechazado Error en Schema</asp:ListItem>
+                                                    <asp:ListItem Value="USR">Upload SII Realizado</asp:ListItem>
+                                                </asp:DropDownList>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divRows34" class="divRow3">
+                                <div id="divEstadoCliente" runat="server">
+                                    <label id="lblEstadoCliente">Estado Cliente</label>
+                                    <div id="divEstadocu" runat="server">
+                                        <div id="divRespuesta" class="divEspacioCol3" runat="server">
+                                            <asp:Label runat="server" ID="respuesta" Style="z-index: 110;" CssClass="dbnLabel">Respuesta</asp:Label>
+                                        </div>
+                                        <div id="RespDTE" runat="server">
+                                            <asp:CheckBox ID="CheckTec" runat="server" CssClass="dbnLabel" Style="z-index: 119"
+                                                OnCheckedChanged="CheckTec_CheckedChanged" AutoPostBack="true" ValidationGroup="val"
+                                                TabIndex="13" Text="Técnica" />
+                                            <asp:CheckBox ID="CheckCom" runat="server" CssClass="dbnLabel" Style="z-index: 119"
+                                                AutoPostBack="True" ValidationGroup="val" OnCheckedChanged="CheckCom_CheckedChanged"
+                                                TabIndex="14" Text="Comercial" />
+                                            <asp:DropDownList ID="listresp" TabIndex="6" Visible="false" runat="server" Width="157px" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divEstaReme" runat="server">
+                                    <label id="lblDivReme">Estado Proveedor</label>
+                                    <div id="divREME" runat="server">
+                                        <div class="divEspacioCol3">
+                                            <asp:Label ID="lblRespComeReci" CssClass="dbnLabel" runat="server">Respuesta</asp:Label>
+                                        </div>
+                                        <div id="divCkb" runat="server">
+                                            <asp:CheckBox ID="envElec" runat="server" Text="Recibo" AutoPostBack="true" TabIndex="12" CssClass="dbnLabel" ToolTip="Recibo de Mercader&#237;a"
+                                                OnCheckedChanged="envElec_CheckedChanged" />
+                                            <asp:CheckBox ID="respComerTradi" runat="server" AutoPostBack="true" Text="Comercial" CssClass="dbnLabel" TabIndex="13"
+                                                ToolTip="Respuesta Comercial" OnCheckedChanged="respComerTradi_CheckedChanged" />
+                                            <div id="divDllTipo">
+                                                <asp:DropDownList ID="ddlTipo" runat="server" Style="width: 157px;" Enabled="false" TabIndex="15">
+                                                    <asp:ListItem>Seleccione</asp:ListItem>
+                                                </asp:DropDownList>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+            <br />
+            <div id="grillamonitor">
+                <div id="positiongrid1" runat="server">
+                    <asp:DataGrid runat="server" ID="Grilla2" AllowSorting="true" AutoGenerateColumns="false" Style='position: relative;'
+                        CssClass="dbnGrilla2" BorderStyle="Solid" BorderColor="#DCDCDC" BorderWidth="1px" OnItemCommand="GrillaComando" OnSortCommand="GrillaOrden">
+                        <ItemStyle CssClass="dbnGrillaDetalle"></ItemStyle>
+                        <HeaderStyle Width="18px" CssClass="grillaFlotante"></HeaderStyle>
+                        <Columns>
+                            <asp:TemplateColumn HeaderText="Folio" SortExpression="Folio">
+                                <HeaderStyle Width="60px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle CssClass="dbnGrillaDetalle" Height="15px"></ItemStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbFolio" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Folio") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Tipo" SortExpression="Tipo">
+                                <HeaderStyle Width="20px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle CssClass="dbnGrillaDetalle" VerticalAlign="Middle" Height="15px"></ItemStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbTipo" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Tipo") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Lin">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle HorizontalAlign="Center" CssClass="dbnGrillaDetalle" Height="15px"></ItemStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="Label1" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Lin") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:ButtonColumn CommandName="Mail" Text="&lt;img src=../librerias/img/mail.png border=0 alt=Mail&gt;">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/deta.gif border=0 alt=Detalle&gt;" CommandName="DETA">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/help.gif border=0 alt=Ayuda&gt;" CommandName="HELP">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/hist.gif border=0 alt=Bitacora&gt;" CommandName="BITA">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/html.gif border=0 alt=HTML&gt;" CommandName="HTML">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/pdf_d.png border=0 alt=Adjunto&gt;" CommandName="Adj">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"/>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/pdf_m.gif border=0 alt=&quot;PDF Merito&quot;&gt;" CommandName="PDF-M">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="25px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/pdf.gif border=0 alt=PDF&gt;" CommandName="PDF">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/xml.gif border=0 alt=XML&gt;" CommandName="XML">
+                                <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado" Height="15px"></HeaderStyle>
+                            </asp:ButtonColumn>
+                            <asp:TemplateColumn HeaderText="Serv">
+                                <HeaderStyle Width="25px" CssClass="dbnGrillaEncabezado"/>
+                                <ItemStyle HorizontalAlign="Center" Height="15px"></ItemStyle>
+                                <ItemTemplate>
+                                    <asp:CheckBox ID="selection" runat="server" AutoPostBack="false" OnClick="AgregarChekbox(this.checked, this.id);" />
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                        </Columns>
+                        <PagerStyle Visible="False" NextPageText="Siguiente" PrevPageText="Anterior" HorizontalAlign="Left"
+                            Position="Top" PageButtonCount="3"></PagerStyle>
+                        <AlternatingItemStyle CssClass="dbnGrillaIntercala" />
+                    </asp:DataGrid>
+                </div>
+                <div id="positiongrid2" runat="server">
+                    <asp:DataGrid ID="Grilla" runat="server" AllowSorting="True" AllowPaging="True" AutoGenerateColumns="False"
+                        BorderColor="#DCDCDC" BorderStyle="Solid" BorderWidth="1px" CssClass="dbnGrilla3" PageSize="15"
+                        OnItemCommand="GrillaComando" OnSortCommand="GrillaOrden">
+                        <ItemStyle CssClass="dbnGrillaDetalle"></ItemStyle>
+                        <HeaderStyle Width="18px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                        <Columns>
+                            <asp:TemplateColumn HeaderText="Folio ERP" SortExpression="Folio-ERP">
+                                <HeaderStyle Width="60px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle CssClass="dbnGrillaDetalle" Height="25px"></ItemStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbFolioERP" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Folio-ERP") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Rut" SortExpression="Rut">
+                                <ItemStyle CssClass="dbnGrillaDetalle" Height="25px"></ItemStyle>
+                                <HeaderStyle Width="85px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbRut" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Rut") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Nombre" SortExpression="Nombre">
+                                <ItemStyle CssClass="dbnGrillaDetalle"></ItemStyle>
+                                <HeaderStyle Width="240px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbNombre" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "Nombre") %>'>
+                                                <%#  DataBinder.Eval(Container.DataItem, "Nombre").ToString().Length > 20 ? DataBinder.Eval(Container.DataItem, "Nombre").ToString().Substring(0,20) : DataBinder.Eval(Container.DataItem, "Nombre")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Contribuyente" SortExpression="Contribuyente">
+                                <ItemStyle CssClass="dbnGrillaDetalle"></ItemStyle>
+                                <HeaderStyle Width="90px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbContribuyente" runat="server" Width="90px">
+                                                <%# DataBinder.Eval(Container.DataItem, "Contribuyente") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Total" SortExpression="Total">
+                                <ItemStyle CssClass="dbnGrillaDetalle"></ItemStyle>
+                                <HeaderStyle Width="85px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbTotal" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Total") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Emision" SortExpression="Emision">
+                                <ItemStyle CssClass="dbnGrillaDetalle"></ItemStyle>
+                                <HeaderStyle Width="170px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbEmision" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "Emision") %>'>
+                                                        <%# DataBinder.Eval(Container.DataItem, "Emision")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Carga">
+                                <ItemStyle CssClass="dbnGrillaDetalle"></ItemStyle>
+                                <HeaderStyle Width="45px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbCarga" runat="server" BackColor="Transparent">
+                                                <%# DataBinder.Eval(Container.DataItem, "Carga") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Envio SII">
+                                <HeaderStyle Width="75px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemTemplate>
+                                    <asp:Label ID="lbEnvioSII" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Envio SII") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/xml.gif border=0 alt=&quot;Respuesta SII&quot;&gt;"
+                                HeaderText="Resp. SII" CommandName="RESP1" ItemStyle-HorizontalAlign="Center">
+                                <HeaderStyle Width="40px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                            </asp:ButtonColumn>
+                            <asp:TemplateColumn HeaderText="Env. Contrib.">
+                                <HeaderStyle Width="65px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbEnvioContr" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Envio Contribuyente") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Recep.DTE">
+                                <HeaderStyle Width="80px"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbRecepcion" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Recep DTE") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Resp. Tecnica">
+                                <HeaderStyle Width="65px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbRespTecnica" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Resp Tecnica") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/xml.gif border=0 alt=&quot;Respuesta Tecnica&quot;&gt;"
+                                HeaderText="Resp. Tecnica" CommandName="RESP2" ItemStyle-HorizontalAlign="Center">
+                                <HeaderStyle CssClass="dbnGrillaEncabezado" Width="40px"></HeaderStyle>
+                                <ItemStyle HorizontalAlign="Center" Height="15px"></ItemStyle>
+                            </asp:ButtonColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/pdf_trazo.jpg border=0 alt=&quot;Respuesta Lapiz Digital&quot;&gt;"
+                                HeaderText="Trazo" CommandName="TRAZO" Visible="False">
+                                <HeaderStyle CssClass="dbnGrillaEncabezado" Width="18px"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                            </asp:ButtonColumn>
+                            <asp:TemplateColumn HeaderText="Resp. Comercial">
+                                <HeaderStyle Width="65px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbRespComercial" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Resp Comercial") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/xml.gif border=0 alt=&quot;Respuesta Comercial&quot;&gt;"
+                                HeaderText="Resp. Comercial" CommandName="RESP3" ItemStyle-HorizontalAlign="Center">
+                                <HeaderStyle Width="50px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle HorizontalAlign="Center" Height="15px"></ItemStyle>
+                            </asp:ButtonColumn>
+                            <asp:TemplateColumn HeaderText="Fecha Rec. Mercader&#237;a" SortExpression="Fecha_Recibo">
+                                <HeaderStyle Width="60px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblFechRecMerc" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Fecha_Recibo")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Recibo Mercader&#237;a" SortExpression="Recibo Mercaderia">
+                                <HeaderStyle Width="60px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblRecMerc" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Recibo Mercaderia")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:ButtonColumn Text="&lt;img src=../librerias/img/xml.gif border=0 alt=&quot;Recibo de Mercadería&quot;&gt;"
+                                HeaderText="Recibo Mercader&#237;a" CommandName="RESP_RECI" ItemStyle-HorizontalAlign="Center">
+                                <HeaderStyle Width="50px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle HorizontalAlign="Center" Height="15px"></ItemStyle>
+                            </asp:ButtonColumn>
+                            <asp:TemplateColumn HeaderText="Estado fase" SortExpression="Estado Doc">
+                                <HeaderStyle Width="190px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbEstadoDoc" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "Descripcion Doc") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "Estado Doc")%>
+                                                    -
+                                                <%# DataBinder.Eval(Container.DataItem, "Descripcion Doc").ToString().Length > 15 ? DataBinder.Eval(Container.DataItem, "Descripcion Doc").ToString().Substring(0, 15) : DataBinder.Eval(Container.DataItem, "Descripcion Doc")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Estado Envio" SortExpression="Estado Env">
+                                <HeaderStyle Width="190px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbEstadoEnv" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "Descripcion Env") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "Estado Env") %>
+                                                    -
+                                                <%# DataBinder.Eval(Container.DataItem, "Descripcion Env").ToString().Length > 15 ? DataBinder.Eval(Container.DataItem, "Descripcion Env").ToString().Substring(0, 15) : DataBinder.Eval(Container.DataItem, "Descripcion Env")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Correlativo" SortExpression="Correlativo">
+                                <HeaderStyle Width="60px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbCorrel" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Correlativo") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Track-id" SortExpression="Track-id">
+                                <HeaderStyle Width="60px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbTrackId" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Track-id") %>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Usuario" SortExpression="Usuario">
+                                <HeaderStyle Width="60px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbuSiD" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Usuario")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Respuesta Comercial" SortExpression="RESP_COME">
+                                <HeaderStyle Width="200px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="30px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lbuSiD2" runat="server">
+                                                <asp:Label ID="lbEstadoEnv2" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "Respuesta Comercial") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "Respuesta Comercial").ToString().Length > 20 ? DataBinder.Eval(Container.DataItem, "Respuesta Comercial").ToString().Substring(0, 20) : DataBinder.Eval(Container.DataItem, "Respuesta Comercial")%>
+                                    </asp:Label>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn HeaderText="Fecha Resp. Comercial" SortExpression="FECH_ESAP">
+                                <HeaderStyle Width="100px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="30px" />
+                                <ItemTemplate>
+                                   <asp:Label ID="lblFechEsap" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "Fecha Resp_Comercial")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <asp:TemplateColumn  Visible="false">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbCorrDocu" runat="server">
+                                                <%# DataBinder.Eval(Container.DataItem, "CORR_DOCU")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            <%-- OT 9376978 25-04-2017|AM --%>
+                            <asp:TemplateColumn HeaderText="Evento Reclamo" SortExpression="FECH_ESAP">
+                                <HeaderStyle Width="200px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="30px" />
+                                <ItemTemplate>
+                                   <asp:Label ID="lblDescEven" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "DESC_EVEN") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "EVEN_RECL")%>
+												    -
+												<%# DataBinder.Eval(Container.DataItem, "DESC_EVEN").ToString().Length > 35 ? DataBinder.Eval(Container.DataItem, "DESC_EVEN").ToString().Substring(0, 25) : DataBinder.Eval(Container.DataItem, "DESC_EVEN")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+                            
+                            <asp:TemplateColumn HeaderText="Usuario Reclamo" SortExpression="Estado Doc">
+                                <HeaderStyle Width="100px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblUsuaRecl" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "USUA_RECL") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "USUA_RECL").ToString().Length > 25 ? DataBinder.Eval(Container.DataItem, "USUA_RECL").ToString().Substring(0, 25) : DataBinder.Eval(Container.DataItem, "USUA_RECL")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>                            
+                            
+                            <asp:TemplateColumn HeaderText="Fecha Reclamo" SortExpression="Estado Doc">
+                                <HeaderStyle Width="100px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblFechRecl" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "FECH_RECL") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "FECH_RECL")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn> 
+							
+                            <asp:TemplateColumn HeaderText="Código respuesta SII" SortExpression="Estado Doc">
+                                <HeaderStyle Width="150px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblDescCssi" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "DESC_CSII") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "CSII_RECL")%>
+												-
+                                                <%# DataBinder.Eval(Container.DataItem, "DESC_CSII").ToString().Length > 25 ? DataBinder.Eval(Container.DataItem, "DESC_CSII").ToString().Substring(0, 25) : DataBinder.Eval(Container.DataItem, "DESC_CSII")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>                            
+                            
+                            <asp:TemplateColumn HeaderText="Fecha recepción SII" SortExpression="Estado Doc">
+                                <HeaderStyle Width="100px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblFechReceSii" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "FECH_RECE_SII") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "FECH_RECE_SII")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn> 
+							                                                   
+                            
+                            <asp:TemplateColumn HeaderText="Fecha recepción Suite" SortExpression="Estado Doc">
+                                <HeaderStyle Width="100px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblFechRece" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "FECH_RECE") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "FECH_RECE")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn> 
+							                            
+							<%-- OT 9376978 25-04-2017|AM --%> 
+
+                            <%-- OT 9376978 10-05-2017|AM --%> 
+							
+                            <asp:TemplateColumn HeaderText="Estado de Reclamo" SortExpression="FECH_ESAP">
+                                <HeaderStyle Width="180px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="30px" />
+                                <ItemTemplate>
+                                   <asp:Label ID="lblDescEvenDTO" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "DESC_EVEN") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "EVEN_RECL")%>
+												    -
+												<%# DataBinder.Eval(Container.DataItem, "DESC_EVEN").ToString().Length > 15 ? DataBinder.Eval(Container.DataItem, "DESC_EVEN").ToString().Substring(0, 15) : DataBinder.Eval(Container.DataItem, "DESC_EVEN")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn>
+							                            
+							
+                            <asp:TemplateColumn HeaderText="Estado Cedible" SortExpression="Estado Doc">
+                                <HeaderStyle Width="200px" CssClass="dbnGrillaEncabezado"></HeaderStyle>
+                                <ItemStyle Height="15px" />
+                                <ItemTemplate>
+                                    <asp:Label ID="lblDescEscdDTO" runat="server" ToolTip='<%# DataBinder.Eval(Container.DataItem, "DESC_ESCD") %>'>
+                                                <%# DataBinder.Eval(Container.DataItem, "DOCU_ESCD")%>
+												    -
+												<%# DataBinder.Eval(Container.DataItem, "DESC_ESCD").ToString().Length > 15 ? DataBinder.Eval(Container.DataItem, "DESC_ESCD").ToString().Substring(0, 15) : DataBinder.Eval(Container.DataItem, "DESC_ESCD")%>
+                                    </asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateColumn> 
+							                            														
+							<%-- OT 9376978 10-05-2017|AM --%> 							
+                        </Columns>
+                        <PagerStyle Visible="False" NextPageText="Siguiente" PrevPageText="Anterior" HorizontalAlign="Left"
+                            Position="Top" PageButtonCount="3"></PagerStyle>
+                        <AlternatingItemStyle CssClass="dbnGrillaIntercala" />
+                    </asp:DataGrid>
+                </div>
+            </div>
+        </div>
+        <br />
+        <asp:HiddenField ID="HiddenScrollbarPosition" runat="server" />
+        <asp:HiddenField ID="HiddenScrollbarPosition2" runat="server" />
+        <script src="<%= ResolveUrl("~/librerias/js/FacLisMonitorReclamo.js") %>" type="text/javascript"></script>
+    </form>
+</body>
+</html>
