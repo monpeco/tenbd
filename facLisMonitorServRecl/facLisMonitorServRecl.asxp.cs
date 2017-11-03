@@ -243,22 +243,6 @@ public partial class facLisMonitorServicio : DbnetPage
                 btnServicio.Visible = false;
                 lbServicio.Visible = false;
             }
-
-cmbUsuarios.Query = "select '---' codi_recl, 'Seleccione Evento SII' desc_recl union select codi_recl,desc_recl from dte_esta_recl where codi_recl in ('ACD','ERM','ERG','RCD','RFP','RFT','FRS')";
-cmbUsuarios.Rescata(DbnetContext.dbConnection);
-cmbUsuarios.Selecciona(DbnetContext.Codi_usua.ToString());
-List<EstadosComer> oListaEventos = new List<EstadosComer>();
-oListaEventos.Add(new EstadosComer { valor = cmbUsuarios.Items[0].Value, texto = cmbUsuarios.Items[0].Text });
-// OT 9376978 - 27-04-2017|am
-oListaEventos = oListaEventos.Where(x => !x.valor.Equals("ACD")).ToList();
-ddlAccionReclamo.DataSource = oListaEventos;
-ddlAccionReclamo.DataValueField = "valor";
-ddlAccionReclamo.DataTextField = "texto";
-ddlAccionReclamo.DataBind();
-divEstadoSii.Visible = false;
-divEstaReme.Visible = false;
-// OT 9376978 - 27-04-2017|am
-
             cmbUsuarios.Enabled = DbnetTool.SelectInto(DbnetContext.dbConnection, "select count(codi_usua) from usua_sist where codi_usua='" + DbnetContext.Codi_usua.ToString() + "' and usua_filt='N'") == "1" ? true : false;
             if (cmbUsuarios.Enabled)
             {
