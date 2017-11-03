@@ -164,14 +164,15 @@ public partial class facLisMonitorServicio : DbnetPage
             oLista.Add(new EstadosComer { valor = "REC", texto = "Rechazar comercialmente" });
 			
 			// OT 9376978 - 27-04-2017|am
-            /*List<EstadosComer> oListaEventos = new List<EstadosComer>();
+            List<EstadosComer> oListaEventos = new List<EstadosComer>();
             oListaEventos.Add(new EstadosComer { valor = "---", texto = "Seleccione Evento SII" });
             oListaEventos.Add(new EstadosComer { valor = "ACD", texto = "Acepta de Contenido del Documento" });
             oListaEventos.Add(new EstadosComer { valor = "ERM", texto = "Otorga Recibo de Mercadeías o Servicios" });
+            oListaEventos.Add(new EstadosComer { valor = "ERG", texto = "Recibo Mercaderías Mes Anterior (Guía de Despacho)" }); // OT 10214564 - 02-10-2017|am
             oListaEventos.Add(new EstadosComer { valor = "RCD", texto = "Reclama Contenido del Documento" });
             oListaEventos.Add(new EstadosComer { valor = "RFP", texto = "Reclama Falta Parcial de Mercaderías" });
             oListaEventos.Add(new EstadosComer { valor = "RFT", texto = "Reclama Falta Total de Mercaderías" });
-            oListaEventos.Add(new EstadosComer { valor = "FRS", texto = "Solicitar Fecha de Recepción en SII" });*/
+            oListaEventos.Add(new EstadosComer { valor = "FRS", texto = "Solicitar Fecha de Recepción en SII" });
 			// OT 9376978 - 27-04-2017|am
 			
 			dllRespuestaReclamoDTE.Visible = false;
@@ -187,13 +188,13 @@ public partial class facLisMonitorServicio : DbnetPage
                 divEstaReme.Visible = false;
 				
 				// OT 9376978 - 27-04-2017|am
-                /*oListaEventos = oListaEventos.Where(x => !x.valor.Equals("ACD")).ToList();
+                oListaEventos = oListaEventos.Where(x => !x.valor.Equals("ACD")).ToList();
                 ddlAccionReclamo.DataSource = oListaEventos;
                 ddlAccionReclamo.DataValueField = "valor";
                 ddlAccionReclamo.DataTextField = "texto";
                 ddlAccionReclamo.DataBind();
                 divEstadoSii.Visible = false;
-                divEstaReme.Visible = false;*/
+                divEstaReme.Visible = false;
 				// OT 9376978 - 27-04-2017|am
 
             }
@@ -205,10 +206,10 @@ public partial class facLisMonitorServicio : DbnetPage
                 ddlAccion.DataBind();
 				
 				// OT 9376978 - 27-04-2017|am
-                /*ddlAccionReclamo.DataSource = oListaEventos;
+                ddlAccionReclamo.DataSource = oListaEventos;
                 ddlAccionReclamo.DataValueField = "valor";
                 ddlAccionReclamo.DataTextField = "texto";
-                ddlAccionReclamo.DataBind();*/
+                ddlAccionReclamo.DataBind();
 				// OT 9376978 - 27-04-2017|am
             }
         }
@@ -864,7 +865,7 @@ public partial class facLisMonitorServicio : DbnetPage
 					if (dllEventoReclamo.SelectedValue == "TODOS")
 						query = query.Replace(":EVEN_RECL", "");
 					else if (dllEventoReclamo.SelectedValue == "TOA")
-						query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('ACD', 'ERM') ");
+                        query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('ACD', 'ERM', 'ERG') ");  // OT 10214564 - 02-10-2017|am
 					else if (dllEventoReclamo.SelectedValue == "TOR")
 						query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('RCD', 'RFP', 'RFT') ");
 					else
@@ -886,7 +887,7 @@ public partial class facLisMonitorServicio : DbnetPage
                     if (dllEventoReclamo.SelectedValue == "TODOS")
                         query = query.Replace(":EVEN_RECL", "");
                     else if (dllEventoReclamo.SelectedValue == "TOA")
-                        query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('ACD', 'ERM') ");
+                        query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('ACD', 'ERM', 'ERG') ");  // OT 10214564 - 02-10-2017|am
                     else if (dllEventoReclamo.SelectedValue == "TOR")
                         query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('RCD', 'RFP', 'RFT') ");
                     else
@@ -912,7 +913,7 @@ public partial class facLisMonitorServicio : DbnetPage
                             //if (dllEventoReclamo.SelectedValue == "TODOS")
                             //    query = query.Replace(":EVEN_RECL", "");
                             //else if (dllEventoReclamo.SelectedValue == "TOA")
-                            //    query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('ACD', 'ERM') ");
+                            //    query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('ACD', 'ERM', 'ERG') ");
                             //else if (dllEventoReclamo.SelectedValue == "TOR")
                             //    query = query.Replace(":EVEN_RECL", " AND DTE.EVEN_RECL IN ('RCD', 'RFP', 'RFT') ");
                             //else
@@ -3953,7 +3954,7 @@ public partial class facLisMonitorServicio : DbnetPage
                                             ",'{8}',{11},'{9}')";
                                     if (DbnetGlobal.Base_dato.Equals("SQLSERVER"))
                                     {
-                                        string sQuery = "select top 1 isnull(nomb_cana,'GNPDF') as nomb_cana from dbq_cana where modo_cana = 'GNPDF'";
+                                        string sQuery = "select top 1 isnull(nomb_cana,'GNPDF') as nomb_cana from dbq_cana where tran_cana = 'GNPDF'";
                                         var sNombCana = DbnetTool.SelectInto(DbnetContext.dbConnection, sQuery);
 
                                         query = string.Format(query, DbnetContext.Codi_emex, DbnetContext.Codi_empr, tipo_docu.Trim(),
@@ -3962,7 +3963,7 @@ public partial class facLisMonitorServicio : DbnetPage
                                     }
                                     else
                                     {
-                                        string sQuery = "select nvl(nomb_cana,'GNPDF') as nomb_cana from dbq_cana where modo_cana = 'GNPDF' and rownum < 2";
+                                        string sQuery = "select nvl(nomb_cana,'GNPDF') as nomb_cana from dbq_cana where tran_cana = 'GNPDF' and rownum < 2";
                                         var sNombCana = DbnetTool.SelectInto(DbnetContext.dbConnection, sQuery);
                                         query = string.Format(query, DbnetContext.Codi_emex, DbnetContext.Codi_empr, tipo_docu.Trim(),
                                                                 foliDocu.Trim(), Request.Params["par1"], DbnetContext.Codi_emex, DbnetContext.Codi_empr,
@@ -4434,7 +4435,7 @@ public partial class facLisMonitorServicio : DbnetPage
                 oReclamoDTO.sMensaje = sMesgRech;
                 oReclamoDTO.iDocumentosSeleccionados = oListaGrilla.Count();
             }
-			else if(new[] {"ACD","ERM","RCD","RFP","RFT","FRS"}.Contains(oReclamoDTO.sAccion)) //CASO RECEPCION
+            else if (new[] { "ACD", "ERM", "ERG", "RCD", "RFP", "RFT", "FRS" }.Contains(oReclamoDTO.sAccion)) //CASO RECEPCION  OT 10214564 - 02-10-2017|am
             {
                 //1 Validar cuales son los x que tengan "Recahzados tecnicamente"
                 var oListaGrillaRechTecn = oListaGrilla.Where(x => (x.EstaDocu.ToUpper() != "INI" && x.EstaDocu.ToUpper() != "ERA"));
@@ -4463,7 +4464,7 @@ public partial class facLisMonitorServicio : DbnetPage
                 if (oReclamoDTO.sAccion != "FRS")
                 {
                     //3 Validar cuales tienen "Evento Reclamo"
-                    string[] aEvenRecl = new string[] { "ACD", "ERM", "RCD", "RFP", "RFT" };
+                    string[] aEvenRecl = new string[] { "ACD", "ERM", "ERG", "RCD", "RFP", "RFT" };  // OT 10214564 - 02-10-2017|am
                     var oListaGrillaRechEvenRecl = oListaGrilla.Where(x => (aEvenRecl.Contains(x.EvenRecl)));
                     //var oListaGrillaRechEvenRecl = oListaGrilla.Where(x => (!string.IsNullOrEmpty(x.EvenRecl)));
                     int iEvenRechEvenRecl = oListaGrillaRechEvenRecl.Count();
@@ -4475,6 +4476,52 @@ public partial class facLisMonitorServicio : DbnetPage
                             tmpMesgRechEvenRecl += string.Format("{0}-{1}, ", item.TipoDocu, item.FoliDocu);
                         sMesgRech += string.Format(" Los documentos {0} ya tienen evento reclamo.", tmpMesgRechEvenRecl);
                     }
+
+                    if (oReclamoDTO.sAccion == "ERG")  // OT 10214564 - 02-10-2017|am
+                    {
+                        // ERG.1. No puede aplicarse a documento tipo != 33
+                        var oListaGrillaRechTipoDocERG = oListaGrilla.Where(x => x.TipoDocu != "33" );
+                        int iEvenRechTipoDocERG = oListaGrillaRechTipoDocERG.Count();
+
+                        if (iEvenRechTipoDocERG > 0) {
+                            string tmpMesgRechTipoDocERG = "";
+                            foreach (var item in oListaGrillaRechTipoDocERG)
+                                tmpMesgRechTipoDocERG += string.Format("{0}-{1}, ", item.TipoDocu, item.FoliDocu);
+                            sMesgRech += string.Format(" Los documentos {0} no se les pueden aplicar Recibo Mercaderías Mes Anterior en Guía de Despacho (ERG), porque el tipo de documento no es 33.", tmpMesgRechTipoDocERG);
+                        }
+
+                        // ERG.2. Se puede aplicar solo a documentos del periodo pasado
+                        string query_month = " select MONTH(getdate()) - 1 ";
+                        var var_month = DbnetTool.Ejecuta_Select(oContexto.dbConnection, query_month);
+                        int month = (int)var_month.Rows[0][0];
+                        string tmpMesgRechTipoDocMonth = "";
+                        foreach (var item in oListaGrilla){ //AM TODO: se tiene que traer el registro cuando tenga POR LO MENOS 1 reg hijo con fecha del mes anterior
+                            string query_month_dto = string.Format(" select MONTH(CONVERT(Datetime, fech_emis, 120)) from dto_enca_docu_p dto  where dto.codi_empr = {0} and dto.tipo_docu={1} and dto.foli_docu='{2}.0' ",
+                                                                    item.CodiEmpr, item.TipoDocu, item.FoliDocu);
+                            var oData = DbnetTool.Ejecuta_Select(oContexto.dbConnection, query_month_dto);
+                            for (int i = 0; i < oData.Rows.Count; i++){
+                                if (month != (int)oData.Rows[i][0])
+                                    tmpMesgRechTipoDocMonth += string.Format("{0}-{1}, ", item.TipoDocu, item.FoliDocu);
+                            }
+                        }
+                        if (!String.IsNullOrEmpty(tmpMesgRechTipoDocMonth))
+                            sMesgRech += string.Format(" Los documentos {0} no se les pueden aplicar Recibo Mercaderías Mes Anterior en Guía de Despacho (ERG), porque el documento debe haber sido emitido el mes pasado. ", tmpMesgRechTipoDocMonth);
+
+
+                        // ERG.3. No se aplica si no tiene por lo menos una referencia a Documento 50 o 52
+                        string tmpMesgRechRefe = "";
+                        foreach (var item in oListaGrilla){
+                            string query_refe_count = string.Format(" select count(*) from dto_enca_docu_p dto inner join dto_docu_refe_p refe on refe.corr_docu = dto.corr_docu where dto.codi_empr = {0} and dto.tipo_docu={1} and dto.foli_docu='{2}.0' and refe.tipo_refe in ('50','52') and MONTH(CONVERT(Datetime, refe.fech_refe, 120)) = (MONTH(getdate()) - 1)",
+                                   item.CodiEmpr, item.TipoDocu, item.FoliDocu);
+                            var oData = DbnetTool.Ejecuta_Select(oContexto.dbConnection, query_refe_count);
+                            if ((int)oData.Rows[0][0] == 0){
+                                tmpMesgRechRefe += string.Format("{0}-{1}, ", item.TipoDocu, item.FoliDocu);
+                            }
+                        }
+                        if (!String.IsNullOrEmpty(tmpMesgRechRefe))
+                            sMesgRech += string.Format(" Los documentos {0} no se les pueden aplicar Recibo Mercaderías Mes Anterior en Guía de Despacho (ERG), porque el documento debe tener alguna referncia a un documento 50 o 52. ", tmpMesgRechRefe);
+
+                    } // OT 10214564 - 02-10-2017|am
                 }
                 else
                 {
@@ -4861,7 +4908,8 @@ public partial class facLisMonitorServicio : DbnetPage
              selecciono fecha del la tabla
              si es nula llamo a putEvento
              sino concateno folio-tipo en mensaje
-         else if (oDTO.sAccion.ToUpper() IN "ACD", "ERM", "RCD", "RFP", "RFT", "FRS")
+         else if (oDTO.sAccion.ToUpper() == "ERG")
+         else if (oDTO.sAccion.ToUpper() IN "ACD", "ERM","ERM", "RCD", "RFP", "RFT", "FRS")
               selecciono datos de reclamo even_recl, eusa_recl, fech_recl
               si EVEN_RECL es nulo 
                     update de even_recl, eusa_recl, fech_recl
@@ -4944,6 +4992,89 @@ public partial class facLisMonitorServicio : DbnetPage
                 oDTO.sMensaje += sMensajeError;
 
         }
+        else if (sEvento == "ERG")
+        {
+            foreach (var item in oLista)
+            {
+                try
+                {
+                    sQuerySelect =  " select even_recl, tipo_docu, round(foli_docu, 0) as foli_docu, rutt_rece, digi_rece, rutt_emis, digi_emis  from dto_enca_docu_p " +
+                                    " where tipo_docu = 33 " +
+                                    " and corr_docu = {0} and codi_empr = {1} and codi_emex = '{2}' " +
+                                    " and YEAR(CONVERT(Datetime, fech_emis, 120)) = YEAR(getdate()) " +
+                                    " and MONTH(CONVERT(Datetime, fech_emis, 120)) = (MONTH(getdate()) - 1) " +
+                                    " and corr_docu in ( " +
+                                    "    select dto.corr_docu from dto_enca_docu_p dto " +
+                                    "    inner join dto_docu_refe_p refe on refe.corr_docu = dto.corr_docu " +
+                                    "    where refe.tipo_refe in ('50','52') " + 
+                                    "    and MONTH(CONVERT(Datetime, fech_refe, 120)) = (MONTH(getdate()) - 1) " +
+                                    " ) ";
+                    sQuerySelect = string.Format(sQuerySelect, item.CorrDocu, item.CodiEmpr, sCodiEmex);
+                    var oData = DbnetTool.Ejecuta_Select(oContexto.dbConnection, sQuerySelect);
+                    sEvenRecl = string.Empty;
+                    sFoliDocu = string.Empty;
+                    foreach (DataRow dr in oData.Rows)
+                    {
+                        sEvenRecl = dr["EVEN_RECL"].ToString();
+                        sTipoDocu = dr["TIPO_DOCU"].ToString();
+                        sFoliDocu = dr["FOLI_DOCU"].ToString();
+                        sRuttRece = dr["RUTT_RECE"].ToString();
+                        sDigiRece = dr["DIGI_RECE"].ToString();
+                        sRuttEmis = dr["RUTT_EMIS"].ToString();
+                        sDigiEmis = dr["DIGI_EMIS"].ToString();
+                    }
+                    if (string.IsNullOrEmpty(sEvenRecl) && !string.IsNullOrEmpty(sFoliDocu))
+                    {
+                        string sQueryUpdate = string.Format("update dto_enca_docu_p set usua_recl = '{0}', even_recl = '{1}', fech_recl = {2} where codi_empr = {3} and corr_docu = {4} and codi_emex = '{5}' and (esta_docu = 'INI' or esta_docu = 'ERA') and (tipo_docu = 33 or tipo_docu = 34 or tipo_docu = 43) ",
+                             oContexto.Codi_usua, oDTO.sAccion.ToUpper(), DbnetGlobal.Base_dato.Equals("SQLSERVER") ? "getdate()" : "sysdate", item.CodiEmpr, item.CorrDocu, sCodiEmex);
+                        DbnetTool.Ejecuta_Select(oContexto.dbConnection, sQueryUpdate);
+                        
+                        string codi_empr_ = item.CodiEmpr.ToString();
+                        string corr_docu_ = item.CorrDocu.ToString();
+
+                        string pi_codi_erro_ = "";
+                        string pi_mens_erro_ = "";
+                        string pi_corr_qmsg_ = "";
+
+                        DbnetProcedure sp = new DbnetProcedure(oContexto.dbConnection, "prc_recl",
+                                   "codi_emex", sCodiEmex, "VarChar", 40, "in",
+                                   "rutt_empr", sRuttRece, "Int", 10, "in",
+                                   "digi_empr", sDigiRece, "VarChar", 1, "in",
+                                   "rutt_emis", sRuttEmis, "Int", 10, "in",
+                                   "digi_emis", sDigiEmis, "VarChar", 1, "in",
+                                   "tipo_docu", sTipoDocu, "Int", 10, "in",
+                                   "foli_docu", sFoliDocu, "Int", 10, "in",
+                                   "even_sii", sEvento, "VarChar", 4, "in",
+                                   "codi_empr", codi_empr_, "Int", 9, "in",
+                                   "corr_docu", corr_docu_, "Int", 18, "in",
+                                   "pi_codi_erro", "", "Int", 5, "out",
+                                   "pi_mens_erro", "", "VarChar", 80, "out",
+                                   "pi_corr_qmsg", "", "Int", 22, "out"
+                                   );
+
+                        pi_codi_erro_ = sp.return_String("pi_codi_erro");
+                        pi_mens_erro_ = sp.return_String("pi_mens_erro");
+                        pi_corr_qmsg_ = sp.return_String("pi_corr_qmsg");
+
+                        iContador++;
+                    }
+                    else //Si ya tiene "Evento Reclamo", se reporta
+                    {
+                        sMensajeRechazo += string.Format("{0}-{1}, ", sTipoDocu, sFoliDocu);
+                        iReciNoApli++;
+                    }
+                }catch (Exception e)
+                {
+                    sMensajeError += string.Format("Database error (folio:{0}-{1})", sTipoDocu, sFoliDocu);
+                    iReciNoApli++;
+                }
+            }
+            if (!string.IsNullOrEmpty(sMensajeRechazo))
+                oDTO.sMensaje = string.Format("Los documentos {0} no se les puede aplicar este evento.", sMensajeRechazo);
+
+            if (!string.IsNullOrEmpty(sMensajeError))
+                oDTO.sMensaje += sMensajeError;
+        }
         else if (new string[] { "ACD", "ERM", "RCD", "RFP", "RFT" }.Contains(sEvento))//los otros casos de Recepcion
         {
             foreach (var item in oLista)
@@ -4952,7 +5083,7 @@ public partial class facLisMonitorServicio : DbnetPage
                 {
                     sQuerySelect = string.Format("select even_recl, tipo_docu, round(foli_docu, 0) as foli_docu, rutt_rece, digi_rece, rutt_emis, digi_emis from dto_enca_docu_p where corr_docu = {0} and codi_empr = {1} and codi_emex = '{2}' and (esta_docu = 'INI' or esta_docu = 'ERA') and (tipo_docu = 33 or tipo_docu = 34 or tipo_docu = 43) ", item.CorrDocu, item.CodiEmpr, sCodiEmex);
                     var oData = DbnetTool.Ejecuta_Select(oContexto.dbConnection, sQuerySelect);
-                    sEvenRecl = string.Empty; 
+                    sEvenRecl = string.Empty;
                     foreach (DataRow dr in oData.Rows)
                     {
                         sEvenRecl = dr["EVEN_RECL"].ToString();
@@ -4979,13 +5110,13 @@ public partial class facLisMonitorServicio : DbnetPage
 
                         DbnetProcedure sp = new DbnetProcedure(oContexto.dbConnection, "prc_recl",
                                    "codi_emex", sCodiEmex, "VarChar", 40, "in",
-                                   "rutt_empr", sRuttRece,  "Int", 10, "in",
-                                   "digi_empr", sDigiRece,  "VarChar", 1, "in",
-                                   "rutt_emis", sRuttEmis,  "Int", 10, "in",
-                                   "digi_emis", sDigiEmis,  "VarChar", 1, "in",
-                                   "tipo_docu", sTipoDocu,  "Int", 10, "in",
-                                   "foli_docu", sFoliDocu,  "Int", 10, "in",
-                                   "even_sii",  sEvento,    "VarChar", 4, "in",
+                                   "rutt_empr", sRuttRece, "Int", 10, "in",
+                                   "digi_empr", sDigiRece, "VarChar", 1, "in",
+                                   "rutt_emis", sRuttEmis, "Int", 10, "in",
+                                   "digi_emis", sDigiEmis, "VarChar", 1, "in",
+                                   "tipo_docu", sTipoDocu, "Int", 10, "in",
+                                   "foli_docu", sFoliDocu, "Int", 10, "in",
+                                   "even_sii", sEvento, "VarChar", 4, "in",
                                    "codi_empr", codi_empr_, "Int", 9, "in",
                                    "corr_docu", corr_docu_, "Int", 18, "in",
                                    "pi_codi_erro", "", "Int", 5, "out",
@@ -5022,9 +5153,9 @@ public partial class facLisMonitorServicio : DbnetPage
             string sMsgRechEvenRecl = "";
             string sMsgRechDocuEscd = "";
             int nCountDTE = 0;
-			foreach (var item in oLista)
+            foreach (var item in oLista)
             {
-				try
+                try
                 {
                     string sDocuEscd = "";
                     string scorrEnvi = "";
@@ -5051,7 +5182,7 @@ public partial class facLisMonitorServicio : DbnetPage
                         iReciNoApli++;
                         continue;
                     }
-                    else if ( (sEvento == "CCD") && (!string.IsNullOrEmpty(sDocuEscd)) )
+                    else if ((sEvento == "CCD") && (!string.IsNullOrEmpty(sDocuEscd)))
                     {
                         sMsgRechDocuEscd += string.Format("{0}-{1}, ", sTipoDocu, sFoliDocu);
                         iReciNoApli++;
@@ -5096,7 +5227,7 @@ public partial class facLisMonitorServicio : DbnetPage
                     sMensajeError += string.Format("Database error (folio:{0}-{1})", sTipoDocu, sFoliDocu);
                     iReciNoApli++;
                 }
-			}
+            }
         }
 
         oDTO.iRegistroSatisfactorio = iContador;
