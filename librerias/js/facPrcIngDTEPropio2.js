@@ -429,7 +429,8 @@ function fndescuento(tabla, celda, item1, item2, resultado, valor, tipo) {
     var Tblaux = document.getElementById('tbl_detalle');
     for (xx = 1; xx < Tblaux.rows.length; xx++) {
         var Tbla = document.getElementById(Tblaux.rows[xx].id);
-        if (Tbla.getElementsByTagName('td')[11].innerHTML == "N") {
+        //TODO-AM-9998417: QUITAR if (Tbla.getElementsByTagName('td')[11].innerHTML == "N") {
+        if (Tbla.getElementsByTagName('td')[11].innerHTML == "0") {
             deta_noexento = parseFloat(deta_noexento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 deta_noexento = parseFloat(deta_noexento);
@@ -440,7 +441,23 @@ function fndescuento(tabla, celda, item1, item2, resultado, valor, tipo) {
                 val2 = parseFloat(Tbla.getElementsByTagName('td')[9].innerHTML.replace(",", "."));
             }
         }
-        else {
+        else if ((Tbla.getElementsByTagName('td')[11].innerHTML == "2") || (Tbla.getElementsByTagName('td')[11].innerHTML == "6")) {
+
+
+
+
+            //deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
+            deta_no_facturable = parseFloat(deta_no_facturable) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
+            
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" || Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" || Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "$") {
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+
+
+        } else if (Tbla.getElementsByTagName('td')[11].innerHTML == "1") {
             deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" || Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 deta_exento = parseFloat(deta_exento);
@@ -594,11 +611,24 @@ function acepta() {
                 var totalvalor = Tbla.getElementsByTagName('td')[9].innerHTML;
                 deta_noexento = parseFloat(deta_noexento);
             }
-        } else if (Tbla.getElementsByTagName('td')[11].innerHTML == "2") {
-            if (debug) alert("Entro en 2");
-        } else if (Tbla.getElementsByTagName('td')[11].innerHTML == "6") {
-            if (debug) alert("Entro en 6");
-        }
+        } else if ((Tbla.getElementsByTagName('td')[11].innerHTML == "2") || (Tbla.getElementsByTagName('td')[11].innerHTML == "6")) {
+            if (debug) alert("Entro en 2 || 6");
+
+            //temp
+            //deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
+            deta_no_facturable = parseFloat(deta_no_facturable) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
+                var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
+                var totalPorc = Tbla.getElementsByTagName('td')[9].innerHTML;
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "$") {
+                var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
+                var totalvalor = Tbla.getElementsByTagName('td')[9].innerHTML;
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+            //temp
+        } 
         else if (Tbla.getElementsByTagName('td')[11].innerHTML == "1") {
             if (debug) alert("Entro en else, exento 1 (checked)");
             deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
