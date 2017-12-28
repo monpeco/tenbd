@@ -1256,7 +1256,16 @@ public partial class facPrcIngDTEPropio : DbnetPage
                 else
                 {
                     obj.Set("impu_vaag", (string.IsNullOrEmpty(totales[2]) ? "0" : totales[2].Replace(",", ".")), 1);
-                    obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
+                    //TODO-AM-9998417: QUITAR obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
+                    string[] datos = txtAuxDetalle.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
+                    string[] campos = datos[0].Split('|');
+                    if (campos[11] == "2" || campos[11] == "6")
+                    {
+                        obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
+                    }else{
+                        obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
+                    }
+                    //TODO-AM-9998417: QUITAR
                 }
                 switch (Tipo_docu.Text)
                 {
