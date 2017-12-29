@@ -544,6 +544,7 @@ function acepta() {
     var Tbl = document.getElementById('tbl_detalle');
     var deta_noexento = 0;
     var deta_exento = 0;
+    var deta_no_facturable = 0;
     var desc_noexento = 0;
     var desc_exento = 0;
     for (x = 1; x < Tbl.rows.length; x++) {
@@ -794,6 +795,7 @@ function acepta() {
 
     document.getElementById('lblcantrefe').innerHTML = Tbl.rows.length - 1;
     document.getElementById('lblTotalAfecto').innerHTML = Math.round(deta_noexento + desc_noexento);
+    document.getElementById('lblTotalNoAfecto').innerHTML = Math.round(deta_noexento + desc_noexento); 
     document.getElementById('lblTotalExento').innerHTML = Math.round(deta_exento + desc_exento);
 
     if (tipo_documento() == false) {
@@ -853,8 +855,10 @@ _noaf_otmo = parseFloat(_lblTotalExento) * _tipo_camb;
 _mont_otmo = parseFloat(_lblTotal) * _tipo_camb;
 }
 
-document.getElementById('txtTotales').value = document.getElementById('lblTotalAfecto').innerHTML + "|" + document.getElementById('lblTotalExento').innerHTML + "|" + document.getElementById('lblIVA').innerHTML + "|" + document.getElementById('lblTotal').innerHTML + "|" + _noaf_otmo.toFixed(4) + "|" + _mont_otmo.toFixed(4);
+//TODO-AM-9998417: QUITAR document.getElementById('txtTotales').value = document.getElementById('lblTotalAfecto').innerHTML + "|" + document.getElementById('lblTotalExento').innerHTML + "|" + document.getElementById('lblIVA').innerHTML + "|" + document.getElementById('lblTotal').innerHTML + "|" + _noaf_otmo.toFixed(4) + "|" + _mont_otmo.toFixed(4);
+document.getElementById('txtTotales').value = document.getElementById('lblTotalAfecto').innerHTML + "|" + document.getElementById('lblTotalExento').innerHTML + "|" + document.getElementById('lblIVA').innerHTML + "|" + document.getElementById('lblTotal').innerHTML + "|" + _noaf_otmo.toFixed(4) + "|" + _mont_otmo.toFixed(4) + "|" + deta_no_facturable.toFixed(4);
     document.getElementById('lblTotalAfecto').innerHTML = document.getElementById('lblTotalAfecto').innerHTML.replace(".", ",");
+    document.getElementById('lblTotalNoAfecto').innerHTML = document.getElementById('lblTotalNoAfecto').innerHTML.replace(".", ","); 
     document.getElementById('lblcantrefe').innerHTML = document.getElementById('lblcantrefe').innerHTML.replace(".", ",");
     document.getElementById('lblTotalExento').innerHTML = document.getElementById('lblTotalExento').innerHTML.replace(".", ",");
     document.getElementById('lblTotal').innerHTML = document.getElementById('lblTotal').innerHTML.replace(".", ",");

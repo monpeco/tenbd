@@ -1256,16 +1256,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                 else
                 {
                     obj.Set("impu_vaag", (string.IsNullOrEmpty(totales[2]) ? "0" : totales[2].Replace(",", ".")), 1);
-                    //TODO-AM-9998417: QUITAR obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
-                    string[] datos = txtAuxDetalle.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
-                    string[] campos = datos[0].Split('|');
-                    if (campos[11] == "2" || campos[11] == "6")
-                    {
-                        obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
-                    }else{
-                        obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
-                    }
-                    //TODO-AM-9998417: QUITAR
+                    obj.Set("mont_neto", dbnFormat.Numero(totales[0], "###0"), 1);
                 }
                 switch (Tipo_docu.Text)
                 {
@@ -1318,7 +1309,16 @@ public partial class facPrcIngDTEPropio : DbnetPage
                         obj.Set("MONT_BACO", dMontBaco.ToString(), 1);
                 }
 
-                obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", "."))? "0" : totales[1].Replace(",", ".")), 1);
+                
+                /*string[] datos = txtAuxDetalle.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
+                string[] campos = datos[0].Split('|');
+                if (campos[11] == "2" || campos[11] == "6"){
+                    obj.Set("mont_nofa", (string.IsNullOrEmpty(totales[6].Replace(",", ".")) ? "0" : totales[6].Replace(",", ".")), 1);
+                }else{
+                    obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", "."))? "0" : totales[1].Replace(",", ".")), 1);
+                }*/
+                obj.Set("mont_nofa", (string.IsNullOrEmpty(totales[6].Replace(",", ".")) ? "0" : totales[6].Replace(",", ".")), 1);
+                obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", ".")) ? "0" : totales[1].Replace(",", ".")), 1);//
                 obj.Set("mont_tota", (string.IsNullOrEmpty(totales[3].Replace(",", ".")) ? "0" : totales[3].Replace(",", ".")), 1);
                 obj.Set("foli_clie", Foli_docu_rp.Text, 0);
 
