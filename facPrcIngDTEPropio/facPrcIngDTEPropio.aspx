@@ -1319,6 +1319,21 @@
                             Style="z-index: 125; text-align: right" Width="92px">0</asp:Label>
                     </td>
                 </tr>
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <asp:Label ID="Label6" runat="server" CssClass="dbnLabel" Height="4px"
+                            Style="z-index: 125" Width="82px">Total No Fac</asp:Label>
+                    </td>
+                    <td>
+                        <asp:Label ID="Label7" runat="server" CssClass="dbnLabel" Height="4px"
+                            Style="z-index: 125; text-align: right" Width="92px">0</asp:Label>
+                    </td>
+                </tr>
+
                 <tr>
                     <td></td>
                     <td></td>
