@@ -1301,6 +1301,10 @@
                         <asp:Label ID="lblTotalAfecto" runat="server" CssClass="dbnLabel" Height="4px"
                             Style="z-index: 125; text-align: right" Width="92px">0</asp:Label>
                     </td>
+                    <td>
+                        <asp:Label ID="lblTotalNoAfecto" runat="server" CssClass="dbnLabel" Height="4px"
+                            Style="z-index: 125; text-align: right" Width="92px">0</asp:Label>
+                    </td>
                 </tr>
                 <tr>
                     <td></td>
@@ -1502,6 +1506,7 @@
             if (tipo_documento()) {
                 document.getElementById('lbldeAfecto').style.visibility = 'visible';
                 document.getElementById('lblTotalAfecto').style.visibility = 'visible';
+                document.getElementById('lblTotalNoAfecto').style.visibility = 'visible';
                 document.getElementById('lvldeIva').style.visibility = 'visible';
                 document.getElementById('lblIVA').style.visibility = 'visible';
             }
@@ -1509,6 +1514,7 @@
             {
                 document.getElementById('lbldeAfecto').style.visibility = 'hidden';
                 document.getElementById('lblTotalAfecto').style.visibility = 'hidden';
+                document.getElementById('lblTotalNoAfecto').style.visibility = 'hidden';
                 document.getElementById('lvldeIva').style.visibility = 'hidden';
                 document.getElementById('lblIVA').style.visibility = 'hidden';
             }  
