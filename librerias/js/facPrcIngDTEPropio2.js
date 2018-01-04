@@ -595,9 +595,7 @@ function acepta() {
             ST.innerHTML = Math.round(ST.innerHTML);
         else
             ST.innerHTML = fix(ST.innerHTML);
-        var debug = false; if (debug) alert(Tbla.getElementsByTagName('td')[11].innerHTML); //TODO-AM-9998417: QUITAR 
         if (Tbla.getElementsByTagName('td')[11].innerHTML == "0") {
-            if (debug) alert("Entro en 0, normal");
             deta_noexento = parseFloat(deta_noexento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
@@ -610,10 +608,6 @@ function acepta() {
                 deta_noexento = parseFloat(deta_noexento);
             }
         } else if ((Tbla.getElementsByTagName('td')[11].innerHTML == "2") || (Tbla.getElementsByTagName('td')[11].innerHTML == "6")) {
-            if (debug) alert("Entro en 2 || 6");
-
-            //temp
-            //deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             deta_no_facturable = parseFloat(deta_no_facturable) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
@@ -625,10 +619,8 @@ function acepta() {
                 var totalvalor = Tbla.getElementsByTagName('td')[9].innerHTML;
                 deta_no_facturable = parseFloat(deta_no_facturable);
             }
-            //temp
         } 
         else if (Tbla.getElementsByTagName('td')[11].innerHTML == "1") {
-            if (debug) alert("Entro en else, exento 1 (checked)");
             deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
@@ -792,7 +784,7 @@ function acepta() {
 
     document.getElementById('lblcantrefe').innerHTML = Tbl.rows.length - 1;
     document.getElementById('lblTotalAfecto').innerHTML = Math.round(deta_noexento + desc_noexento);
-    document.getElementById('lblTotalNoAfecto').innerHTML = Math.round(deta_noexento + desc_noexento); 
+    document.getElementById('lblTotalNoFacturable').innerHTML = Math.round(deta_no_facturable); 
     document.getElementById('lblTotalExento').innerHTML = Math.round(deta_exento + desc_exento);
 
     if (tipo_documento() == false) {
@@ -854,7 +846,7 @@ _mont_otmo = parseFloat(_lblTotal) * _tipo_camb;
 
 document.getElementById('txtTotales').value = document.getElementById('lblTotalAfecto').innerHTML + "|" + document.getElementById('lblTotalExento').innerHTML + "|" + document.getElementById('lblIVA').innerHTML + "|" + document.getElementById('lblTotal').innerHTML + "|" + _noaf_otmo.toFixed(4) + "|" + _mont_otmo.toFixed(4) + "|" + deta_no_facturable.toFixed(4);
     document.getElementById('lblTotalAfecto').innerHTML = document.getElementById('lblTotalAfecto').innerHTML.replace(".", ",");
-    document.getElementById('lblTotalNoAfecto').innerHTML = document.getElementById('lblTotalNoAfecto').innerHTML.replace(".", ","); 
+    document.getElementById('lblTotalNoFacturable').innerHTML = document.getElementById('lblTotalNoFacturable').innerHTML.replace(".", ","); 
     document.getElementById('lblcantrefe').innerHTML = document.getElementById('lblcantrefe').innerHTML.replace(".", ",");
     document.getElementById('lblTotalExento').innerHTML = document.getElementById('lblTotalExento').innerHTML.replace(".", ",");
     document.getElementById('lblTotal').innerHTML = document.getElementById('lblTotal').innerHTML.replace(".", ",");
