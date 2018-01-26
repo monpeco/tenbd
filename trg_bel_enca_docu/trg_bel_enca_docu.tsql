@@ -1,11 +1,11 @@
 IF EXISTS (SELECT * FROM sys.objects WHERE [name] = 'trg_bel_enca_docu' AND [type] = 'TR')
 BEGIN
-	PRINT 'Elimina trigger'
+	PRINT 'Elimina trigger trg_bel_enca_docu'
 	DROP TRIGGER [dbo].[trg_bel_enca_docu]
 END
 GO
 
-PRINT 'Creando trigger'
+PRINT 'Creando trigger trg_bel_enca_docu'
 GO
 
 CREATE TRIGGER [dbo].[trg_bel_enca_docu]
@@ -27,20 +27,20 @@ BEGIN
 	@p_salida 	VARCHAR(80),
 	@p_existe 	varchar(1),
 	@p_mensaje 	varchar(80),
-	@p_codi_erro  	varchar(12),
-	@p_codi    	varchar(5),
+	@p_codi_erro 	varchar(12),
+	@p_codi 	 	varchar(5),
 	@p_desc_erro 	varchar(50),
-	@p_indi_dnte	varchar(1),
+	@p_indi_dnte 	varchar(1),
 	@p_tipo_erro 	varchar(12),
-	@p_tipo_dnte	varchar(1)
+	@p_tipo_dnte 	varchar(1)
 
 	print 'entrando a trg_bel_enca_docu'
 	-- TODO: Valida rango de Folios
 	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
   
-	execute @res= dte_chec_rang_foli @codi_empr,@tipo_docu,
-				@corr_rafo output, @foli_docu, @ult_foli output, 
-				@cod_error output, @mensaje output 
+	execute @res = 	dte_chec_rang_foli @codi_empr,@tipo_docu,
+					@corr_rafo output, @foli_docu, @ult_foli output, 
+					@cod_error output, @mensaje output 
                 
 	if @cod_error = 'S' 
 		begin 
@@ -55,9 +55,10 @@ BEGIN
 				if  @p_salida  = 'PARCIAL'
 					begin
 						set @p_codi ='20001'
-						execute @res= dte_chec_erro  @p_codi,
-						@p_desc_erro output, @p_tipo_erro output,
-						@p_indi_dnte output, @p_existe output, @p_mensaje output
+						execute @res = 	dte_chec_erro  @p_codi,
+										@p_desc_erro output, @p_tipo_erro output,
+										@p_indi_dnte output, @p_existe output, @p_mensaje output
+								
 						if (@p_tipo_dnte = 'N') OR (@p_tipo_dnte = 'S' AND @p_indi_dnte = 'S')
 							begin
 								if @p_tipo_erro ='ERR'   
