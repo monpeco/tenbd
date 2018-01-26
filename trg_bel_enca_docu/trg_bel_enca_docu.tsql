@@ -12,12 +12,34 @@ CREATE TRIGGER [dbo].[trg_bel_enca_docu]
     on [dbo].[bel_enca_docu]
     for insert AS
 BEGIN
-  declare
-  @hay_err	varchar(3),    	
-  @hay_era	varchar(3)
+	declare
+	@hay_err	varchar(3),    	
+	@hay_era	varchar(3),
+	@res		varchar(10),
+	@codi_empr 	varchar(20),
+	@tipo_docu	varchar(20),
+	@corr_rafo 	varchar(20), 
+	@foli_docu 	varchar(20),
+	@ult_foli 	varchar(10),
+	@cod_error 	varchar(10), 
+	@mensaje 	varchar(80),
+	@mensaje2 	varchar(2000)
+	
 
   print 'entrando a trg_bel_enca_docu'
   -- TODO: Valida rango de Folios
+  
+  execute @res= dte_chec_rang_foli @codi_empr,@tipo_docu,
+                @corr_rafo output, @foli_docu, @ult_foli output, 
+                @cod_error output, @mensaje output 
+                
+    if @cod_error = 'S' 
+      begin 
+        set @mensaje2 =@mensaje2+ ' -20006 - FOLI_DOCU -'+ @mensaje
+	  end
+	  
+
+
 
 END
 
