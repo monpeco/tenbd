@@ -36,46 +36,41 @@ BEGIN
 
 	print 'entrando a trg_bel_enca_docu'
 	-- TODO: Valida rango de Folios
+	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
   
 	execute @res= dte_chec_rang_foli @codi_empr,@tipo_docu,
 				@corr_rafo output, @foli_docu, @ult_foli output, 
 				@cod_error output, @mensaje output 
                 
 	if @cod_error = 'S' 
-	  begin 
-		set @mensaje2 =@mensaje2+ ' -20006 - FOLI_DOCU -'+ @mensaje
-	  end
-	  
-	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
-	   
-	if  @p_salida = 'TOTAL' 
-	begin
-		set  @hay_err = '1'
-		raiserror (@mensaje2,16,1)
-	end
-	else
-	if  @p_salida  = 'PARCIAL' 
-	begin
-		set @p_codi ='20001'
-		execute @res= dte_chec_erro  @p_codi,
+		begin 
+			set @mensaje2 =@mensaje2+ ' -20006 - FOLI_DOCU -'+ @mensaje
+
+			if  @p_salida = 'TOTAL' 
+				begin
+					set  @hay_err = '1'
+					raiserror (@mensaje2,16,1)
+				end
+			else 
+				if  @p_salida  = 'PARCIAL'
+					begin
+						set @p_codi ='20001'
+						execute @res= dte_chec_erro  @p_codi,
 						@p_desc_erro output, @p_tipo_erro output,
 						@p_indi_dnte output, @p_existe output, @p_mensaje output
+						if (@p_tipo_dnte = 'N') OR (@p_tipo_dnte = 'S' AND @p_indi_dnte = 'S')
+							begin
+								if @p_tipo_erro ='ERR'   
+									begin
+										set  @hay_err = '1'
+										raiserror (@mensaje2,16,1)
+									end
+								else
+									begin
+										set  @hay_era = '1'
+									end
+							end 
+					end
+		end
 
-          
-		if (@p_tipo_dnte = 'N') OR (@p_tipo_dnte = 'S' AND @p_indi_dnte = 'S')
-		begin
-			if @p_tipo_erro ='ERR'   
-			begin
-				set  @hay_err = '1'
-				raiserror (@mensaje2,16,1)
-			end
-			else
-			begin
-				set  @hay_era = '1'
-			end
-		end 
-
-	  end
 END
-
-
