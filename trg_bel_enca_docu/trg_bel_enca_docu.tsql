@@ -1,0 +1,24 @@
+IF EXISTS (SELECT * FROM sys.objects WHERE [name] = 'trg_bel_enca_docu' AND [type] = 'TR')
+BEGIN
+	PRINT 'Elimina trigger'
+	DROP TRIGGER [dbo].[trg_bel_enca_docu]
+END
+GO
+
+PRINT 'Creando trigger'
+GO
+
+CREATE TRIGGER [dbo].[trg_bel_enca_docu]
+    on [dbo].[bel_enca_docu]
+    for insert AS
+BEGIN
+  declare
+  @hay_err	varchar(3),    	
+  @hay_era	varchar(3)
+
+  print 'entrando a trg_bel_enca_docu'
+  -- TODO: Valida rango de Folios
+
+END
+
+
