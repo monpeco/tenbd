@@ -34,6 +34,18 @@ BEGIN
 	@p_tipo_erro 	varchar(12),
 	@p_tipo_dnte 	varchar(1)
 
+--
+  begin
+   select 
+    @codi_empr=CODI_EMPR, @tipo_docu=TIPO_DOCU, 
+    @foli_docu=FOLI_DOCU,
+ 
+    @corr_rafo=CORR_RAFO
+   from inserted
+  end
+--
+
+
 	print 'entrando a trg_bel_enca_docu'
 	-- TODO: Valida rango de Folios
 	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
