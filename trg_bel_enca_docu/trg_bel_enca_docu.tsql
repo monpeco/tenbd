@@ -47,7 +47,12 @@ BEGIN
   end
 --
 
-
+  begin
+     set  @hay_err = '0'
+     set  @hay_era = '0'
+     set  @mensaje2 =' '
+  end
+  
 	print 'entrando a trg_bel_enca_docu'
 	-- TODO: Valida rango de Folios
 	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
