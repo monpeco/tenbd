@@ -32,14 +32,16 @@ BEGIN
 	@p_desc_erro 	varchar(50),
 	@p_indi_dnte 	varchar(1),
 	@p_tipo_erro 	varchar(12),
-	@p_tipo_dnte 	varchar(1)
+	@p_tipo_dnte 	varchar(1),
+	@esta_docu 	 	varchar(3),
+	@rutt_rece 	 	varchar(20),
+	@p_aux_esta_defi varchar(3)
 
 --
   begin
    select 
     @codi_empr=CODI_EMPR, @tipo_docu=TIPO_DOCU, 
     @foli_docu=FOLI_DOCU,
- 
     @corr_rafo=CORR_RAFO
    from inserted
   end
@@ -85,5 +87,57 @@ BEGIN
 							end 
 					end
 		end
+
+--
+begin
+
+   if   @hay_err = '1'
+        set @esta_docu ='ERR'
+   else
+      begin
+		/*
+			OT 1502529 - Cargar en X Estado aquellos documentos que deben completarse (Referencia y C¾digo de Pdto). 
+			Completar con Digitador.
+		*/
+
+		select @esta_docu = 'PEN', @mensaje2 = ''
+		from dbo.personas
+		where codi_pers = @rutt_rece and isnull(modi_docu,'N') = 'S';
+
+		if @esta_docu != 'PEN' and @esta_docu !='PRC'
+		begin
+		   if   @hay_era = '1'
+			   set @esta_docu ='ERA'
+		   else
+		   begin
+			   set @esta_docu ='ING'
+			   set @mensaje2 = ''
+		   end
+		end
+      end
+end  
+--
+
+begin
+  if @esta_docu <>'HIS'
+   if @p_aux_esta_defi != 'ING' 
+   begin
+      set @esta_docu =@p_aux_esta_defi
+   end
+
+   begin
+     print 'Mensaje '+ isnull(@mensaje2,'**')
+     update dte_enca_docu set esta_docu = @esta_docu, 
+            MNSG_ERRO = isnull(MNSG_ERRO,'') + @mensaje2,
+            corr_rafo=@corr_rafo
+     where EXISTS 
+           (select *  from inserted
+            where inserted.codi_empr =dte_enca_docu.codi_empr
+            and inserted.foli_docu =dte_enca_docu.foli_docu
+            and inserted.tipo_docu =dte_enca_docu.tipo_docu)
+   end
+end 
+
+--
 
 END
