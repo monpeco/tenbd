@@ -38,7 +38,7 @@ BEGIN
 
 --
   begin
-   print 'recueprando desde inserted'
+   -- recueprando desde inserted
    select 
     @codi_empr=CODI_EMPR, @tipo_docu=TIPO_DOCU, 
 	@foli_docu=FOLI_DOCU, @corr_rafo=CORR_RAFO
@@ -47,14 +47,13 @@ BEGIN
 --
 
   begin
-	print 'seteando valores'
+	-- seteando valores
      set  @hay_err = '0'
      set  @hay_era = '0'
      set  @mensaje2 =' '
   end
   
-	print 'Valida rango de Folios'
-	-- TODO: Valida rango de Folios
+	-- Valida rango de Folios
 	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
   
 	execute @res = 	dte_chec_rang_foli @codi_empr,@tipo_docu,
@@ -79,7 +78,7 @@ BEGIN
 										@p_indi_dnte output, @p_existe output, @p_mensaje output
 								
 
-						set @descrip = 'TIPO_DOCU'
+						--set @descrip = 'TIPO_DOCU'
 						execute @res = dte_chec_tido_veel_esta @tipo_docu, @descrip output,
 									  @p_bole_elec output, @p_tipo_dnte output,
 									  @p_aux_esta_defi output,
@@ -92,10 +91,6 @@ BEGIN
 									begin
 										set  @hay_err = '1'
 										raiserror (@mensaje2,16,1)
-									end
-								else
-									begin
-										set  @hay_era = '1'
 									end
 							end 
 					end
