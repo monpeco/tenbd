@@ -35,25 +35,28 @@ BEGIN
 	@p_tipo_dnte 	varchar(1),
 	@esta_docu 	 	varchar(3),
 	@rutt_rece 	 	varchar(20),
-	@p_aux_esta_defi varchar(3)
+	@p_aux_esta_defi varchar(3),
+	@descrip   	varchar(80),
+	@p_bole_elec 	varchar(1)
 
 --
   begin
+   print 'recueprando desde inserted'
    select 
-    @codi_empr=CODI_EMPR, @tipo_docu=TIPO_DOCU, 
-    @foli_docu=FOLI_DOCU,
-    @corr_rafo=CORR_RAFO
+    @codi_empr=CODI_EMPR, @tipo_docu=TIPO_DOCU, @foli_docu=FOLI_DOCU,@corr_rafo=CORR_RAFO
    from inserted
   end
 --
 
   begin
+	print 'seteando valores'
      set  @hay_err = '0'
      set  @hay_era = '0'
      set  @mensaje2 =' '
+     --set @p_tipo_dnte = 'N'
   end
   
-	print 'entrando a trg_bel_enca_docu'
+	print 'Valida rango de Folios'
 	-- TODO: Valida rango de Folios
 	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
   
@@ -78,6 +81,15 @@ BEGIN
 										@p_desc_erro output, @p_tipo_erro output,
 										@p_indi_dnte output, @p_existe output, @p_mensaje output
 								
+--						
+    set @descrip = 'TIPO_DOCU'
+    execute @res= dte_chec_tido_veel_esta @tipo_docu, @descrip output,
+                  @p_bole_elec output, @p_tipo_dnte output,
+                  @p_aux_esta_defi output,
+                  @cod_error output, @mensaje output
+								
+								
+--
 						if (@p_tipo_dnte = 'N') OR (@p_tipo_dnte = 'S' AND @p_indi_dnte = 'S')
 							begin
 								if @p_tipo_erro ='ERR'   
