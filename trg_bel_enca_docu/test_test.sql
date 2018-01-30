@@ -2,12 +2,12 @@
 
 if exists (select * from dbo.sysobjects where [name] = 'test_Test')
 BEGIN
-PRINT 'Elimina trigger [test_Test]'
+PRINT 'Elimina procedure [test_Test]'
 drop procedure [dbo].[test_Test]
 END
 GO
 
-PRINT 'Creando trigger [test_Test]'
+PRINT 'Creando procedure [test_Test]'
 GO
 
 create  procedure test_Test 
