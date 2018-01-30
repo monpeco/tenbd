@@ -39,10 +39,12 @@ AS
 	@p_tipo_dnte 	varchar(1),
 	@esta_docu 	 	varchar(3),
 	@rutt_rece 	 	varchar(20),
-	@p_aux_esta_defi varchar(3)
+	@p_aux_esta_defi varchar(3),
+	@descrip   	varchar(80),
+	@p_bole_elec 	varchar(1)
 BEGIN
 	begin
-		print '1 - entrando a test_Test'
+		print '1 - entrando a test_Test ------------------'
 		  begin
 			 set  @hay_err = '0'
 			 set  @hay_era = '0'
@@ -50,8 +52,12 @@ BEGIN
 			 set @codi_empr = 1
 			 set @tipo_docu = 39
 			 set @foli_docu = 101
+			 --set @p_tipo_dnte = 'N'
 		  end
-
+		  
+	print ''
+	print '#1.1'
+	print ''
 	print '@codi_empr: ' + @codi_empr + ', @tipo_docu: ' + @tipo_docu  + ', @foli_docu: ' + @foli_docu 
 
 	print 'execute PARA_GET_VAL EGATE_TIPO_VALI, @p_salida output, @p_existe output, @p_mensaje output'
@@ -59,7 +65,9 @@ BEGIN
 	
 	print '@p_salida: ' + @p_salida + ', @p_existe: ' + @p_existe + ', @p_mensaje: ' + @p_mensaje
 
-
+	print ''
+	print '#1.2'
+	print ''
 	execute @res = 	dte_chec_rang_foli @codi_empr,@tipo_docu,
 					@corr_rafo output, @foli_docu, @ult_foli output, 
 					@cod_error output, @mensaje output 
@@ -73,9 +81,12 @@ BEGIN
  
  --- 2
  
-	print '2 - validacion cod_error'
+	print '2 - validacion cod_error -----------------------------------'
  	if @cod_error = 'S' 
 		begin 
+			print ''
+			print '#2.1'
+			print ''
 			set @mensaje2 =@mensaje2+ ' -20006 - FOLI_DOCU -'+ @mensaje
 			print '---> @mensaje2: [' + @mensaje2 + ']' --TODO QUITAR
 			
@@ -100,12 +111,31 @@ BEGIN
 						print '---> @p_indi_dnte: [' + @p_indi_dnte + ']' --TODO QUITAR
 						print '---> @p_existe: ['    + @p_existe + ']' --TODO QUITAR
 						print '---> @p_mensaje: ['   + @p_mensaje + ']' --TODO QUITAR
-						
+
+						print ''
+						print '#2.2'
+						print ''
+
 						print '------------------------]' --TODO QUITAR
 						print '---> @@p_tipo_dnte: ['   + @p_tipo_dnte + ']' --TODO QUITAR
 						print '---> @@p_tipo_dnte: ['   + @p_tipo_dnte + ']' --TODO QUITAR
 						print '---> @@p_indi_dnte: ['   + @p_indi_dnte + ']' --TODO QUITAR
-						
+
+						print ''
+						print '#2.3'
+						print ''
+    
+    
+    set @descrip = 'TIPO_DOCU'
+    execute @res= dte_chec_tido_veel_esta @tipo_docu, @descrip output,
+                  @p_bole_elec output, @p_tipo_dnte output,
+                  @p_aux_esta_defi output,
+                  @cod_error output, @mensaje output
+                  
+  						print ''
+						print '#2.4'
+						print ''
+						                
 						if (@p_tipo_dnte = 'N') OR (@p_tipo_dnte = 'S' AND @p_indi_dnte = 'S')
 							begin
 								print '---> @p_tipo_dnte = N: ' --TODO QUITAR
