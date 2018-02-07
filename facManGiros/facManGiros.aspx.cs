@@ -191,7 +191,7 @@ public partial class facManGiros : DbnetPage
                     {
                         //dr[4] = crearNombreArchivo(rutCliente.ToString(),tipo.ToString(),dr[1].ToString(),dr[2].ToString());
                         //dr[3] = crearCaff(dr[4].ToString(), rutCliente.ToString(), dr[5].ToString(), tipo.ToString(), dr[1].ToString(), dr[2].ToString(), dr[6].ToString(), dr[7].ToString(), dr[8].ToString(), dr[9].ToString(), dr[10].ToString(), dr[11].ToString(), dr[12].ToString(), dr[13].ToString());
-                        DbnetTool.MsgAlerta(dr[0].ToString(), this.Page);
+                        
                         qryTemp = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
                             "values (" +
                             "'" + Codi_ramo.Text + "'," +
@@ -239,6 +239,12 @@ public partial class facManGiros : DbnetPage
         }
         catch (Exception ex)
         {
+
+            if (ex is System.Data.OleDb.OleDbException)
+            {
+                DbnetTool.MsgAlerta("Infracción de la restricción PRIMARY KEY", this.Page);
+            }
+
             DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
                                   "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
                                   "pproc_erro", "Menu: Maestro de Giros", "VarChar", 50, "in",
