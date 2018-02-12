@@ -181,30 +181,18 @@ public partial class facManGiros : DbnetPage
                     string qryTemp = String.Empty;
                     string qryInsertRamos = String.Empty;
 
-                    /*if (DbnetGlobal.Base_dato == "SQLSERVER"){
-                    }else{
-                    }*/
-
                     dataTable = DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryCodiEmpr);
 
                     foreach (DataRow dr in dataTable.Rows)
                     {
-                        //dr[4] = crearNombreArchivo(rutCliente.ToString(),tipo.ToString(),dr[1].ToString(),dr[2].ToString());
-                        //dr[3] = crearCaff(dr[4].ToString(), rutCliente.ToString(), dr[5].ToString(), tipo.ToString(), dr[1].ToString(), dr[2].ToString(), dr[6].ToString(), dr[7].ToString(), dr[8].ToString(), dr[9].ToString(), dr[10].ToString(), dr[11].ToString(), dr[12].ToString(), dr[13].ToString());
-                        
                         qryTemp = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
-                            "values (" +
-                            "'" + Codi_ramo.Text + "'," +
-                            "'" + Nomb_ramo.Text + "'," +
-                            "" + dr[0].ToString() + "); ";
+                                    " values (" +
+                                    "'" + Codi_ramo.Text + "'," +
+                                    "'" + Nomb_ramo.Text + "'," +
+                                    "" + dr[0].ToString() + "); ";
                         qryInsertRamos += qryTemp;
                     }
 
-                    qryRamo = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
-                            "values (" +
-                            "'" + Codi_ramo.Text + "'," +
-                            "'" + Nomb_ramo.Text + "'," +
-                            "" + DbnetContext.Codi_empr.ToString() + ")";
                     DbnetTool.ctrlSqlInjection(this.Page.Form);
                     DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryInsertRamos);
                     if (salidaweb == 0)
