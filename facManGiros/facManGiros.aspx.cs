@@ -202,11 +202,19 @@ public partial class facManGiros : DbnetPage
                 }
                 else
                 {
-                    qryRamo = "update ramo set nomb_ramo='" + Nomb_ramo.Text + "'" +
-                         "where codi_ramo='" + Codi_ramo.Text + "' and codi_empr=" + DbnetContext.Codi_empr.ToString();
+                    qryCodiEmpr = "select codi_empr from empr";
+                    dataTable = DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryCodiEmpr);
+
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        qryRamo = " update ramo set nomb_ramo='" + Nomb_ramo.Text + "'" +
+                                " where codi_ramo='" + Codi_ramo.Text  + "'" +
+                                " and codi_empr=" + dr[0].ToString() + "; ";
+                        qryAllRamos += qryRamo;
+                    }
 
                     DbnetTool.ctrlSqlInjection(this.Page.Form);
-                    DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryRamo);
+                    DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryAllRamos);
                     if (salidaweb == 0)
                         DbnetTool.MsgAlerta("Cambios Realizados!!", this.Page);
                 }
