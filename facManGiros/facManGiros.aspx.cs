@@ -174,18 +174,18 @@ public partial class facManGiros : DbnetPage
         {
             if (ValidaFormulario())
             {
+                DataTable dataTable = new DataTable();
+                string qryCodiEmpr = String.Empty;
+                string qryInsertRamos = String.Empty;
+
                 if (modo == "I")
                 {
-                    DataTable dataTable = new DataTable();
-                    string qryCodiEmpr = "select codi_empr from empr";
-                    string qryTemp = String.Empty;
-                    string qryInsertRamos = String.Empty;
-
+                    qryCodiEmpr = "select codi_empr from empr";
                     dataTable = DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryCodiEmpr);
 
                     foreach (DataRow dr in dataTable.Rows)
                     {
-                        qryTemp = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
+                        string qryTemp = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
                                     " values (" +
                                     "'" + Codi_ramo.Text + "'," +
                                     "'" + Nomb_ramo.Text + "'," +
