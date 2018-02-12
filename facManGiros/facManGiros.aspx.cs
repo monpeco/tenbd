@@ -75,7 +75,7 @@ public partial class facManGiros : DbnetPage
                 lbTitulo.Text = "Mantencion de Giros";
 
 
-                if (DbnetContext.Val1 == "")
+                if (DbnetContext.Val1 == "" && modo != "M")
                     modo = "I";
                 else modo = "M";
 
