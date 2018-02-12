@@ -176,7 +176,7 @@ public partial class facManGiros : DbnetPage
             {
                 DataTable dataTable = new DataTable();
                 string qryCodiEmpr = String.Empty;
-                string qryInsertRamos = String.Empty;
+                string qryAllRamos = String.Empty;
 
                 if (modo == "I")
                 {
@@ -185,16 +185,16 @@ public partial class facManGiros : DbnetPage
 
                     foreach (DataRow dr in dataTable.Rows)
                     {
-                        string qryTemp = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
+                        qryRamo = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
                                     " values (" +
                                     "'" + Codi_ramo.Text + "'," +
                                     "'" + Nomb_ramo.Text + "'," +
                                     "" + dr[0].ToString() + "); ";
-                        qryInsertRamos += qryTemp;
+                        qryAllRamos += qryRamo;
                     }
 
                     DbnetTool.ctrlSqlInjection(this.Page.Form);
-                    DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryInsertRamos);
+                    DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryAllRamos);
                     if (salidaweb == 0)
                         DbnetTool.MsgAlerta("Nuevo Giro Agregado!!", this.Page);
 
