@@ -170,6 +170,7 @@ public partial class facManGiros : DbnetPage
     private void barRun_Click(object sender, System.Web.UI.ImageClickEventArgs e)
     {
         lbMensaje.Text = "";
+        string mensInsert = String.Empty;
         try
         {
             if (ValidaFormulario())
@@ -178,26 +179,35 @@ public partial class facManGiros : DbnetPage
                 {
                     DataTable dataTable = new DataTable();
                     string qryCodiEmpr = String.Empty;
-                    string qryAllRamos = String.Empty;
+                    int cInserts = 0;
+                    string nroEmpr = String.Empty;
 
                     qryCodiEmpr = "select codi_empr from empr";
                     dataTable = DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryCodiEmpr);
 
                     foreach (DataRow dr in dataTable.Rows)
                     {
+                        nroEmpr = dr[0].ToString();
                         qryRamo = "Insert into ramo(codi_ramo,nomb_ramo,codi_empr)" +
                                     " values (" +
                                     "'" + Codi_ramo.Text + "'," +
                                     "'" + Nomb_ramo.Text + "'," +
-                                    "" + dr[0].ToString() + "); ";
-                        qryAllRamos += qryRamo;
+                                    "" + nroEmpr + ") ";
+                        try
+                        {
+                            //DbnetTool.ctrlSqlInjection(this.Page.Form);
+                            DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryRamo);
+                            cInserts++;
+                        }
+                        catch (System.Data.OleDb.OleDbException ex)
+                        {
+                            //DbnetTool.MsgAlerta("Infracción de la restricción PRIMARY KEY en la empresa " + nroEmpr, this.Page);
+                            mensInsert = String.Format("Infracción de la restricción PRIMARY KEY en la empresa {0}. Favor ponerse en contacto con soporte técnico para revisar esta condición. ", nroEmpr);
+                        }
                     }
 
-                    DbnetTool.ctrlSqlInjection(this.Page.Form);
-                    DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryAllRamos);
-                    if (salidaweb == 0)
-                        DbnetTool.MsgAlerta("Nuevo Giro Agregado!!", this.Page);
-
+                    //DbnetTool.MsgAlerta("Nuevo Giro Agregado correctamente en " + cInserts + " de " + dataTable.Rows.Count + " empresas", this.Page);
+                    mensInsert += String.Format("Nuevo Giro Agregado correctamente en {0} de {1} empresas", cInserts, dataTable.Rows.Count);
                     Codi_ramo.Enabled = false;
                 }
                 else
@@ -214,7 +224,7 @@ public partial class facManGiros : DbnetPage
                 {
                     string aux = "";
                     if (modo == "I")
-                        aux = "Nuevo Giro Agregado!!";
+                        aux = mensInsert;
                     else
                         aux = "Cambios Realizados !!";
                     string pScript = "<script type=\"text/javascript\"> " +
