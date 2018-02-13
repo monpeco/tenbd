@@ -174,12 +174,12 @@ public partial class facManGiros : DbnetPage
         {
             if (ValidaFormulario())
             {
-                DataTable dataTable = new DataTable();
-                string qryCodiEmpr = String.Empty;
-                string qryAllRamos = String.Empty;
-
                 if (modo == "I")
                 {
+                    DataTable dataTable = new DataTable();
+                    string qryCodiEmpr = String.Empty;
+                    string qryAllRamos = String.Empty;
+
                     qryCodiEmpr = "select codi_empr from empr";
                     dataTable = DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryCodiEmpr);
 
@@ -202,19 +202,11 @@ public partial class facManGiros : DbnetPage
                 }
                 else
                 {
-                    qryCodiEmpr = "select codi_empr from empr";
-                    dataTable = DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryCodiEmpr);
-
-                    foreach (DataRow dr in dataTable.Rows)
-                    {
-                        qryRamo = " update ramo set nomb_ramo='" + Nomb_ramo.Text + "'" +
-                                " where codi_ramo='" + Codi_ramo.Text  + "'" +
-                                " and codi_empr=" + dr[0].ToString() + "; ";
-                        qryAllRamos += qryRamo;
-                    }
+                    qryRamo = "update ramo set nomb_ramo='" + Nomb_ramo.Text + "'" +
+                         "where codi_ramo='" + Codi_ramo.Text + "' and codi_empr=" + DbnetContext.Codi_empr.ToString();
 
                     DbnetTool.ctrlSqlInjection(this.Page.Form);
-                    DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryAllRamos);
+                    DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, qryRamo);
                     if (salidaweb == 0)
                         DbnetTool.MsgAlerta("Cambios Realizados!!", this.Page);
                 }
