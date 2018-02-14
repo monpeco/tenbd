@@ -201,12 +201,10 @@ public partial class facManGiros : DbnetPage
                         }
                         catch (System.Data.OleDb.OleDbException ex)
                         {
-                            //DbnetTool.MsgAlerta("Infracción de la restricción PRIMARY KEY en la empresa " + nroEmpr, this.Page);
-                            mensInsert = String.Format("Infracción de la restricción PRIMARY KEY en la empresa {0}. Favor ponerse en contacto con soporte técnico para revisar esta condición. ", nroEmpr);
+                            mensInsert = String.Format("Registro duplicado en la empresa {0}.", nroEmpr);
                         }
                     }
 
-                    //DbnetTool.MsgAlerta("Nuevo Giro Agregado correctamente en " + cInserts + " de " + dataTable.Rows.Count + " empresas", this.Page);
                     mensInsert += String.Format("Nuevo Giro Agregado correctamente en {0} de {1} empresas", cInserts, dataTable.Rows.Count);
                     Codi_ramo.Enabled = false;
                 }
@@ -237,12 +235,6 @@ public partial class facManGiros : DbnetPage
         }
         catch (Exception ex)
         {
-
-            if (ex is System.Data.OleDb.OleDbException)
-            {
-                DbnetTool.MsgAlerta("Infracción de la restricción PRIMARY KEY", this.Page);
-            }
-
             DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
                                   "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
                                   "pproc_erro", "Menu: Maestro de Giros", "VarChar", 50, "in",
