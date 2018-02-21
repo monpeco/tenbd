@@ -863,18 +863,13 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. PageLoad()", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            String erroMensaje = registroLog(ex);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     
@@ -1503,18 +1498,14 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. graba_acec()", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message + sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     private void graba_detalle()
@@ -1655,18 +1646,14 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. Detalle", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message+sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     private void graba_descuento()
@@ -1707,18 +1694,14 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. Descuento", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message+sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     private void graba_impuesto()
@@ -1754,18 +1737,14 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. Impuesto", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message+sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     private void graba_referencia()
@@ -1801,18 +1780,14 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. Referencias", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message + sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     private void graba_tpoBultos()
@@ -1848,18 +1823,14 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. TipoBulto", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message+sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     private void Graba_Comisiones()
@@ -1899,17 +1870,13 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. GrabaComisiones", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message+sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     protected void Grabar()
@@ -1982,14 +1949,10 @@ public partial class facPrcIngDTEPropio : DbnetPage
                 MsgError(1);
             }
         }
-        catch (Exception ex1)
+        catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                     "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                     "pproc_erro", "Menu: Ingreso de DTEs Propio. Grabar()", "VarChar", 50, "in",
-                                     "pmsaj_erro", ex1.Message + sLugar, "VarChar", 150, "in",
-                                     "pbin_erro", "WEB", "VarChar", 50, "in",
-                                     "p_mensaje", "", "VarChar", 200, "out");
+            //sLugar
+            String erroMensaje = registroLog(ex);
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
@@ -2030,17 +1993,12 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. barRun()", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            String erroMensaje = registroLog(ex);
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     protected void barExit_Click(object sender, ImageClickEventArgs e)
@@ -2455,17 +2413,12 @@ public partial class facPrcIngDTEPropio : DbnetPage
             {File.Copy(origen, cache + archivo, true);}
             catch (Exception ex)
             {
-                DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. Previsualizar()", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+                String erroMensaje = registroLog(ex);
                 chkDespliega.Checked = true;
                 lbMensaje.Enabled = true;
                 lbMensaje.Visible = true;
                 lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-                lbEx.Text = sp.return_String("p_mensaje");
+                lbEx.Text = erroMensaje;
             }
             pScript = "<script type=\"text/javascript\"> " +
                                          "window.open(\"" + "../cache/" + archivo + "\",\"" + "_blank\",\"width=800,height=600,scrollbars=yes,toolbar=no,menubar=yes\");" +
