@@ -1,0 +1,100 @@
+IF EXISTS (SELECT * FROM sys.objects WHERE [name] = 'trg_bel_enca_docu' AND [type] = 'TR')
+BEGIN
+	PRINT 'Elimina trigger trg_bel_enca_docu'
+	DROP TRIGGER [dbo].[trg_bel_enca_docu]
+END
+GO
+
+PRINT 'Creando trigger trg_bel_enca_docu'
+GO
+
+CREATE TRIGGER [dbo].[trg_bel_enca_docu]
+    on [dbo].[bel_enca_docu]
+    for insert AS
+BEGIN
+	declare
+	@hay_err			varchar(3),    	
+	@hay_era			varchar(3),
+	@res				varchar(10),
+	@codi_empr 			varchar(20),
+	@tipo_docu			varchar(20),
+	@corr_rafo 			varchar(20), 
+	@foli_docu 			varchar(20),
+	@ult_foli 			varchar(10),
+	@cod_error 			varchar(10), 
+	@mensaje 			varchar(80),
+	@mensaje2 			varchar(2000),
+	@p_salida 			varchar(80),
+	@p_existe 			varchar(1),
+	@p_mensaje 			varchar(80),
+	@p_codi 	 		varchar(5),
+	@p_desc_erro 		varchar(50),
+	@p_indi_dnte 		varchar(1),
+	@p_tipo_erro 		varchar(12),
+	@p_tipo_dnte 		varchar(1),
+	@p_aux_esta_defi 	varchar(3),
+	@descrip   			varchar(80),
+	@p_bole_elec 		varchar(1)
+
+--
+  begin
+   -- recueprando desde inserted
+   select 
+    @codi_empr=CODI_EMPR, @tipo_docu=TIPO_DOCU, 
+	@foli_docu=FOLI_DOCU, @corr_rafo=CORR_RAFO
+   from inserted
+  end
+--
+
+  begin
+	-- seteando valores
+     set  @hay_err = '0'
+     set  @hay_era = '0'
+     set  @mensaje2 =' '
+  end
+  
+	-- Valida rango de Folios
+	execute PARA_GET_VAL 'EGATE_TIPO_VALI', @p_salida output, @p_existe output, @p_mensaje output
+  
+	execute @res = 	dte_chec_rang_foli @codi_empr,@tipo_docu,
+					@corr_rafo output, @foli_docu, @ult_foli output, 
+					@cod_error output, @mensaje output 
+                
+	if @cod_error = 'S' 
+		begin 
+			set @mensaje2 = @mensaje2+ ' -20006 - FOLI_DOCU -'+ @mensaje
+
+			if  @p_salida = 'TOTAL' 
+				begin
+					set  @hay_err = '1'
+					raiserror (@mensaje2,16,1)
+				end
+			else 
+				if  @p_salida  = 'PARCIAL'
+					begin
+						set @p_codi ='20001'
+						execute @res = 	dte_chec_erro  @p_codi,
+										@p_desc_erro output, @p_tipo_erro output,
+										@p_indi_dnte output, @p_existe output, @p_mensaje output
+								
+
+						--set @descrip = 'TIPO_DOCU'
+						execute @res = dte_chec_tido_veel_esta @tipo_docu, @descrip output,
+									  @p_bole_elec output, @p_tipo_dnte output,
+									  @p_aux_esta_defi output,
+									  @cod_error output, @mensaje output
+
+
+						if (@p_tipo_dnte = 'N') OR (@p_tipo_dnte = 'S' AND @p_indi_dnte = 'S')
+							begin
+								if @p_tipo_erro ='ERR'   
+									begin
+										set  @hay_err = '1'
+										raiserror (@mensaje2,16,1)
+									end
+							end 
+					end
+		end
+
+
+END
