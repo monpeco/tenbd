@@ -2493,13 +2493,45 @@ public partial class facPrcIngDTEPropio : DbnetPage
     
     private String registroLog(Exception ex)
     {
+        String exMessage = ex.Message;
+        String result = String.Empty;
+        String p_mensaje = String.Empty;
+
         DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
                               "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
                               "pproc_erro", "Menu: Ingreso de DTEs Propio. Grabar DTE", "VarChar", 50, "in",
                               "pmsaj_erro", ex.Message /*+ sLugar*/, "VarChar", 150, "in",
                               "pbin_erro", "WEB", "VarChar", 50, "in",
                               "p_mensaje", "", "VarChar", 200, "out");
-        return ex.Message;
+
+        p_mensaje = sp.return_String("p_mensaje");
+
+        if (exMessage.Contains("PRIMARY KEY") || exMessage.Contains("UNIQUE KEY")) 
+        {
+            result = "Error Documento Duplicado";
+        }
+        else if (exMessage.Contains("FOREIGN KEY"))
+        {
+            result = "Error en Dependencia del Documento";
+        }
+        else if (exMessage.Contains(", no permitido"))
+        {
+            result = "En Documento Contiene Palabras Peservada. Favor corregir para poder continuar";
+        }
+        else if( (exMessage.Contains("El campo ") && exMessage.Contains(" no puede estar vacio"))
+              || (exMessage.Contains("El campo ") || exMessage.Contains(" debe ser numerico y distinto a vacio.")) )
+        {
+            result = exMessage;
+        }
+        else
+        {
+            result = p_mensaje;
+        }
+
+
+
+
+        return result;
     }
 
     
