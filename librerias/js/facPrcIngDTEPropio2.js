@@ -159,7 +159,6 @@ function camps(tabla, celda) {
                     Tbl.getElementsByTagName('td')[8].innerHTML = cmb3;
                     Tbl.getElementsByTagName('td')[9].innerHTML = '<input class="txt" style="width:92%;position:relative;float:left;" id="txtdet8" value="' + Tbl.getElementsByTagName('td')[9].innerHTML + '" onblur="multiplicar(\'' + tabla + '\',\'' + celda + '\',\'txtdet3\',\'txtdet5\',\'optdet7\',\'txtdet8\',\'txtdet6\')"/>';
                     Tbl.getElementsByTagName('td')[10].innerHTML = cmb1;
-                    //TODO-AM-9998417: QUITAR Tbl.getElementsByTagName('td')[11].innerHTML = '<input class="txt" id="chkdet10" type="checkbox" ' + (Tbl.getElementsByTagName('td')[11].innerHTML == "S" ? "checked" : "") + '>';
                     Tbl.getElementsByTagName('td')[11].innerHTML = '<select class="dbnLov" id="chkdet10"><option value="0" >Seleccionar Indicador</option><option value="1" >1-No Afecto o Exento</option><option value="2" >2-Prod o Serv No facturable</option><option value="6" >6-Prod o Serv No facturable Negativo</option></select>';
                     Tbl.getElementsByTagName('td')[12].innerHTML = cmb12;
                     Tbl.getElementsByTagName('td')[13].innerHTML = '<input class="txt" style="width:92%;position:relative;float:left;" id="txtdet13" value="' + Tbl.getElementsByTagName('td')[13].innerHTML + '" />';
@@ -429,7 +428,7 @@ function fndescuento(tabla, celda, item1, item2, resultado, valor, tipo) {
     var Tblaux = document.getElementById('tbl_detalle');
     for (xx = 1; xx < Tblaux.rows.length; xx++) {
         var Tbla = document.getElementById(Tblaux.rows[xx].id);
-        if (Tbla.getElementsByTagName('td')[11].innerHTML == "N") {
+        if (Tbla.getElementsByTagName('td')[11].innerHTML == "0") {
             deta_noexento = parseFloat(deta_noexento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 deta_noexento = parseFloat(deta_noexento);
@@ -440,7 +439,23 @@ function fndescuento(tabla, celda, item1, item2, resultado, valor, tipo) {
                 val2 = parseFloat(Tbla.getElementsByTagName('td')[9].innerHTML.replace(",", "."));
             }
         }
-        else {
+        else if ((Tbla.getElementsByTagName('td')[11].innerHTML == "2") || (Tbla.getElementsByTagName('td')[11].innerHTML == "6")) {
+
+
+
+
+            //deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
+            deta_no_facturable = parseFloat(deta_no_facturable) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
+            
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" || Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" || Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "$") {
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+
+
+        } else if (Tbla.getElementsByTagName('td')[11].innerHTML == "1") {
             deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" || Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 deta_exento = parseFloat(deta_exento);
@@ -527,6 +542,7 @@ function acepta() {
     var Tbl = document.getElementById('tbl_detalle');
     var deta_noexento = 0;
     var deta_exento = 0;
+    var deta_no_facturable = 0;
     var desc_noexento = 0;
     var desc_exento = 0;
     for (x = 1; x < Tbl.rows.length; x++) {
@@ -543,7 +559,6 @@ function acepta() {
             Tbla.getElementsByTagName('td')[8].innerHTML = document.getElementById('optdet7').value; //Tipo descuento
             Tbla.getElementsByTagName('td')[9].innerHTML = document.getElementById('txtdet8').value; //Valor Descuento
             Tbla.getElementsByTagName('td')[10].innerHTML = document.getElementById('optdet9').value;
-            //TODO-AM-9998417: QUITAR Tbla.getElementsByTagName('td')[11].innerHTML = (document.getElementById('chkdet10').checked ? "S" : "N");
             Tbla.getElementsByTagName('td')[11].innerHTML = document.getElementById('chkdet10').value;
             Tbla.getElementsByTagName('td')[12].innerHTML = document.getElementById('optdet12').value;
             Tbla.getElementsByTagName('td')[13].innerHTML = document.getElementById('txtdet13').value;
@@ -580,9 +595,7 @@ function acepta() {
             ST.innerHTML = Math.round(ST.innerHTML);
         else
             ST.innerHTML = fix(ST.innerHTML);
-        var debug = true; if (debug) alert(Tbla.getElementsByTagName('td')[11].innerHTML); //TODO-AM-9998417: QUITAR 
         if (Tbla.getElementsByTagName('td')[11].innerHTML == "0") {
-            if (debug) alert("Entro en 0, normal");
             deta_noexento = parseFloat(deta_noexento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
@@ -594,13 +607,20 @@ function acepta() {
                 var totalvalor = Tbla.getElementsByTagName('td')[9].innerHTML;
                 deta_noexento = parseFloat(deta_noexento);
             }
-        } else if (Tbla.getElementsByTagName('td')[11].innerHTML == "2") {
-            if (debug) alert("Entro en 2");
-        } else if (Tbla.getElementsByTagName('td')[11].innerHTML == "6") {
-            if (debug) alert("Entro en 6");
-        }
+        } else if ((Tbla.getElementsByTagName('td')[11].innerHTML == "2") || (Tbla.getElementsByTagName('td')[11].innerHTML == "6")) {
+            deta_no_facturable = parseFloat(deta_no_facturable) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
+                var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
+                var totalPorc = Tbla.getElementsByTagName('td')[9].innerHTML;
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+            if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "$") {
+                var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
+                var totalvalor = Tbla.getElementsByTagName('td')[9].innerHTML;
+                deta_no_facturable = parseFloat(deta_no_facturable);
+            }
+        } 
         else if (Tbla.getElementsByTagName('td')[11].innerHTML == "1") {
-            if (debug) alert("Entro en else, exento 1 (checked)");
             deta_exento = parseFloat(deta_exento) + parseFloat(Tbla.getElementsByTagName('td')[7].innerHTML);
             if (Tbla.getElementsByTagName('td')[9].innerHTML != "" && Tbla.getElementsByTagName('td')[9].innerHTML != 0 && Tbla.getElementsByTagName('td')[8].innerHTML == "%") {
                 var totalItem = Tbla.getElementsByTagName('td')[7].innerHTML;
@@ -764,6 +784,7 @@ function acepta() {
 
     document.getElementById('lblcantrefe').innerHTML = Tbl.rows.length - 1;
     document.getElementById('lblTotalAfecto').innerHTML = Math.round(deta_noexento + desc_noexento);
+    document.getElementById('lblTotalNoFacturable').innerHTML = Math.round(deta_no_facturable); 
     document.getElementById('lblTotalExento').innerHTML = Math.round(deta_exento + desc_exento);
 
     if (tipo_documento() == false) {
@@ -823,8 +844,9 @@ _noaf_otmo = parseFloat(_lblTotalExento) * _tipo_camb;
 _mont_otmo = parseFloat(_lblTotal) * _tipo_camb;
 }
 
-document.getElementById('txtTotales').value = document.getElementById('lblTotalAfecto').innerHTML + "|" + document.getElementById('lblTotalExento').innerHTML + "|" + document.getElementById('lblIVA').innerHTML + "|" + document.getElementById('lblTotal').innerHTML + "|" + _noaf_otmo.toFixed(4) + "|" + _mont_otmo.toFixed(4);
+document.getElementById('txtTotales').value = document.getElementById('lblTotalAfecto').innerHTML + "|" + document.getElementById('lblTotalExento').innerHTML + "|" + document.getElementById('lblIVA').innerHTML + "|" + document.getElementById('lblTotal').innerHTML + "|" + _noaf_otmo.toFixed(4) + "|" + _mont_otmo.toFixed(4) + "|" + deta_no_facturable.toFixed(4);
     document.getElementById('lblTotalAfecto').innerHTML = document.getElementById('lblTotalAfecto').innerHTML.replace(".", ",");
+    document.getElementById('lblTotalNoFacturable').innerHTML = document.getElementById('lblTotalNoFacturable').innerHTML.replace(".", ","); 
     document.getElementById('lblcantrefe').innerHTML = document.getElementById('lblcantrefe').innerHTML.replace(".", ",");
     document.getElementById('lblTotalExento').innerHTML = document.getElementById('lblTotalExento').innerHTML.replace(".", ",");
     document.getElementById('lblTotal').innerHTML = document.getElementById('lblTotal').innerHTML.replace(".", ",");

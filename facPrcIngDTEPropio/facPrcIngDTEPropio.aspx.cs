@@ -628,7 +628,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
 
                             cant_item = Math.Pow(Convert.ToDouble(dr["cant_item"]),1).ToString().ToString();
                             precio_item = Math.Pow(Convert.ToDouble(dr["prec_item"]),1).ToString();
-                            if (Tipo_docu.Text == "110" || Tipo_docu.Text == "111" || Tipo_docu.Text == "112" || Tipo_docu.Text == "43")
+                            if (Tipo_docu.Text == "110" || Tipo_docu.Text == "111" || Tipo_docu.Text == "112")
                             {
                                 neto_item = Math.Pow(Convert.ToDouble(dr["neto_item"]), 1).ToString();
                             }
@@ -666,7 +666,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                                                (desc_porc == "0" ? (desc_cant != "0" ? "$" : "%") : "%") + "|" +
                                                (desc_porc == "0" ? (desc_cant == "0" ? "0" : desc_cant) : desc_porc) + "|" +
                                                dr["codi_impu"].ToString() + "|" +
-                                               dr["indi_exen"].ToString() + "|" +
+                                               (dr["indi_exen"].ToString() == "1" ? "S" : "N") + "|" +
                                                dr["tipo_codi2"].ToString() + "|" +
                                                dr["codi_item2"].ToString() + "|"+
                                                dr["tipo_codi_liq"].ToString() + "|#$#";
@@ -1309,8 +1309,16 @@ public partial class facPrcIngDTEPropio : DbnetPage
                         obj.Set("MONT_BACO", dMontBaco.ToString(), 1);
                 }
 
-                obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", ".")) ? "0" : totales[1].Replace(",", ".")), 1);
+                
+                /*string[] datos = txtAuxDetalle.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
+                string[] campos = datos[0].Split('|');
+                if (campos[11] == "2" || campos[11] == "6"){
+                    obj.Set("mont_nofa", (string.IsNullOrEmpty(totales[6].Replace(",", ".")) ? "0" : totales[6].Replace(",", ".")), 1);
+                }else{
+                    obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", "."))? "0" : totales[1].Replace(",", ".")), 1);
+                }*/
                 obj.Set("mont_nofa", (string.IsNullOrEmpty(totales[6].Replace(",", ".")) ? "0" : totales[6].Replace(",", ".")), 1);
+                obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", ".")) ? "0" : totales[1].Replace(",", ".")), 1);//
                 obj.Set("mont_tota", (string.IsNullOrEmpty(totales[3].Replace(",", ".")) ? "0" : totales[3].Replace(",", ".")), 1);
                 obj.Set("foli_clie", Foli_docu_rp.Text, 0);
 
@@ -1598,6 +1606,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                     obj.Set("neto_item", netoItem.ToString(), 1);
                 }
                 obj.Set("codi_impu", campos[10].Trim(), 0);
+                //TODO-AM-9998417: QUITAR obj.Set("indi_exen", (campos[11] != "S" ? "0" : "1"), 1); sLugar = sLugar + "135";
                 obj.Set("indi_exen", campos[11], 1); sLugar = sLugar + "135";
                 if (sAdicionales1.Length > 1)
                 {
