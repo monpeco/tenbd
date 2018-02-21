@@ -628,7 +628,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
 
                             cant_item = Math.Pow(Convert.ToDouble(dr["cant_item"]),1).ToString().ToString();
                             precio_item = Math.Pow(Convert.ToDouble(dr["prec_item"]),1).ToString();
-                            if (Tipo_docu.Text == "110" || Tipo_docu.Text == "111" || Tipo_docu.Text == "112")
+                            if (Tipo_docu.Text == "110" || Tipo_docu.Text == "111" || Tipo_docu.Text == "112" || Tipo_docu.Text == "43")
                             {
                                 neto_item = Math.Pow(Convert.ToDouble(dr["neto_item"]), 1).ToString();
                             }
@@ -666,7 +666,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                                                (desc_porc == "0" ? (desc_cant != "0" ? "$" : "%") : "%") + "|" +
                                                (desc_porc == "0" ? (desc_cant == "0" ? "0" : desc_cant) : desc_porc) + "|" +
                                                dr["codi_impu"].ToString() + "|" +
-                                               (dr["indi_exen"].ToString() == "1" ? "S" : "N") + "|" +
+                                               dr["indi_exen"].ToString() + "|" +
                                                dr["tipo_codi2"].ToString() + "|" +
                                                dr["codi_item2"].ToString() + "|"+
                                                dr["tipo_codi_liq"].ToString() + "|#$#";
@@ -1197,14 +1197,17 @@ public partial class facPrcIngDTEPropio : DbnetPage
                 query = "";
                 int largo;
                 largo = (lvGiros.Descripcion.Length > 40) ? 40 : lvGiros.Descripcion.Length;
-                DbnetWebLibrary.asObject obj = new asObject();
+                asObjectException obj = new asObjectException();
 
                 string[] totales = txtTotales.Text.Split('|');
 
                 sLugar = "antes de obj.Set" + ", txtTotales.Text:[" + txtTotales.Text + "]";
                 obj.Set("codi_empr", DbnetContext.Codi_empr.ToString(), 1);
                 obj.Set("tipo_docu", Tipo_docu.Text, 1);
-                obj.Set("foli_docu", Foli_docu.Text, 1, "Error al asignarse un Folio");
+                //TODO-AM obj.Set("foli_docu", Foli_docu.Text, 1, "Error al asignarse un Folio");
+                string temp = Foli_docu.Text;
+                obj.Set("foli_docu", temp, 1);
+
                 obj.Set("esta_docu", Esta_docu.Text, 0);
                 obj.Set("fech_emis", Convert.ToDateTime(Fech_Emis.Text).ToString("yyyy-MM-dd"), 0);
 
@@ -1309,16 +1312,8 @@ public partial class facPrcIngDTEPropio : DbnetPage
                         obj.Set("MONT_BACO", dMontBaco.ToString(), 1);
                 }
 
-                
-                /*string[] datos = txtAuxDetalle.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
-                string[] campos = datos[0].Split('|');
-                if (campos[11] == "2" || campos[11] == "6"){
-                    obj.Set("mont_nofa", (string.IsNullOrEmpty(totales[6].Replace(",", ".")) ? "0" : totales[6].Replace(",", ".")), 1);
-                }else{
-                    obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", "."))? "0" : totales[1].Replace(",", ".")), 1);
-                }*/
+                obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", ".")) ? "0" : totales[1].Replace(",", ".")), 1);
                 obj.Set("mont_nofa", (string.IsNullOrEmpty(totales[6].Replace(",", ".")) ? "0" : totales[6].Replace(",", ".")), 1);
-                obj.Set("mont_exen", (string.IsNullOrEmpty(totales[1].Replace(",", ".")) ? "0" : totales[1].Replace(",", ".")), 1);//
                 obj.Set("mont_tota", (string.IsNullOrEmpty(totales[3].Replace(",", ".")) ? "0" : totales[3].Replace(",", ".")), 1);
                 obj.Set("foli_clie", Foli_docu_rp.Text, 0);
 
@@ -1454,17 +1449,12 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                  "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                  "pproc_erro", "Menu: Ingreso de DTEs Propio. Grabar DTE", "VarChar", 50, "in",
-                                  "pmsaj_erro", ex.Message + sLugar, "VarChar", 150, "in",
-                                  "pbin_erro", "WEB", "VarChar", 50, "in",
-                                  "p_mensaje", "", "VarChar", 200, "out");
+            String erroMensaje = registroLog(ex);
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
             lbMensaje.Text = "<img src=\"../librerias/img/imgWarn.png\" border=\"0\" class=\"dbnEstado\" />";
-            lbEx.Text = sp.return_String("p_mensaje");
+            lbEx.Text = erroMensaje;
         }
     }
     public string restacero(string valor_string)
@@ -1544,7 +1534,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         {
             string[] datos = txtAuxDetalle.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
             string[] sAdicionales = txtAgility.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
-            DbnetWebLibrary.asObject obj = new asObject();
+            asObjectException obj = new asObjectException();
             for (int i = 0; i < datos.Length - 1; i++)
             {
                 string[] campos = datos[i].Split('|'); sLugar = "datos[i]" + datos[i];
@@ -1606,7 +1596,6 @@ public partial class facPrcIngDTEPropio : DbnetPage
                     obj.Set("neto_item", netoItem.ToString(), 1);
                 }
                 obj.Set("codi_impu", campos[10].Trim(), 0);
-                //TODO-AM-9998417: QUITAR obj.Set("indi_exen", (campos[11] != "S" ? "0" : "1"), 1); sLugar = sLugar + "135";
                 obj.Set("indi_exen", campos[11], 1); sLugar = sLugar + "135";
                 if (sAdicionales1.Length > 1)
                 {
@@ -1692,7 +1681,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         {
             DbnetTool.ctrlSqlInjection(this.Page.Form);
             string[] datos = txtAuxDescuento.Text.Split(new string[] { "#$#" }, StringSplitOptions.None);
-            DbnetWebLibrary.asObject obj = new asObject();
+            asObjectException obj = new asObjectException();
 
             for (int i = 0; i < datos.Length - 1; i++)
             {
@@ -1740,7 +1729,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         
         DbnetTool.ctrlSqlInjection(this.Page.Form);
         DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, query);
-        DbnetWebLibrary.asObject obj = new asObject();
+        asObjectException obj = new asObjectException();
         try
         {
             DbnetTool.ctrlSqlInjection(this.Page.Form);
@@ -1786,7 +1775,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                         DbnetContext.Codi_empr, Tipo_docu.Text, Foli_docu.Text);
         DbnetTool.ctrlSqlInjection(this.Page.Form);
         DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, query);
-        DbnetWebLibrary.asObject obj = new asObject();
+        asObjectException obj = new asObjectException();
         try
         {
             DbnetTool.ctrlSqlInjection(this.Page.Form);
@@ -1833,7 +1822,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                         DbnetContext.Codi_empr, Tipo_docu.Text, Foli_docu.Text);
         DbnetTool.ctrlSqlInjection(this.Page.Form);
         DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, query);
-        DbnetWebLibrary.asObject obj = new asObject();
+        asObjectException obj = new asObjectException();
         try
         {
             DbnetTool.ctrlSqlInjection(this.Page.Form);
@@ -1880,7 +1869,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                         DbnetContext.Codi_empr, Tipo_docu.Text, Foli_docu.Text);
         DbnetTool.ctrlSqlInjection(this.Page.Form);
         DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, query);
-        DbnetWebLibrary.asObject obj = new asObject();
+        asObjectException obj = new asObjectException();
         int iNumeCoca = 1;
         try
         {
@@ -2304,7 +2293,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         DbnetTool.ctrlSqlInjection(this.Page.Form);
         DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, query);
         sLugar += "despues de actualizar registro a ING en BD|";
-        registroLog(sLugar);
+        registroLog(new Exception(sLugar));
         DbnetTool.MsgAlerta("Se imprimio el Documento", this.Page);
 
         salir();
@@ -2548,15 +2537,18 @@ public partial class facPrcIngDTEPropio : DbnetPage
     {
         cargaSugerencia();
     }
-    private void registroLog(string sData)
+    
+    private String registroLog(Exception ex)
     {
         DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
-                                 "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                                 "pproc_erro", "Menu: Ingreso de DTEs Propio. registroLog", "VarChar", 50, "in",
-                                 "pmsaj_erro", sData, "VarChar", 150, "in",
-                                 "pbin_erro", "WEB", "VarChar", 50, "in",
-                                 "p_mensaje", "", "VarChar", 200, "out");
+                              "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
+                              "pproc_erro", "Menu: Ingreso de DTEs Propio. Grabar DTE", "VarChar", 50, "in",
+                              "pmsaj_erro", ex.Message /*+ sLugar*/, "VarChar", 150, "in",
+                              "pbin_erro", "WEB", "VarChar", 50, "in",
+                              "p_mensaje", "", "VarChar", 200, "out");
+        return ex.Message;
     }
+
     
     [WebMethod]
     [ScriptMethod(UseHttpGet = false)]
@@ -2622,4 +2614,46 @@ public class Sucursal
     public string sDireccion { get; set; }
     public string sComuna { get; set; }
     public string sCiudad { get; set; }
+}
+
+public class asObjectException : asObject
+{
+    public asObjectException()
+    {
+        //***
+    }
+    private string[] objeto = new string[100];
+    private string[] valor = new string[100];
+    private int[] texto = new int[100];
+    private int contador = 0;
+
+    public void Set(string objeto, string valor, int texto, string error)
+    {
+        Exception myException;
+
+
+        if (valor == "")
+        {
+            myException = new Exception("El campo " + error + " no puede estar vacio.@");
+            throw myException;
+        }
+
+        if (texto == 1)
+            valor = valor.ToString().Replace(',', '.');
+        string valor2 = valor.Replace("-", "");
+        if (texto == 1 && !(System.Text.RegularExpressions.Regex.IsMatch(valor2, "^\\d{0,20}\\.{0,1}?\\d{1,4}$") ||
+                             System.Text.RegularExpressions.Regex.IsMatch(valor2, "^\\d{0,20}\\,{0,1}?\\d{1,4}$")))
+        {
+            myException = new Exception("El campo " + error + " debe ser numerico y distinto a vacio.@");
+            throw myException;
+        }
+
+        this.objeto[this.contador] = objeto;
+        this.valor[this.contador] = valor;
+        this.texto[this.contador] = texto;
+        this.contador++;
+
+    }
+
+
 }
