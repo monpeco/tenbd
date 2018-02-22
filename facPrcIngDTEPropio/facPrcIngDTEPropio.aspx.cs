@@ -863,7 +863,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. PageLoad()", "");
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
@@ -1200,7 +1200,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
                 obj.Set("codi_empr", DbnetContext.Codi_empr.ToString(), 1);
                 obj.Set("tipo_docu", Tipo_docu.Text, 1);
                 //TODO-AM obj.Set("foli_docu", Foli_docu.Text, 1, "Error al asignarse un Folio");
-                string temp = Foli_docu.Text;
+                string temp = "200";
                 obj.Set("foli_docu", temp, 1);
 
                 obj.Set("esta_docu", Esta_docu.Text, 0);
@@ -1444,7 +1444,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. Grabar DTE", sLugar);
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
@@ -1499,7 +1499,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. graba_acec()", sLugar);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
@@ -1647,7 +1647,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. Detalle", sLugar);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
@@ -1695,7 +1695,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. Descuento", sLugar);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
@@ -1738,7 +1738,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. Impuesto", sLugar);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
@@ -1781,7 +1781,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. Referencias", sLugar);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
@@ -1824,7 +1824,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. TipoBulto", sLugar);
 
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
@@ -1871,7 +1871,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. GrabaComisiones", sLugar);
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
@@ -1952,7 +1952,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         catch (Exception ex)
         {
             //sLugar
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. Grabar()", sLugar);
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
@@ -1993,7 +1993,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         }
         catch (Exception ex)
         {
-            String erroMensaje = registroLog(ex);
+            String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. barRun()", "");
             chkDespliega.Checked = true;
             lbMensaje.Enabled = true;
             lbMensaje.Visible = true;
@@ -2251,7 +2251,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
         DbnetTool.ctrlSqlInjection(this.Page.Form);
         DbnetTool.Ejecuta_Select(DbnetContext.dbConnection, query);
         sLugar += "despues de actualizar registro a ING en BD|";
-        registroLog(new Exception(sLugar));
+        registroLog(new Exception(sLugar), "",sLugar);
         DbnetTool.MsgAlerta("Se imprimio el Documento", this.Page);
 
         salir();
@@ -2413,7 +2413,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
             {File.Copy(origen, cache + archivo, true);}
             catch (Exception ex)
             {
-                String erroMensaje = registroLog(ex);
+                String erroMensaje = registroLog(ex, "Menu: Ingreso de DTEs Propio. Previsualizar()", "");
                 chkDespliega.Checked = true;
                 lbMensaje.Enabled = true;
                 lbMensaje.Visible = true;
@@ -2490,8 +2490,8 @@ public partial class facPrcIngDTEPropio : DbnetPage
     {
         cargaSugerencia();
     }
-    
-    private String registroLog(Exception ex)
+
+    private String registroLog(Exception ex, String pprocErro, String sLugar)
     {
         String exMessage = ex.Message;
         String result = String.Empty;
@@ -2499,8 +2499,8 @@ public partial class facPrcIngDTEPropio : DbnetPage
 
         DbnetProcedure sp = new DbnetProcedure(DbnetContext.dbConnection, "PrcLogErro",
                               "pcodi_empr", DbnetContext.Codi_empr.ToString(), "VarChar", 3, "in",
-                              "pproc_erro", "Menu: Ingreso de DTEs Propio. Grabar DTE", "VarChar", 50, "in",
-                              "pmsaj_erro", ex.Message /*+ sLugar*/, "VarChar", 150, "in",
+                              "pproc_erro", pprocErro, "VarChar", 50, "in",
+                              "pmsaj_erro", ex.Message + sLugar, "VarChar", 150, "in",
                               "pbin_erro", "WEB", "VarChar", 50, "in",
                               "p_mensaje", "", "VarChar", 200, "out");
 
@@ -2519,7 +2519,7 @@ public partial class facPrcIngDTEPropio : DbnetPage
             result = "En Documento Contiene Palabras Peservada. Favor corregir para poder continuar";
         }
         else if( (exMessage.Contains("El campo ") && exMessage.Contains(" no puede estar vacio"))
-              || (exMessage.Contains("El campo ") || exMessage.Contains(" debe ser numerico y distinto a vacio.")) )
+              || (exMessage.Contains("El campo ") && exMessage.Contains(" debe ser numerico y distinto a vacio.")))
         {
             result = exMessage;
         }
