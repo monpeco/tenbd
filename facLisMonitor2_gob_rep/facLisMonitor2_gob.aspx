@@ -230,13 +230,14 @@
 								runat="server" Design_Time_Lock="True" CssClass="dbnTextBox_Numero" Width="79px">9999999999</cc1:dbnetwebtextbox_numero></td>
                                 <td><cc1:dbnetweblabel id="lbCodi_pers" Width="60px" runat="server">Receptor</cc1:dbnetweblabel></td>
                                 <td><cc1:dbnetwebtextbox_numero id="Codi_pers" style=""
-								runat="server" Design_Time_Lock="True" CssClass="dbnTextbox_Numero" Width="64px" 
-                                AutoPostBack="True" MaxLength="16" Height="19px">0</cc1:dbnetwebtextbox_numero>
+								runat="server" Design_Time_Lock="True" CssClass="dbnTextbox_Numero" Width="64px" MaxLength="16" 
+                                        Height="19px"></cc1:dbnetwebtextbox_numero>
                                 <cc1:dbnetweblov id="lvCodi_pers" style=""
 								tabIndex="6" runat="server" Design_Time_Lock="True" Width="197px" AutoPostBack="True" 
-                                Height="17px"></cc1:dbnetweblov><asp:ImageButton ID="lvCodi_persLoad" runat="server" ImageUrl="../librerias/img/load.jpg"
+                                Height="17px" Visible="False"></cc1:dbnetweblov>
+                                    <asp:ImageButton ID="lvCodi_persLoad" runat="server" ImageUrl="../librerias/img/load.jpg"
                                 OnClick="lvCodi_persLoad_Click" Style="" 
-                                ToolTip="Carga Receptores" Width="16px" />
+                                ToolTip="Carga Receptores" Width="16px" Visible="False" />
                                 </td>
                             </tr>
                             <tr>
