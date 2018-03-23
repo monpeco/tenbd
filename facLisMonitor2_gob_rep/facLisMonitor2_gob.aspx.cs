@@ -262,7 +262,7 @@ public partial class facLisMonitor2_GOB : DbnetPage
                 lvCodi_sucu.Query = qryCodi_sucu;
                 lvCodi_sucu.Rescata(DbnetContext.dbConnection);
 
-                lvCodi_pers.Query = qryCodi_pers;
+                //lvCodi_pers.Query = qryCodi_pers;
                 //Se comento para hacer cargar manual
                 //lvCodi_pers.Rescata(DbnetContext.dbConnection);
 
@@ -444,7 +444,7 @@ public partial class facLisMonitor2_GOB : DbnetPage
                     //}
                     //if (rdRecepcion.Checked==true)
                     //{
-                    query = query.Replace(":FECHA_RECE1", "Convert(DateTime,DTE.FECH_RECE,120) >= Convert(DateTime,'" + Fecha_desde.Text + "',120)");
+                    query = query.Replace(":FECHA_RECE1", "Convert(DateTime,DTE.FECH_EMIS,120) >= Convert(DateTime,'" + Fecha_desde.Text + "',120)");
                     query = query.Replace(":FECHA_DOCU1", str_defe);
                     //}
                     //}
@@ -466,7 +466,7 @@ public partial class facLisMonitor2_GOB : DbnetPage
                     //    }
                     //    if (rdRecepcion.Checked==true)
                     //    {
-                    query = query.Replace(":FECHA_RECE1", "to_date(DTE.FECH_RECE,'YYYY-MM-DD') >= to_date('" + Fecha_desde.Text + "','yyyy-mm-dd')");
+                    query = query.Replace(":FECHA_RECE1", "to_date(DTE.FECH_EMIS,'YYYY-MM-DD') >= to_date('" + Fecha_desde.Text + "','yyyy-mm-dd')");
                     query = query.Replace(":FECHA_DOCU1", str_defe);
                     //    }
                     //}
@@ -501,7 +501,7 @@ public partial class facLisMonitor2_GOB : DbnetPage
                     //    }
                     //    if (rdRecepcion.Checked==true)
                     //    {
-                    query = query.Replace(":FECHA_RECE2", "Convert(DateTime,DTE.FECH_RECE,120) <= Convert(DateTime,'" + Fecha_hasta.Text + "',120)");
+                    query = query.Replace(":FECHA_RECE2", "Convert(DateTime,DTE.FECH_EMIS,120) <= Convert(DateTime,'" + Fecha_hasta.Text + "',120)");
                     query = query.Replace(":FECHA_EMIS2", str_defe);
                     query = query.Replace(":FECHA_DOCU2", str_defe);
                     //    }
@@ -525,7 +525,7 @@ public partial class facLisMonitor2_GOB : DbnetPage
                     //    }
                     //    if (rdRecepcion.Checked==true)
                     //    {
-                    query = query.Replace(":FECHA_RECE2", "to_date(DTE.FECH_RECE,'YYYY-MM-DD') <= to_date('" + Fecha_hasta.Text + "','yyyy-mm-dd')");
+                    query = query.Replace(":FECHA_RECE2", "to_date(DTE.FECH_EMIS,'YYYY-MM-DD') <= to_date('" + Fecha_hasta.Text + "','yyyy-mm-dd')");
                     query = query.Replace(":FECHA_EMIS2", str_defe);
                     query = query.Replace(":FECHA_DOCU2", str_defe);
 
@@ -1552,9 +1552,9 @@ public partial class facLisMonitor2_GOB : DbnetPage
     {
         try
         {
-            lvCodi_pers.Query = qryCodi_pers;
-            lvCodi_pers.Rescata(DbnetContext.dbConnection);
-            lvCodi_pers.Selecciona(Codi_pers.Text);
+            //lvCodi_pers.Query = qryCodi_pers;
+            //lvCodi_pers.Rescata(DbnetContext.dbConnection);
+            //lvCodi_pers.Selecciona(Codi_pers.Text);
         }
         catch
         {
@@ -1566,7 +1566,7 @@ public partial class facLisMonitor2_GOB : DbnetPage
 
     private void lvCodi_pers_SelectedIndexChanged(object sender, System.EventArgs e)
     {
-        Codi_pers.Text = lvCodi_pers.SelectedValue;
+        //Codi_pers.Text = lvCodi_pers.SelectedValue;
     }
 
     private void Codi_sucu_TextChanged(object sender, System.EventArgs e)
@@ -1683,8 +1683,8 @@ public partial class facLisMonitor2_GOB : DbnetPage
     }
     protected void lvCodi_persLoad_Click(object sender, ImageClickEventArgs e)
     {
-        lvCodi_pers.Query = qryCodi_pers;
-        lvCodi_pers.Rescata(DbnetContext.dbConnection);
+        //lvCodi_pers.Query = qryCodi_pers;
+        //lvCodi_pers.Rescata(DbnetContext.dbConnection);
     }
 
     protected void Grilla_SelectedIndexChanged(object sender, EventArgs e)
